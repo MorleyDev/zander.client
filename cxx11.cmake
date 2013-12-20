@@ -1,4 +1,8 @@
-option(FORCE_CXX11_FLAG "Force the -std=c++11 flag to alwyas be enabled" OFF)
+##############################################
+# Enable required C++11 flags on compilation #
+##############################################
+
+option(FORCE_CXX11_FLAG "Force the -std=c++11 flag to always be enabled" OFF)
 
 if(FORCE_CXX11_FLAG)
 	set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
