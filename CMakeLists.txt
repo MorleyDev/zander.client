@@ -7,6 +7,8 @@ option(BUILD_UNIT_TESTS "Build the unit tests for the zander client" ON)
 option(BUILD_SPEC_TESTS "Build the specification tests for the zander client" ON)
 
 include(cxx11.cmake)
+
+set(ZANDER_DEPENDENCIES unittest11)
 include(ext.cmake)
 
 if (BUILD_CLIENT_EXE)

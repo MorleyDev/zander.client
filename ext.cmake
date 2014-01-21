@@ -1,5 +1,8 @@
 #########################################################
 # Utilise the zander system to acquire the dependencies #
+# Parameters:
+#	List[String] - ZANDER_DEPENDENCIES
+#		The list of library names to acquire via zander
 #########################################################
 
 option(ZANDER_GET_DEPENDENCIES "Use zander to install the dependencies" ON)
@@ -25,7 +28,13 @@ if (ZANDER_GET_DEPENDENCIES)
 	if(NOT ZANDER_UNKNOWN_COMPILER)
 		message("Working Directory: ${ZANDER_EXT_DIRECTORY}")
 		file(MAKE_DIRECTORY ${ZANDER_EXT_DIRECTORY})
-		execute_process(COMMAND cmd /c zander get unittest11 ${ZANDER_COMPILER} ${ZANDER_BUILD_TYPE} WORKING_DIRECTORY ${ZANDER_EXT_DIRECTORY})
+		
+		message("Getting dependencies: ${ZANDER_DEPENDENCIES}")
+		foreach(ZANDER_DEPENDENCY ${ZANDER_DEPENDENCIES})
+			message("Getting dependency: ${ZANDER_DEPENDENCY}")
+			execute_process(COMMAND cmd /c zander get ${ZANDER_DEPENDENCY} ${ZANDER_COMPILER} ${ZANDER_BUILD_TYPE} WORKING_DIRECTORY ${ZANDER_EXT_DIRECTORY})
+		endforeach(ZANDER_DEPENDENCY)
+
 	endif()
 
 	include_directories(${ZANDER_EXT_DIRECTORY}/include)
