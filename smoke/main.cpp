@@ -1,4 +1,6 @@
+#include <UnitTest11.hpp>
+
 int main(const int nArgs, const char** ppcArgs)
 {
-	return 0;
+	return ut11::Run(nArgs, ppcArgs);
 }
