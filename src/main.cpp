@@ -1,4 +1,4 @@
-int main(const int nArgs, const char** ppcArgs)
+int main(const int nArgs, char** ppcArgs)
 {
 	return 0;
 }
