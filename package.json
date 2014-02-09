@@ -1,0 +1,12 @@
+{
+  "name": "zander.client",
+  "author": "Jason Morley (http://www.morleydev.co.uk)",
+  "license": "MIT",
+  "devDependencies": { "mocha" : "1.14.0", "chai" : "1.8.1" },
+  "scripts": {
+    "start": "node src/run.js",
+    "test" : "npm run-script unit && npm run-script spec",
+    "unit" : "mocha test --recursive",
+    "spec" : "mocha spec/src --recursive"
+  }
+}
