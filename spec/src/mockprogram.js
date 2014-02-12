@@ -1,26 +1,42 @@
-var fileSystem = require("fs");
+var fs = require("fs");
+var fsextra = require("fs.extra");
 var path = require("path");
+
+const configPath = __dirname + "/../../src/config.json";
+const configBackupPath = __dirname + "/../../src/config_backup.json";
 
 module.exports = { 
 	createMock : function(programName, programStub) {
-		var stubCmd = "node " + path.normalize(__dirname + "/../mockbin/program.js") + " " + programName + " " + path.normalize(programStub);
-		var name = programName;
-
-		var retVal = { };
-		retVal[name] = stubCmd;
+		const stubCmd = "node " + path.normalize(__dirname + "/../mockbin/program.js") + " " + programName + " " + path.normalize(programStub);
+        var retVal = { };
+		retVal[programName] = stubCmd;
 		return retVal;
 	},
 
-	startMocks : function(programs) {
-		var programConfig = { 
+	startMocks : function(programs, onStarted) {
+		const programConfig = {
 			"programs" : programs
 		};
 
-		fileSystem.writeFileSync(path.normalize(__dirname + "/../../src/config.json"), JSON.stringify(programConfig));
+        var writeConfig = function () {
+            fs.writeFile(configPath, JSON.stringify(programConfig), function() { onStarted(); });
+        };
+
+        fs.exists(configPath, function(exists) {
+            if (exists)
+                fsextra.copy(configPath, configBackupPath, writeConfig);
+            else
+                writeConfig();
+        });
 	},
 
-	stopMocks : function() {
-		
+	stopMocks : function(onStopped) {
+
+        fs.unlinkSync(configPath);
+        fsextra.copy(configBackupPath, configPath, function() {
+            fs.unlinkSync(configBackupPath);
+            onStopped();
+        });
 	},
 	
 	verify : function(programName, arguments) { 

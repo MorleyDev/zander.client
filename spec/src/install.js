@@ -1,5 +1,14 @@
-var mockprogram = require(__dirname + "/mockprogram.js");
+var mockProgram = require(__dirname + "/mockProgram.js");
 
-mockprogram.startMocks([ mockprogram.createMock("make", __dirname + "/installMake.js") ]);
+describe("install: ", function () {
+    beforeEach(function (done) {
+        var programs = [
+            mockProgram.createMock("make", __dirname + "/installMake.js")
+        ];
 
-mockprogram.stopMocks();
+        mockProgram.startMocks(programs, done);
+    });
+    afterEach(function (done) {
+        mockProgram.stopMocks(done);
+    });
+});
