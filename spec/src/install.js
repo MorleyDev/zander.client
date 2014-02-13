@@ -13,11 +13,14 @@ describe("install: ", function () {
     beforeEach(function (done) {
 
         path.mkdirSync(workingDirectory);
+        process.chdir(workingDirectory);
 
         mock_program.startMocks([ mock_program.createMock("make", __dirname + "/installMake.js") ], done);
     });
     afterEach(function (done) {
         mock_program.stopMocks(done);
+
+        process.chdir(originalWorkingDirectory);
         fs.extra.rmrfSync(workingDirectory);
     });
     describe("successful install test: ", function ()  {
@@ -33,7 +36,7 @@ describe("install: ", function () {
 
         });
         it("calls make", function() {
-            mock_program.verify("make", "", process.cwd())
+            mock_program.verify("make", "", workingDirectory)
         });
     });
 });
