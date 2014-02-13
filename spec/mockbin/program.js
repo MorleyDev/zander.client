@@ -1,15 +1,15 @@
 var Enumerable = require("linq");
 var fileSystem = require("fs");
+var path = require("path");
 
 var args = Enumerable.From(process.argv).Skip(2).ToArray();
 var programName = args[0];
 var programPath = args[1];
 var programArgs = Enumerable.From(args).Skip(2).ToArray();
 
-var jsonOut = { 
-	"program" : programName.toString(),
-	"arguments" : programArgs,
-	"working_directory": process.cwd()
+var jsonOut = {
+	"arguments" : programArgs.join(' '),
+	"working_directory": path.normalize(process.cwd())
 };
 var jsonString = JSON.stringify(jsonOut);
 
