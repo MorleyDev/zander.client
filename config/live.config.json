@@ -1,0 +1,7 @@
+{
+    "server":"http://zander.morleydev.co.uk",
+    "programs" : {
+        "make" : "make",
+        "cmake" : "cmake"
+    }
+}
