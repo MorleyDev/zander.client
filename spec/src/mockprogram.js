@@ -13,9 +13,6 @@ module.exports = {
 
 	startMocks : function(programs, onStarted) {
 
-        if ( fs.existsSync(__dirname + "/../mockbin/execs/") )
-            fs.extra.rmrfSync(__dirname + "/../mockbin/execs/");
-
 		var programConfig = {
 			"programs" : { }
 		};
@@ -37,6 +34,9 @@ module.exports = {
 
 	stopMocks : function(onStopped) {
 
+        if ( fs.existsSync(__dirname + "/../mockbin/execs/") )
+            fs.extra.rmrfSync(__dirname + "/../mockbin/execs/");
+        
         fs.unlinkSync(configPath);
         if ( fs.existsSync(configBackupPath) ) {
             fs.extra.copy(configBackupPath, configPath, function() {
