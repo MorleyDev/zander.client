@@ -41,7 +41,7 @@ module.exports = {
 
         fs.exists(configPath, function(exists) {
             if (exists)
-                fs.extra.copy(configPath, configBackupPath, writeConfig);
+                fs.extra.copy(configPath, configBackupPath, function() { fs.unlink(configPath, writeConfig); });
             else
                 writeConfig();
         });

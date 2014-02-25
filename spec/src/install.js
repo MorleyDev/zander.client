@@ -13,7 +13,7 @@ describe("install: ", function () {
     const gitUrl = "http://github.com/morleydev/unittest11";
     beforeEach(function (done) {
 
-        path.mkdirSync(workingDirectory);
+        fs.mkdirSync(workingDirectory);
         process.chdir(workingDirectory);
 
         nock('http://localhost:1337/')
@@ -40,7 +40,7 @@ describe("install: ", function () {
 
         beforeEach(function (done) {
             child_process.exec(path.normalize("node " + __dirname + "/../../src/run.js") + " install unittest11 debug gnu", function(err, stdout, stderr) {
-                assert(err == null, "Error occurred when running program: " + err.code);
+                assert(err == null, "Error occurred when running program " + err);
                 done();
             });
         });
@@ -49,7 +49,7 @@ describe("install: ", function () {
             mock_program.verify("git", "clone " + gitUrl + "unittest11", __dirname + "/../../src/cache/source");
         });
         it("calls cmake with the expected arguments", function() {
-            mock_program.verify("cmake", path.normalize(__dirname + "/../../src/cache/source/unittest11") + "-G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(__dirname + "/../../src/tmp/unitest11/package"), path.normalize(__dirname + "/../../src/tmp/unittest11"));
+            mock_program.verify("cmake", path.normalize(__dirname + "/../../src/cache/unittest11/source") + "-G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(__dirname + "/../../src/cache/unitest11/gnu/debug"), path.normalize(__dirname + "/../../src/tmp/unittest11"));
         });
         it("calls make", function() {
             mock_program.verify("make", "", path.normalize(__dirname + "/../../src/tmp"))
