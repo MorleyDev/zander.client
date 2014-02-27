@@ -11,6 +11,10 @@ const workingDirectory = __dirname + "/tmp";
 
 describe("install: ", function () {
     const gitUrl = "http://github.com/morleydev/unittest11";
+    const cacheSourceDirectory = __dirname + "/../../src/cache/source";
+    const cacheBinaryDirectory = __dirname + "/../../src/cache/unitest11/gnu/debug";
+    const temporaryDirectory = __dirname + "/../../src/tmp/unittest11";
+
     beforeEach(function (done) {
 
         fs.mkdirSync(workingDirectory);
@@ -46,14 +50,16 @@ describe("install: ", function () {
         });
 
         it("calls git with the expected arguments", function() {
-            mock_program.verify("git", "clone " + gitUrl + "unittest11", __dirname + "/../../src/cache/source");
+            mock_program.verify("git", "clone " + gitUrl + "unittest11", cacheSourceDirectory);
         });
         it("calls cmake with the expected arguments", function() {
-            mock_program.verify("cmake", path.normalize(__dirname + "/../../src/cache/unittest11/source") + "-G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(__dirname + "/../../src/cache/unitest11/gnu/debug"), path.normalize(__dirname + "/../../src/tmp/unittest11"));
+            mock_program.verify("cmake", path.normalize(cacheSourceDirectory) + "-G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(cacheBinaryDirectory), temporaryDirectory);
         });
         it("calls make", function() {
-            mock_program.verify("make", "", path.normalize(__dirname + "/../../src/tmp"))
-            mock_program.verify("make", "install", path.normalize(__dirname + "/../../src/tmp"))
+            mock_program.verify("make", "install", temporaryDirectory)
+        });
+        it("calls make install", function() {
+            mock_program.verify("make", "install", temporaryDirectory)
         });
     });
 });
