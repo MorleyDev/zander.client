@@ -2,6 +2,9 @@
   "name": "zander.client",
   "author": "Jason Morley (http://www.morleydev.co.uk)",
   "license": "MIT",
+  "dependencies": {
+      "restify":"*.*.*"
+  },
   "devDependencies": { 
     "mocha" : "1.14.0", 
     "chai" : "1.8.1", 
@@ -12,6 +15,6 @@
     "start": "node src/run.js",
     "test" : "npm run-script unit && npm run-script spec",
     "unit" : "mocha test --recursive",
-    "spec" : "mocha spec/src --recursive"
+    "spec" : "cd spec/mockbin && npm install && cd ../.. && mocha spec/src --recursive"
   }
 }

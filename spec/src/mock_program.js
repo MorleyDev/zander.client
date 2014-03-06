@@ -5,17 +5,6 @@ var assert = require("assert");
 const configPath = __dirname + "/../../src/config.json";
 const configBackupPath = __dirname + "/../../src/config_backup.json";
 
-function checkMockInvoked(programName, arguments, workingDirectory, callback) {
-
-    if (fs.existsSync(__dirname + "/../mockbin/execs/" + programName + ".json")) {
-        var invocation = JSON.parse(fs.readFileSync(__dirname + "/../mockbin/execs/" + programName + ".json"));
-        var wasInvoked = ( invocation.arguments == arguments  && invocation.working_directory == path.normalize(workingDirectory) );
-        var failureDescription = ("Found invocation of \"" + programName + (invocation.arguments.length > 0 ? " " + invocation.arguments : "") + "\" in " + invocation.working_directory);
-        callback(wasInvoked, failureDescription);
-    }
-    callback(false, "No invocation found");
-}
-
 module.exports = { 
 	createMock : function(programName, programStub) {
 		const stubCmd = "node " + path.normalize(__dirname + "/../mockbin/program.js") + " " + programName + " " + path.normalize(programStub);
@@ -62,19 +51,30 @@ module.exports = {
             onStopped();
 	},
 	
-	verify : function(programName, arguments, workingDirectory) {
+	verify : function(programName, expectedArguments, workingDirectory) {
 
-        var failureDescription = "Expected invocation of \"" + programName + (arguments.length > 0 ? " " + arguments : "") + "\" in " + workingDirectory + " was not found";
-        checkMockInvoked(programName, arguments, workingDirectory, function (wasInvoked, description) {
-            assert(wasInvoked, failureDescription + '\n' + description);
-        });
-	},
+        const expectedWorkingDirectory = path.normalize(workingDirectory);
 
-    verifyNot : function(programName, arguments, workingDirectory) {
+        var matchFound = false;
+        var failureDescription = "Expected invocation of \"" + programName + (expectedArguments.length > 0 ? " " + expectedArguments : "") + "\" in " + expectedWorkingDirectory + " was not found\n";
 
-        checkMockInvoked(programName, arguments, workingDirectory, function (wasInvoked, description) {
-            var failureDescription = "Unexpected invocation of \"" + programName + (arguments.length > 0 ? " " + arguments : "") + "\" in " + workingDirectory + " was found";
-            assert(!wasInvoked, failureDescription + '\n' + description);
-        });
-    }
+        const executionLogPath = path.normalize(__dirname + "/../mockbin/execs/" + programName + ".json");
+        if (fs.existsSync(executionLogPath)) {
+            var invocations = JSON.parse(fs.readFileSync(executionLogPath));
+
+            invocations.forEach(function (invocation) {
+                const actualWorkingDirectory = path.normalize(invocation.working_directory);
+                const actualArguments = invocation.arguments;
+
+                var wasInvoked = ( actualArguments == expectedArguments && actualWorkingDirectory == expectedWorkingDirectory );
+                failureDescription += ("Found invocation of \"" + programName + (actualArguments.length > 0 ? " " + actualArguments : "") + "\" in " + actualWorkingDirectory + "\n");
+
+                if (wasInvoked)
+                    matchFound = true;
+            });
+        } else {
+            failureDescription += "No invocation found\n";
+        }
+        assert(matchFound, failureDescription);
+	}
 };
