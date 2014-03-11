@@ -42,12 +42,12 @@ var restClient = restify.createJsonClient({ url: config.server });
 restClient.get("/projects/" + library, function(err, req, res, data) {
 
     if (!fs.existsSync(cacheSourceDirectory))
-        fs.extra.mkdirRecursive(cacheSourceDirectory);
+        fs.extra.mkdirpSync(cacheSourceDirectory);
 
     child_process.exec(config.programs.git + " clone " + data.git + " " + library, { cwd: cacheSourceDirectory }, function(err, stdout, stderr) {
 
         if (!fs.existsSync(temporaryDirectory))
-            fs.extra.mkdirRecursive(temporaryDirectory);
+            fs.extra.mkdirpSync(temporaryDirectory);
 
         child_process.exec(config.programs.cmake + " " + path.normalize(cacheSourceDirectory + "/" + library) + " -G\\\"MinGW Makefiles\\\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(cacheBinaryDirectory), { cwd: temporaryDirectory  }, function(err, stdout, stderr) {
 
