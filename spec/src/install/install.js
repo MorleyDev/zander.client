@@ -13,11 +13,14 @@ describe("install: ", function () {
     const zanderProgramDirectory = __dirname + "/../../../src";
     const zanderProcess = path.normalize("node " + zanderProgramDirectory + "/run.js");
 
-    const cacheSourceDirectory = zanderProgramDirectory + "/cache/source";
-    const cacheBinaryDirectory = zanderProgramDirectory + "/cache/unitest11/gnu/debug";
-    const temporaryDirectory = zanderProgramDirectory + "/src/tmp/unittest11";
+    const libraryName = "unittest11";
 
-    const gitUrl = "http://github.com/morleydev/unittest11";
+    const cacheSourceRootDirectory = zanderProgramDirectory + "/cache/source";
+    const cacheSourceDirectory = cacheSourceRootDirectory + "/" + libraryName;
+    const cacheBinaryDirectory = zanderProgramDirectory + "/cache/" + libraryName + "/gnu/debug";
+    const temporaryDirectory = zanderProgramDirectory + "/tmp/" + libraryName;
+
+    const gitUrl = "http://github.com/morleydev/" + libraryName;
     var mockServer = restify.createServer();
 
     before(function (done) {
@@ -29,7 +32,7 @@ describe("install: ", function () {
         process.chdir(workingDirectory);
 
         mockServer.listen(1337, "localhost");
-        mockServer.get("/projects/unittest11", function (request, response, next) {
+        mockServer.get("/projects/" + libraryName, function (request, response, next) {
             response.send(200, { git:gitUrl });
             return next();
         });
@@ -51,17 +54,19 @@ describe("install: ", function () {
 
         before(function (done) {
             this.timeout(0);
-            child_process.exec(zanderProcess + " install unittest11 debug gnu", function(err, stdout, stderr) {
+            child_process.exec(zanderProcess + " install " + libraryName + " debug gnu", function(err, stdout, stderr) {
                 assert(err == null, "Error occurred when running program " + err + "\nStdOut:\n" + stdout + "\nStdErr:\n" + stderr);
+                console.log(stdout);
+                console.log(stderr);
                 done();
             });
         });
 
         it("calls git with the expected arguments", function() {
-            mock_program.verify("git", "clone " + gitUrl + " unittest11", cacheSourceDirectory);
+            mock_program.verify("git", "clone " + gitUrl + " unittest11", cacheSourceRootDirectory);
         });
         it("calls cmake with the expected arguments", function() {
-            mock_program.verify("cmake", path.normalize(cacheSourceDirectory) + "-G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(cacheBinaryDirectory), temporaryDirectory);
+            mock_program.verify("cmake", path.normalize(cacheSourceDirectory) + " -G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(cacheBinaryDirectory), temporaryDirectory);
         });
         it("calls make", function() {
             mock_program.verify("make", "install", temporaryDirectory)

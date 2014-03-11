@@ -3,7 +3,6 @@ var fs = require("fs");
 var path = require("path");
 
 var args = linq.From(process.argv).Skip(2).ToArray();
-console.log(args);
 
 var programName = args[0];
 var programPath = args[1];

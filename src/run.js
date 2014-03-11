@@ -28,26 +28,33 @@ function loadConfigurationFile() {
 
 var config = loadConfigurationFile();
 
-const zanderWorkingDirectory = process.cwd();
-const cacheSourceDirectory = path.normalize(__dirname + "/cache/source");
-const cacheBinaryDirectory = path.normalize(__dirname + "/cache/unitest11/gnu/debug");
-const temporaryDirectory = path.normalize(__dirname + "/src/tmp/unittest11");
-
 const method = process.argv[2];
 const library = process.argv[3];
 const compiler = process.argv[4];
 const mode = process.argv[5];
 
+const zanderWorkingDirectory = process.cwd();
+const cacheSourceDirectory = path.normalize(__dirname + "/cache/source");
+const cacheBinaryDirectory = path.normalize(__dirname + "/cache/" + library + "/gnu/debug");
+const temporaryDirectory = path.normalize(__dirname + "/tmp/" + library);
+
 var restClient = restify.createJsonClient({ url: config.server });
 restClient.get("/projects/" + library, function(err, req, res, data) {
 
-    console.log(config.programs.git + " clone " + data.git + " unittest11");
-    console.log(cacheSourceDirectory);
     if (!fs.existsSync(cacheSourceDirectory))
         fs.extra.mkdirRecursive(cacheSourceDirectory);
 
-    child_process.exec(config.programs.git + " clone " + data.git + " " + library, { "cwd": cacheSourceDirectory }, function(err, stdout, stderr) {
-        process.exit();
+    child_process.exec(config.programs.git + " clone " + data.git + " " + library, { cwd: cacheSourceDirectory }, function(err, stdout, stderr) {
+
+        if (!fs.existsSync(temporaryDirectory))
+            fs.extra.mkdirRecursive(temporaryDirectory);
+
+        child_process.exec(config.programs.cmake + " " + path.normalize(cacheSourceDirectory + "/" + library) + " -G\\\"MinGW Makefiles\\\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(cacheBinaryDirectory), { cwd: temporaryDirectory  }, function(err, stdout, stderr) {
+
+            console.log("run");
+            process.exit();
+        });
     });
 });
+
 
