@@ -12,5 +12,11 @@ before(function (done) {
     fs.extra.copy(configSpecFilePath, configFilePath, done);
 });
 after(function (done) {
-    fs.unlink(configFilePath, done);
+    done();
+});
+
+process.on('exit', function() {
+    fs.extra.rmrfSync(__dirname + "/../../src/tmp");
+    fs.extra.rmrfSync(__dirname + "/../../src/cache");
+    fs.unlinkSync(configFilePath);
 });

@@ -28,7 +28,7 @@ describe("install: ", function () {
         if (fs.existsSync(workingDirectory))
             fs.extra.rmrfSync(workingDirectory);
 
-        fs.mkdirSync(workingDirectory);
+        fs.extra.mkdirpSync(workingDirectory);
         process.chdir(workingDirectory);
 
         mockServer.listen(1337, "localhost");
@@ -74,10 +74,15 @@ describe("install: ", function () {
         it("calls make install", function() {
             mock_program.verify("make", "install", temporaryDirectory)
         });
-        it("copies the install files into the working directory", function() {
+        it("copies the install files into the cache binary directory", function() {
             assert(fs.existsSync(cacheBinaryDirectory + "/include/some_header"), "expected header file was not copied");
             assert(fs.existsSync(cacheBinaryDirectory + "/lib/some_lib"), "expected lib file was not copied");
             assert(fs.existsSync(cacheBinaryDirectory + "/bin/some_bin"), "expected binary file was not copied");
+        });
+        it("copies the install files into the working directory", function() {
+            assert(fs.existsSync(workingDirectory + "/include/some_header"), "expected header file was not copied");
+            assert(fs.existsSync(workingDirectory + "/lib/some_lib"), "expected lib file was not copied");
+            assert(fs.existsSync(workingDirectory + "/bin/some_bin"), "expected binary file was not copied");
         });
     });
 });

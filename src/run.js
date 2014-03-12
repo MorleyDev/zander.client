@@ -49,12 +49,16 @@ restClient.get("/projects/" + library, function(err, req, res, data) {
         if (!fs.existsSync(temporaryDirectory))
             fs.extra.mkdirpSync(temporaryDirectory);
 
-        child_process.exec(config.programs.cmake + " " + path.normalize(cacheSourceDirectory + "/" + library) + " -G\\\"MinGW Makefiles\\\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(cacheBinaryDirectory), { cwd: temporaryDirectory  }, function(err, stdout, stderr) {
-
-            console.log("run");
-            process.exit();
+        child_process.exec(config.programs.cmake + " " + path.normalize(cacheSourceDirectory + "/" + library) + " -G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(cacheBinaryDirectory), { cwd: temporaryDirectory  }, function(err, stdout, stderr) {
+            child_process.exec(config.programs.make, { cwd: temporaryDirectory  }, function(err, stdout, stderr) {
+                child_process.exec(config.programs.make + " install", { cwd: temporaryDirectory  }, function(err, stdout, stderr) {
+                    fs.extra.copyRecursive(temporaryDirectory, cacheBinaryDirectory, function(err) {
+                        fs.extra.copyRecursive(cacheBinaryDirectory, zanderWorkingDirectory, function(err) {
+                            process.exit();
+                        });
+                    });
+                });
+            });
         });
     });
 });
-
-

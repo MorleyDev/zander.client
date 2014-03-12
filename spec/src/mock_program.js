@@ -53,6 +53,11 @@ module.exports = {
 	
 	verify : function(programName, expectedArguments, workingDirectory) {
 
+        // Bug(Feature?) in Node.js requires all quotes to be slashed in the command line.
+        // This is stupid.
+        expectedArguments = expectedArguments.replace(/"/g, '');
+        expectedArguments = expectedArguments.replace(/'/g, '');
+
         const expectedWorkingDirectory = path.normalize(workingDirectory);
 
         var matchFound = false;
