@@ -5,7 +5,7 @@ fs.extra = require("fs.extra");
 module.exports = {
 	invoke : function(args) {
 
-        const cacheBinaryDirectory = path.normalize(__dirname + "/../../../src/cache/unittest11/gnu/debug");
+        const cacheBinaryDirectory = path.normalize(__dirname + "/../../../src/cache/bin/unittest11/gnu/debug");
 
         if (args.length == 1 && args[0] == "install") {
             fs.extra.mkdirpSync(cacheBinaryDirectory + "/include");

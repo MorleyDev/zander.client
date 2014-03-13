@@ -34,8 +34,8 @@ const compiler = process.argv[4];
 const mode = process.argv[5];
 
 const zanderWorkingDirectory = process.cwd();
-const cacheSourceDirectory = path.normalize(__dirname + "/cache/source");
-const cacheBinaryDirectory = path.normalize(__dirname + "/cache/" + library + "/gnu/debug");
+const cacheSourceDirectory = path.normalize(__dirname + "/cache/src");
+const cacheBinaryDirectory = path.normalize(__dirname + "/cache/bin/" + library + "/gnu/debug");
 const temporaryDirectory = path.normalize(__dirname + "/tmp/" + library);
 
 var restClient = restify.createJsonClient({ url: config.server });

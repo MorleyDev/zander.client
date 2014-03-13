@@ -1,85 +1,79 @@
-var mock_program = require(__dirname + "/../mock_program.js");
 var assert = require('assert');
 var child_process = require('child_process');
 var path = require('path');
-var restify = require('restify');
 var fs = require('fs');
 fs.extra = require('fs.extra');
 
-const originalWorkingDirectory = process.cwd();
-const workingDirectory = __dirname + "/tmp";
+var zander = require(__dirname + "/../zander.js");
 
-describe("install: ", function () {
-    const zanderProgramDirectory = __dirname + "/../../../src";
-    const zanderProcess = path.normalize("node " + zanderProgramDirectory + "/run.js");
+describe("install: Given a server and available programs", function () {
+
+    const workingDirectory = __dirname + "/tmp";
 
     const libraryName = "unittest11";
 
-    const cacheSourceRootDirectory = zanderProgramDirectory + "/cache/source";
-    const cacheSourceDirectory = cacheSourceRootDirectory + "/" + libraryName;
-    const cacheBinaryDirectory = zanderProgramDirectory + "/cache/" + libraryName + "/gnu/debug";
-    const temporaryDirectory = zanderProgramDirectory + "/tmp/" + libraryName;
+    const temporaryDirectory = zander.directories.getTmpWorkingDir(libraryName);
+    const projectCachedBinaryDirectory = zander.directories.getCacheBinaryDir(libraryName, "gnu", "debug");
 
     const gitUrl = "http://github.com/morleydev/" + libraryName;
-    var mockServer = restify.createServer();
 
-    before(function (done) {
+    var mockServer;
 
-        if (fs.existsSync(workingDirectory))
-            fs.extra.rmrfSync(workingDirectory);
-
+    beforeEach(function (done) {
         fs.extra.mkdirpSync(workingDirectory);
-        process.chdir(workingDirectory);
 
-        mockServer.listen(1337, "localhost");
-        mockServer.get("/projects/" + libraryName, function (request, response, next) {
-            response.send(200, { git:gitUrl });
-            return next();
+        zander.loadTestConfig(function(port) {
+            mockServer = zander.createMockServer(port);
+            mockServer.get("/projects/" + libraryName, function (request, response, next) {
+                response.send(200, { git : gitUrl });
+                return next();
+            });
+
+            var mocks = [
+                zander.mocking.createMock("make", __dirname + "/installMake.js"),
+                zander.mocking.createMock("cmake", __dirname + "/installCMake.js") ,
+                zander.mocking.createMock("git", __dirname + "/installGit.js")
+            ];
+            zander.mocking.startMocks(mocks, done);
         });
-
-        var mocks = [
-            mock_program.createMock("make", __dirname + "/installMake.js"),
-            mock_program.createMock("cmake", __dirname + "/installCMake.js") ,
-            mock_program.createMock("git", __dirname + "/installGit.js")
-        ];
-        mock_program.startMocks(mocks, done);
     });
-    after(function (done) {
-        mock_program.stopMocks(done);
+    afterEach(function (done) {
+        mockServer.close();
+        zander.mocking.stopMocks(function() {
 
-        process.chdir(originalWorkingDirectory);
-        fs.extra.rmrfSync(workingDirectory);
+            zander.clean();
+            fs.extra.rmrfSync(workingDirectory);
+            done();
+        });
     });
-    describe("successful install test: ", function ()  {
+    describe("When installing an existing library in debug mode: ", function ()  {
 
-        before(function (done) {
-            this.timeout(0);
-            child_process.exec(zanderProcess + " install " + libraryName + " debug gnu", function(err, stdout, stderr) {
+        beforeEach(function (done) {
+
+            zander.launch("install", libraryName, "debug", "gnu", workingDirectory, function(err, stdout, stderr) {
                 assert(err == null, "Error occurred when running program " + err + "\nStdOut:\n" + stdout + "\nStdErr:\n" + stderr);
-                console.log(stdout);
-                console.log(stderr);
                 done();
             });
         });
 
-        it("calls git with the expected arguments", function() {
-            mock_program.verify("git", "clone " + gitUrl + " unittest11", cacheSourceRootDirectory);
+        it("Then it calls git with the expected arguments", function() {
+            zander.mocking.verify("git", "clone " + gitUrl + " " + libraryName, zander.directories.cacheSource);
         });
-        it("calls cmake with the expected arguments", function() {
-            mock_program.verify("cmake", path.normalize(cacheSourceDirectory) + " -G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(cacheBinaryDirectory), temporaryDirectory);
+        it("Then it calls cmake with the expected arguments", function() {
+            zander.mocking.verify("cmake", path.normalize(zander.directories.getCacheSourceDir(libraryName)) + " -G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(projectCachedBinaryDirectory), temporaryDirectory);
         });
-        it("calls make", function() {
-            mock_program.verify("make", "install", temporaryDirectory)
+        it("Then it calls make", function() {
+            zander.mocking.verify("make", "install", temporaryDirectory)
         });
-        it("calls make install", function() {
-            mock_program.verify("make", "install", temporaryDirectory)
+        it("Then it calls make install", function() {
+            zander.mocking.verify("make", "install", temporaryDirectory)
         });
-        it("copies the install files into the cache binary directory", function() {
-            assert(fs.existsSync(cacheBinaryDirectory + "/include/some_header"), "expected header file was not copied");
-            assert(fs.existsSync(cacheBinaryDirectory + "/lib/some_lib"), "expected lib file was not copied");
-            assert(fs.existsSync(cacheBinaryDirectory + "/bin/some_bin"), "expected binary file was not copied");
+        it("Then it copies the install files into the cache binary directory", function() {
+            assert(fs.existsSync(projectCachedBinaryDirectory + "/include/some_header"), "expected header file was not copied");
+            assert(fs.existsSync(projectCachedBinaryDirectory + "/lib/some_lib"), "expected lib file was not copied");
+            assert(fs.existsSync(projectCachedBinaryDirectory + "/bin/some_bin"), "expected binary file was not copied");
         });
-        it("copies the install files into the working directory", function() {
+        it("Then it copies the install files into the working directory", function() {
             assert(fs.existsSync(workingDirectory + "/include/some_header"), "expected header file was not copied");
             assert(fs.existsSync(workingDirectory + "/lib/some_lib"), "expected lib file was not copied");
             assert(fs.existsSync(workingDirectory + "/bin/some_bin"), "expected binary file was not copied");

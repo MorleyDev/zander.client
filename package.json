@@ -9,7 +9,8 @@
     "mocha" : "1.14.0", 
     "chai" : "1.8.1", 
     "fs.extra" : "1.2.1",
-    "nock" : "0.27.2"
+    "nock" : "0.27.2",
+    "freeport" : "*.*.*"
   },
   "scripts": {
     "start": "node src/run.js",
