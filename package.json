@@ -3,7 +3,7 @@
   "author": "Jason Morley (http://www.morleydev.co.uk)",
   "license": "MIT",
   "dependencies": {
-      "restify":"*.*.*"
+      "restify":"2.7.0"
   },
   "devDependencies": { 
     "mocha" : "1.14.0", 
