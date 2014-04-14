@@ -1,18 +1,13 @@
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
- 
-pids
-logs
-results
- 
-node_modules
-npm-debug.log
+*.class
 
-.idea/
-lib/
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Maven
+target
+
+#IntelliJ
+.idea
+.iml
