@@ -10,7 +10,7 @@
     "chai" : "1.8.1", 
     "fs.extra" : "1.2.1",
     "nock" : "0.27.2",
-    "freeport" : "*.*.*"
+    "freeport" : "1.0.2"
   },
   "scripts": {
     "start": "node src/run.js",

@@ -63,10 +63,10 @@ describe("install: Given a server and available programs", function () {
             zander.mocking.verify("cmake", path.normalize(zander.directories.getCacheSourceDir(libraryName)) + " -G\"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_DIRECTORY=" + path.normalize(projectCachedBinaryDirectory), temporaryDirectory);
         });
         it("Then it calls make", function() {
-            zander.mocking.verify("make", "install", temporaryDirectory)
+            zander.mocking.verify("cmake", "--build .", temporaryDirectory)
         });
         it("Then it calls make install", function() {
-            zander.mocking.verify("make", "install", temporaryDirectory)
+            zander.mocking.verify("cmake", "--build . -- install", temporaryDirectory)
         });
         it("Then it copies the install files into the cache binary directory", function() {
             assert(fs.existsSync(projectCachedBinaryDirectory + "/include/some_header"), "expected header file was not copied");
