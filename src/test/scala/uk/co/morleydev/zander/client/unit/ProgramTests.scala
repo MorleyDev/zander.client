@@ -11,7 +11,13 @@ class ProgramTests extends FunSpec {
     val program = new Program()
 
     describe("When running the program") {
-      program.run(new Arguments(Operation.Install, "project", Compiler.GnuCxx, BuildMode.Debug), new Configuration(new URL("http://localhost")))
+      val args = new Arguments(Operation.Install, "project", Compiler.GnuCxx, BuildMode.Debug)
+      val config = new Configuration(new URL("http://localhost"))
+      val responseCode = program.run(args, config)
+
+      it("Then the response code is -404") {
+        assert(responseCode == -404)
+      }
     }
   }
 }
