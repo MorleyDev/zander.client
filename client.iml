@@ -21,16 +21,27 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.10.3" level="project" />
+    <orderEntry type="library" name="Maven: com.lambdaworks:jacks_2.10:2.2.3" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scalap:2.10.2" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scala-compiler:2.10.2" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.10.0" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.2.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.2.3" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.2.3" level="project" />
+    <orderEntry type="library" name="Maven: net.databinder.dispatch:core_2.10:0.9.1" level="project" />
+    <orderEntry type="library" name="Maven: com.ning:async-http-client:1.7.5" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty:3.4.4.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scalatest:scalatest_2.10:2.1.3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.scala-lang:scala-reflect:2.10.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scalacheck:scalacheck_2.10:1.11.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scala-sbt:test-interface:1.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.scalamock:scalamock-scalatest-support_2.10:3.0.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.scalamock:scalamock-core_2.10:3.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.github.kristofa:mock-http-server:4.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.simpleframework:simple:4.1.21" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.slf4j:slf4j-log4j12:1.6.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.slf4j:slf4j-api:1.6.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: log4j:log4j:1.2.16" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.httpcomponents:httpclient:4.2.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.httpcomponents:httpcore:4.2.4" level="project" />

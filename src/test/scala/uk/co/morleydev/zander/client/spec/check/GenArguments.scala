@@ -5,7 +5,7 @@ import java.net.URLEncoder
 
 object GenArguments {
   def gen(operation: String) : Gen[Array[String]] = for {
-    project <- Gen.alphaStr.map(f => URLEncoder.encode(f, "UTF-8"))
+    project <- Gen.alphaStr.suchThat(s => s.size > 0 && s.size <= 20).map(f => URLEncoder.encode(f, "UTF-8"))
     compiler <-  Gen.oneOf("gnu", "msvc10", "msvc11", "msvc12")
     mode <- Gen.oneOf("debug", "release")
   } yield Array[String](operation, project, compiler, mode)

@@ -1,4 +1,4 @@
-package uk.co.morleydev.zander.client.model
+package uk.co.morleydev.zander.client.model.arg
 
 object Operation extends Enumeration {
 

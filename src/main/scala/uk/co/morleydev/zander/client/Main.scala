@@ -2,10 +2,14 @@ package uk.co.morleydev.zander.client
 
 import uk.co.morleydev.zander.client.model._
 import java.net.URL
+import scala.io.Source
+import com.lambdaworks.jacks.JacksMapper
+import uk.co.morleydev.zander.client.model.arg.{Operation, Compiler, BuildMode}
+import uk.co.morleydev.zander.client.validator.ProjectValidator
 
 object Main {
 
-  private val program = new Program()
+  private val program = new Program(ProjectValidator)
 
   def main(args : Array[String], configFile : String, exit : Int => Unit) {
 
@@ -14,7 +18,9 @@ object Main {
                                   Compiler.withName(args(2)),
                                   BuildMode.withName(args(3)))
 
-    val config = new Configuration(new URL("http://zander.morleydev.co.uk"))
+
+    val configJson = Source.fromFile(configFile).getLines.mkString
+    val config = JacksMapper.readValue[Configuration](configJson)
 
     val returnCode = program.run(arguments, config)
     exit(returnCode)
