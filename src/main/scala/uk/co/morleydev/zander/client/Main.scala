@@ -13,10 +13,12 @@ object Main {
 
   def main(args : Array[String], configFile : String, exit : Int => Unit) {
 
-    val arguments = new Arguments(Operation.withName(args(0)),
-                                  args(1),
-                                  Compiler.withName(args(2)),
-                                  BuildMode.withName(args(3)))
+    val operation = try { Operation.withName(args(0)) } catch { case e : NoSuchElementException => exit(1); return }
+    val project = args(1)
+    val compiler = try { Compiler.withName(args(2)) } catch { case e : NoSuchElementException => exit(3); return }
+    val buildMode = try { BuildMode.withName(args(3)) } catch { case e : NoSuchElementException => exit(4); return }
+
+    val arguments = new Arguments(operation, project, compiler, buildMode)
 
 
     val configJson = Source.fromFile(configFile).getLines.mkString

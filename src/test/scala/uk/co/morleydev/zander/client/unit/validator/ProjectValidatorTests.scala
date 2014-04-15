@@ -59,9 +59,12 @@ class ProjectValidatorTests extends FunSpec {
     }
 
     val random = new Random()
-    Iterator.continually(random.nextString(random.nextInt(21)))
+    Iterator.continually(random.nextString(random.nextInt(20)+1))
             .filter(f => f.count(c => !c.isLetterOrDigit) > 1)
-            .take(20).foreach({
+            .take(20)
+            .toList
+            .distinct
+            .foreach({
       project => describe("When validating a project with string containing invalid character: " + project) {
         var thrownException : Exception = null
         try {
