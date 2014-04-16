@@ -2,6 +2,4 @@ package uk.co.morleydev.zander.client.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-case class Configuration(
-  @JsonProperty("server") server : String) {
-}
+case class Configuration(@JsonProperty("server") server : String = "http://zander.morleydev.co.uk")

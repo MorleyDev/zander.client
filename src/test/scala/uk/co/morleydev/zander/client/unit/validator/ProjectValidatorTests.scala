@@ -8,12 +8,17 @@ import scala.util.Random
 
 class ProjectValidatorTests extends FunSpec {
 
+  private val random = new Random()
+
   describe("Given a project validator") {
 
     val validator : Validator[String] = ProjectValidator
 
-    Array[String]("p", "pro", "2sad", "as34dfg9", "123456789", "as34dfgrt12adaf", "a23456k890p23jhggfds").foreach({ project =>
-      describe("When validating a valid project that is an alphanumeric string of length " + project.size) {
+      Iterator.continually(random.alphanumeric.take(random.nextInt(20)+1))
+              .take(20)
+              .map(chars => chars.mkString)
+              .foreach({ project =>
+      describe("When validating a valid project that is an alphanumeric string " + project  + " of length " + project.size) {
         var thrownException : Exception = null
         try {
           validator.validate(project)
@@ -26,8 +31,11 @@ class ProjectValidatorTests extends FunSpec {
       }
     })
 
-      Gen.alphaStr.suchThat(_.size > 20).sample.foreach({ project =>
-      describe("When validating a project with invalid alphanumeric length greater than 20 (" + project + ")") {
+    Iterator.continually(random.alphanumeric.take(random.nextInt(22)+21))
+      .take(20)
+      .map(chars => chars.mkString)
+      .foreach({ project =>
+      describe("When validating a project with invalid alphanumeric length " + project.size + " greater than 20 (" + project + ")") {
         var thrownException : Exception = null
         try {
           validator.validate(project)
@@ -58,14 +66,13 @@ class ProjectValidatorTests extends FunSpec {
       }
     }
 
-    val random = new Random()
     Iterator.continually(random.nextString(random.nextInt(20)+1))
             .filter(f => f.count(c => !c.isLetterOrDigit) > 1)
             .take(20)
             .toList
             .distinct
             .foreach({
-      project => describe("When validating a project with string containing invalid character: " + project) {
+      project => describe("When validating a project with string containing invalid characters: " + project) {
         var thrownException : Exception = null
         try {
 

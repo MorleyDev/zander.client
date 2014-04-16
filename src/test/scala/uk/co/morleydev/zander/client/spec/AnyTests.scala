@@ -3,27 +3,22 @@ package uk.co.morleydev.zander.client.spec
 import org.scalatest.FunSpec
 import scala.util.Random
 import uk.co.morleydev.zander.client.Main
-import uk.co.morleydev.zander.client.check.GenArguments
 import uk.co.morleydev.zander.client.util.Using._
 import uk.co.morleydev.zander.client.model.Configuration
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito
+import uk.co.morleydev.zander.client.check.{GenStringArguments, GenNative}
 
 class AnyTests extends FunSpec with MockitoSugar {
 
   describe("Given Zander when running an invalid operation") {
 
-    val random = new Random
-    val operation = Iterator.continually(random.alphanumeric.take(random.nextInt(10)+1).mkString)
-                            .dropWhile(s => GenArguments.operations.contains(s))
-                            .take(1)
-                            .toList
-                            .apply(0)
+    val operation = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.operations)
 
     val arguments = Array[String](operation,
-                                  GenArguments.genProject(),
-                                  GenArguments.genCompiler(),
-                                  GenArguments.genBuildMode())
+                                  GenStringArguments.genProject(),
+                                  GenStringArguments.genCompiler(),
+                                  GenStringArguments.genBuildMode())
 
     val mockExit = mock[Int => Unit]
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
@@ -37,16 +32,11 @@ class AnyTests extends FunSpec with MockitoSugar {
 
   describe("Given Zander when running an invalid compiler") {
 
-    val random = new Random
-    val compiler = Iterator.continually(random.alphanumeric.take(random.nextInt(10)+1).mkString)
-      .dropWhile(s => GenArguments.compilers.contains(s))
-      .take(1)
-      .toList
-      .apply(0)
+    val compiler = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.compilers)
 
-    val arguments = Array[String](GenArguments.genOperation(),
-      GenArguments.genProject(), compiler,
-      GenArguments.genBuildMode())
+    val arguments = Array[String](GenStringArguments.genOperation(),
+      GenStringArguments.genProject(), compiler,
+      GenStringArguments.genBuildMode())
 
     val mockExit = mock[Int => Unit]
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
@@ -60,16 +50,11 @@ class AnyTests extends FunSpec with MockitoSugar {
 
   describe("Given Zander when running an invalid build mode") {
 
-    val random = new Random
-    val buildMode = Iterator.continually(random.alphanumeric.take(random.nextInt(10)+1).mkString)
-      .dropWhile(s => GenArguments.buildModes.contains(s))
-      .take(1)
-      .toList
-      .apply(0)
+    val buildMode = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.buildModes)
 
-    val arguments = Array[String](GenArguments.genOperation(),
-      GenArguments.genProject(),
-      GenArguments.genCompiler(),
+    val arguments = Array[String](GenStringArguments.genOperation(),
+      GenStringArguments.genProject(),
+      GenStringArguments.genCompiler(),
       buildMode)
 
     val mockExit = mock[Int => Unit]
@@ -86,14 +71,13 @@ class AnyTests extends FunSpec with MockitoSugar {
 
     val random = new Random
     val project = Iterator.continually(random.nextString(random.nextInt(20)+1))
-                          .filter(f => f.count(c => !c.isLetterOrDigit) > 1)
-                          .take(1)
-                          .toList(0)
+                          .find(f => !f.forall(c => c.isLetterOrDigit))
+                          .get
 
-    val arguments = Array[String](GenArguments.genOperation(),
+    val arguments = Array[String](GenStringArguments.genOperation(),
                                   project,
-                                  GenArguments.genCompiler(),
-                                  GenArguments.genBuildMode())
+                                  GenStringArguments.genCompiler(),
+                                  GenStringArguments.genBuildMode())
 
     val mockExit = mock[Int => Unit]
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
@@ -107,16 +91,12 @@ class AnyTests extends FunSpec with MockitoSugar {
 
   describe("Given Zander when running any operation with a project of invalid length") {
 
-    val random = new Random
-    val project = Iterator.continually(random.nextString(random.nextInt(20)+20))
-      .filter(f => f.forall(c => c.isLetterOrDigit))
-      .take(1)
-      .toList(0)
+    val project = GenNative.genAlphaNumericString(21, 50)
 
-    val arguments = Array[String](GenArguments.genOperation(),
+    val arguments = Array[String](GenStringArguments.genOperation(),
                                   project,
-                                  GenArguments.genCompiler(),
-                                  GenArguments.genBuildMode())
+                                  GenStringArguments.genCompiler(),
+                                  GenStringArguments.genBuildMode())
 
     val mockExit = mock[Int => Unit]
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>

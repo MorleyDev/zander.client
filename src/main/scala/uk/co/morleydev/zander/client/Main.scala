@@ -1,27 +1,38 @@
 package uk.co.morleydev.zander.client
 
-import uk.co.morleydev.zander.client.model._
-import java.net.URL
+import uk.co.morleydev.zander.client.model.{Arguments, Configuration, ExitCodes}
 import scala.io.Source
 import com.lambdaworks.jacks.JacksMapper
 import uk.co.morleydev.zander.client.model.arg.{Operation, Compiler, BuildMode}
 import uk.co.morleydev.zander.client.validator.ProjectValidator
+import uk.co.morleydev.zander.client.controller.ControllerFactoryImpl
 
 object Main {
 
-  private val program = new Program(ProjectValidator)
+  private val program = new Program(ProjectValidator, ControllerFactoryImpl)
 
   def main(args : Array[String], configFile : String, exit : Int => Unit) {
 
-    val operation = try { Operation.withName(args(0)) } catch { case e : NoSuchElementException => exit(1); return }
+    def extractEnum(enum : Enumeration, value: String, failureCode: Int): enum.Value = {
+      try {
+        enum.withName(value)
+      } catch {
+        case e: NoSuchElementException =>
+          exit(failureCode)
+          return null
+      }
+    }
+
+    val operation = extractEnum(Operation, args(0), ExitCodes.InvalidOperation)
     val project = args(1)
-    val compiler = try { Compiler.withName(args(2)) } catch { case e : NoSuchElementException => exit(3); return }
-    val buildMode = try { BuildMode.withName(args(3)) } catch { case e : NoSuchElementException => exit(4); return }
+    val compiler = extractEnum(Compiler, args(2), ExitCodes.InvalidCompiler)
+    val buildMode =extractEnum(BuildMode, args(3), ExitCodes.InvalidBuildMode)
+    if (operation == null || compiler == null || buildMode == null)
+      return
 
     val arguments = new Arguments(operation, project, compiler, buildMode)
 
-
-    val configJson = Source.fromFile(configFile).getLines.mkString
+    val configJson = Source.fromFile(configFile).getLines().mkString
     val config = JacksMapper.readValue[Configuration](configJson)
 
     val returnCode = program.run(arguments, config)
