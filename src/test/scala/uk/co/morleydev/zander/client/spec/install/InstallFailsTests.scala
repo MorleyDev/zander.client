@@ -1,14 +1,17 @@
-package uk.co.morleydev.zander.client.spec
+package uk.co.morleydev.zander.client.spec.install
 
 import org.scalatest.FunSpec
 import uk.co.morleydev.zander.client.Main
 import uk.co.morleydev.zander.client.util.Using.using
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
 import uk.co.morleydev.zander.client.model.Configuration
-import uk.co.morleydev.zander.client.check.GenStringArguments
+import uk.co.morleydev.zander.client.gen.GenStringArguments
 import uk.co.morleydev.zander.client.util.CreateMockHttpServer
+import org.scalatest.mock.MockitoSugar
+import uk.co.morleydev.zander.client.data.program.NativeProcessBuilderFactory
+import uk.co.morleydev.zander.client.spec.{ResponseCodes, TestConfigurationFile}
 
-class InstallTests extends FunSpec {
+class InstallFailsTests extends FunSpec with MockitoSugar {
 
   private val arguments = Array[String]("install",
                                         GenStringArguments.genProject(),
@@ -20,8 +23,9 @@ class InstallTests extends FunSpec {
 
       var responseCode = 0
 
-      using(new TestConfigurationFile(new Configuration("http://localhost:24325"))) {
-        config => Main.main(arguments, config.file.getAbsolutePath, s => responseCode = s)
+      val configuration = new Configuration("http://localhost:24325", cache = "./cache/directory/")
+      using(new TestConfigurationFile(configuration)) {
+        config => Main.main(arguments, config.file.getAbsolutePath, s => responseCode = s, mock[NativeProcessBuilderFactory])
       }
       it("Then the expected return code is returned") {
         assert(responseCode == ResponseCodes.EndpointNotFound)
@@ -29,30 +33,25 @@ class InstallTests extends FunSpec {
     }
   }
 
-  describe("Given the project/compiler endpoint exists") {
+  describe("Given a server but the endpoint does not exist") {
 
-    val endpointUrl = "/" + arguments(1) + "/" + arguments(2).toString
-    val gitUrl = "http://git_url/request/at_me"
-    val responseBody = "{ \"git\":\"" + gitUrl + "\" }"
-
+    val endpointUrl = "/" + arguments(1) + "/" + arguments(2)
     val provider = new SimpleHttpResponseProvider()
     val mockHttpServer = CreateMockHttpServer(provider)
     mockHttpServer.server.start()
 
     provider.expect(Method.GET, endpointUrl)
-      .respondWith(200, "application/json", responseBody)
+      .respondWith(404, "application/json", "{ }")
 
     describe("When an install operation is carried out with arguments " + arguments.mkString(", ")) {
 
-      var responseCode = -1
-      using(new TestConfigurationFile(new Configuration("http://localhost:" + mockHttpServer.port))) {
-        config => Main.main(arguments, config.file.getAbsolutePath, s => responseCode = s)
-      }
-      it("Then the endpoint was requested") {
-        provider.verify()
+      var responseCode = 0
+
+      using(new TestConfigurationFile(new Configuration("http://localhost:24325"))) {
+        config => Main.main(arguments, config.file.getAbsolutePath, s => responseCode = s, mock[NativeProcessBuilderFactory])
       }
       it("Then the expected return code is returned") {
-        assert(responseCode == ResponseCodes.Success)
+        assert(responseCode == ResponseCodes.EndpointNotFound)
       }
     }
   }

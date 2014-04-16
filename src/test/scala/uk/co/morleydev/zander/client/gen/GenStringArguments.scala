@@ -1,4 +1,4 @@
-package uk.co.morleydev.zander.client.check
+package uk.co.morleydev.zander.client.gen
 
 object GenStringArguments {
 

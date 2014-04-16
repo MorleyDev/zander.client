@@ -7,7 +7,8 @@ import uk.co.morleydev.zander.client.util.Using._
 import uk.co.morleydev.zander.client.model.Configuration
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito
-import uk.co.morleydev.zander.client.check.{GenStringArguments, GenNative}
+import uk.co.morleydev.zander.client.gen.{GenStringArguments, GenNative}
+import uk.co.morleydev.zander.client.data.program.NativeProcessBuilderFactory
 
 class AnyTests extends FunSpec with MockitoSugar {
 
@@ -22,7 +23,7 @@ class AnyTests extends FunSpec with MockitoSugar {
 
     val mockExit = mock[Int => Unit]
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit)
+      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory])
     }
 
     it("Then the program exits with the expected code") {
@@ -40,7 +41,7 @@ class AnyTests extends FunSpec with MockitoSugar {
 
     val mockExit = mock[Int => Unit]
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit)
+      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory])
     }
 
     it("Then the program exits with the expected code") {
@@ -59,7 +60,7 @@ class AnyTests extends FunSpec with MockitoSugar {
 
     val mockExit = mock[Int => Unit]
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit)
+      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory])
     }
 
     it("Then the program exits with the expected code") {
@@ -80,8 +81,8 @@ class AnyTests extends FunSpec with MockitoSugar {
                                   GenStringArguments.genBuildMode())
 
     val mockExit = mock[Int => Unit]
-    using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit)
+    using(new TestConfigurationFile(new Configuration(GenNative.genHttpUrl().toString))) { config =>
+      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory])
     }
 
     it("Then the program exits with the expected code") {
@@ -99,8 +100,8 @@ class AnyTests extends FunSpec with MockitoSugar {
                                   GenStringArguments.genBuildMode())
 
     val mockExit = mock[Int => Unit]
-    using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit)
+    using(new TestConfigurationFile(new Configuration(GenNative.genHttpUrl().toString))) { config =>
+      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory])
     }
 
     it("Then the program exits with the expected code") {

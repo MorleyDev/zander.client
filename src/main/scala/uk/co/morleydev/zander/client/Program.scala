@@ -1,19 +1,11 @@
 package uk.co.morleydev.zander.client
 
 import uk.co.morleydev.zander.client.model.{ExitCodes, Arguments, Configuration}
-import uk.co.morleydev.zander.client.validator.Validator
-import uk.co.morleydev.zander.client.validator.exceptions.InvalidProjectException
 import uk.co.morleydev.zander.client.controller.ControllerFactory
 import uk.co.morleydev.zander.client.data.net.exceptions.ProjectNotFoundException
 
-class Program(projectValidator : Validator[String], controllerFactory : ControllerFactory) {
+class Program(controllerFactory : ControllerFactory) {
   def run(args : Arguments, config : Configuration) : Int = {
-
-    try {
-      projectValidator.validate(args.project)
-    } catch {
-      case e : InvalidProjectException => return ExitCodes.InvalidProject
-    }
 
     val installController = controllerFactory.createInstallController(config)
 
@@ -23,7 +15,7 @@ class Program(projectValidator : Validator[String], controllerFactory : Controll
       case e : ProjectNotFoundException =>
         return ExitCodes.EndpointNotFound
       case e : Exception =>
-        println("Unknown error: " )
+        println("Unexpected Error Occurred" )
         e.printStackTrace()
         return ExitCodes.UnknownError
     }

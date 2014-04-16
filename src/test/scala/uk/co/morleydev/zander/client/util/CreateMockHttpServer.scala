@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.util
 
 import com.github.kristofa.test.http.{MockHttpServer, AbstractHttpResponseProvider}
-import uk.co.morleydev.zander.client.check.GenNative
+import uk.co.morleydev.zander.client.gen.GenNative
 import java.net.BindException
 
 case class MockServerAndPort(server : MockHttpServer, port : Int)

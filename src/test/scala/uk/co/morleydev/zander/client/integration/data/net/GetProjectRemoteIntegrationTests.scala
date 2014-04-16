@@ -4,11 +4,11 @@ import org.scalatest.FunSpec
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
 import uk.co.morleydev.zander.client.data.net.GetProjectRemote
 import java.net.URL
-import uk.co.morleydev.zander.client.check.GenNative
-import uk.co.morleydev.zander.client.model.arg.Compiler
+import uk.co.morleydev.zander.client.gen.{GenModel, GenNative}
+import uk.co.morleydev.zander.client.model.arg.{Project, Compiler}
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import uk.co.morleydev.zander.client.model.net.Project
+import uk.co.morleydev.zander.client.model.net.ProjectDto
 import uk.co.morleydev.zander.client.data.net.exceptions.ProjectNotFoundException
 import uk.co.morleydev.zander.client.util.CreateMockHttpServer
 
@@ -23,14 +23,14 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
     val getProjectRemote = new GetProjectRemote(new URL("http://localhost:" + mockHttpServer.port + "/"))
 
     describe("When requesting a project") {
-      val expectedProject = new Project("http://git/user/server")
-      val projectName = GenNative.genAlphaNumericString(1, 20)
-      val compiler = GenNative.genOneFrom(Compiler.values.toSeq)
+      val expectedProject = GenModel.net.genProjectDto()
+      val project = GenModel.arg.genProject()
+      val compiler = GenModel.arg.genCompiler()
 
-      provider.expect(Method.GET, "/" + projectName + "/" + compiler.toString)
+      provider.expect(Method.GET, "/" + project + "/" + compiler.toString)
         .respondWith(200, "application/json", "{ \"git\":\"" + expectedProject.git + "\" }")
 
-      val projectFuture = getProjectRemote.apply(projectName, compiler)
+      val projectFuture = getProjectRemote.apply(project, compiler)
 
       it("Then the expected project is returned") {
         val actualProject = Await.result(projectFuture, Duration(1, SECONDS))
@@ -39,14 +39,14 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
     }
 
     describe("When requesting a project that does not exist and the future is awaited on") {
-      val projectName = GenNative.genAlphaNumericString(1, 20)
-      val compiler = GenNative.genOneFrom(Compiler.values.toSeq)
+      val project = GenModel.arg.genProject()
+      val compiler = GenModel.arg.genCompiler()
 
-      provider.expect(Method.GET, "/" + projectName + "/" + compiler.toString)
-        .respondWith(404, "application/json", "{\"code\":\"ResourceNotFound\",\"message\":\"/" + projectName + "/" + compiler + " does not exist\"}")
+      provider.expect(Method.GET, "/" + project + "/" + compiler.toString)
+        .respondWith(404, "application/json", "{\"code\":\"ResourceNotFound\",\"message\":\"/" + project + "/" + compiler + " does not exist\"}")
 
       var thrownException : Exception = null
-      val projectFuture = getProjectRemote.apply(projectName, compiler)
+      val projectFuture = getProjectRemote.apply(project, compiler)
       try {
         Await.result(projectFuture, Duration(1, SECONDS))
       } catch {
@@ -64,11 +64,8 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
     val getProjectRemote = new GetProjectRemote(new URL("http://632a5d62-dafb-4c72-be18-11f29d890fbf.com/"))
 
     describe("When requesting a project/compiler the future is awaited on") {
-      val projectName = GenNative.genAlphaNumericString(1, 20)
-      val compiler = GenNative.genOneFrom(Compiler.values.toSeq)
-
       var thrownException : Exception = null
-      val projectFuture = getProjectRemote.apply(projectName, compiler)
+      val projectFuture = getProjectRemote.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler())
       try {
         Await.result(projectFuture, Duration(1, SECONDS))
       } catch {

@@ -3,15 +3,23 @@ package uk.co.morleydev.zander.client
 import uk.co.morleydev.zander.client.model.{Arguments, Configuration, ExitCodes}
 import scala.io.Source
 import com.lambdaworks.jacks.JacksMapper
-import uk.co.morleydev.zander.client.model.arg.{Operation, Compiler, BuildMode}
-import uk.co.morleydev.zander.client.validator.ProjectValidator
+import uk.co.morleydev.zander.client.model.arg.{Project, Operation, Compiler, BuildMode}
 import uk.co.morleydev.zander.client.controller.ControllerFactoryImpl
+import java.io.FileNotFoundException
+import uk.co.morleydev.zander.client.util.NativeProcessBuilderImpl
+import uk.co.morleydev.zander.client.data.program.{NativeProcessBuilder, NativeProcessBuilderFactory}
 
 object Main {
 
-  private val program = new Program(ProjectValidator, ControllerFactoryImpl)
+  object NativeProcessBuilderFactoryImpl$ extends NativeProcessBuilderFactory {
+    override def apply(commands :  Seq[String]): NativeProcessBuilder =
+      new NativeProcessBuilderImpl(commands)
+  }
 
-  def main(args : Array[String], configFile : String, exit : Int => Unit) {
+  def main(args : Array[String],
+           configFile : String,
+           exit : Int => Unit,
+           processBuilderFactory : NativeProcessBuilderFactory) {
 
     def extractEnum(enum : Enumeration, value: String, failureCode: Int): enum.Value = {
       try {
@@ -24,7 +32,7 @@ object Main {
     }
 
     val operation = extractEnum(Operation, args(0), ExitCodes.InvalidOperation)
-    val project = args(1)
+    val project = try { new Project(args(1)) } catch { case e : IllegalArgumentException => exit(ExitCodes.InvalidProject); return }
     val compiler = extractEnum(Compiler, args(2), ExitCodes.InvalidCompiler)
     val buildMode =extractEnum(BuildMode, args(3), ExitCodes.InvalidBuildMode)
     if (operation == null || compiler == null || buildMode == null)
@@ -32,14 +40,21 @@ object Main {
 
     val arguments = new Arguments(operation, project, compiler, buildMode)
 
-    val configJson = Source.fromFile(configFile).getLines().mkString
+    val configJson = try {
+      Source.fromFile(configFile).getLines().mkString
+    } catch {
+      case e : FileNotFoundException =>
+        println("Warning: Could not open config file " + configFile + ", using defaults")
+        "{ }"
+    }
     val config = JacksMapper.readValue[Configuration](configJson)
 
+    val program = new Program(new ControllerFactoryImpl(processBuilderFactory))
     val returnCode = program.run(arguments, config)
     exit(returnCode)
   }
 
   def main(args : Array[String]) {
-    main(args, "config.json", System.exit)
+    main(args, "config.json", System.exit, NativeProcessBuilderFactoryImpl$)
   }
 }

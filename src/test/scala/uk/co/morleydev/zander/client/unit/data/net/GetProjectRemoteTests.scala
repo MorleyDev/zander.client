@@ -8,11 +8,11 @@ import uk.co.morleydev.zander.client.model.arg.Compiler
 import org.mockito.{ArgumentMatcher, Mockito, Matchers}
 import scala.concurrent.{Await, future}
 import com.stackmob.newman.response.{HttpResponseCode, HttpResponse}
-import uk.co.morleydev.zander.client.model.net.Project
+import uk.co.morleydev.zander.client.model.net.ProjectDto
 import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.stackmob.newman.request.HttpRequest
-import uk.co.morleydev.zander.client.check.GenNative
+import uk.co.morleydev.zander.client.gen.{GenStringArguments, GenModel, GenNative}
 import uk.co.morleydev.zander.client.data.net.exceptions.ProjectNotFoundException
 
 class GetProjectRemoteTests extends FunSpec with MockitoSugar {
@@ -26,7 +26,7 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
 
       val mockHttpRequest = mock[HttpRequest]
       val mockHttpResponse = mock[HttpResponse]
-      val expectedProject = new Project("http://git_string.com/git/string")
+      val expectedProject = new ProjectDto("http://git_string.com/git/string")
 
       Mockito.when(mockUrlGet(Matchers.any[URL]()))
         .thenReturn(mockHttpRequest)
@@ -37,9 +37,12 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
       Mockito.when(mockHttpResponse.bodyString)
         .thenReturn("{ \"git\": \"" + expectedProject.git + "\" }")
 
-      val expectedPath = host + "/some_project/msvc10"
+      val project = GenModel.arg.genProject()
+      val compilerString = GenStringArguments.genCompiler()
+      val compiler = Compiler.withName(compilerString)
+      val expectedPath = host + "/" + project + "/" + compilerString
 
-      val result = getProjectRemote.apply("some_project", Compiler.VisualStudio10)
+      val result = getProjectRemote.apply(project, compiler)
 
       it("Then the expected url is used to retrieve the data") {
         Mockito.verify(mockUrlGet).apply(Matchers.argThat(new ArgumentMatcher[URL] {
@@ -72,7 +75,7 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
 
       var thrownException: Exception = null
       try {
-        Await.result(getProjectRemote.apply("some_project", Compiler.VisualStudio10), Duration.create(1, SECONDS))
+        Await.result(getProjectRemote.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler()), Duration.create(1, SECONDS))
       } catch {
         case e: ProjectNotFoundException => thrownException = e
       }
@@ -95,7 +98,7 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
 
       var thrownException: Exception = null
       try {
-        Await.result(getProjectRemote.apply("some_project", Compiler.VisualStudio10), Duration.create(1, SECONDS))
+        Await.result(getProjectRemote.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler()), Duration.create(1, SECONDS))
       } catch {
         case e: ProjectNotFoundException => thrownException = e
       }
