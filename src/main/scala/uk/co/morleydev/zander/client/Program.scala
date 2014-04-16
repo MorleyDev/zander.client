@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client
 
 import uk.co.morleydev.zander.client.model.{ExitCodes, Arguments, Configuration}
 import uk.co.morleydev.zander.client.controller.ControllerFactory
-import uk.co.morleydev.zander.client.data.net.exceptions.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
 
 class Program(controllerFactory : ControllerFactory) {
   def run(args : Arguments, config : Configuration) : Int = {

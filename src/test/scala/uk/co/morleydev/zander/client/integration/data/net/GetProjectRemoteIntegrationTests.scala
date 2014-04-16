@@ -9,7 +9,7 @@ import uk.co.morleydev.zander.client.model.arg.{Project, Compiler}
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import uk.co.morleydev.zander.client.model.net.ProjectDto
-import uk.co.morleydev.zander.client.data.net.exceptions.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
 import uk.co.morleydev.zander.client.util.CreateMockHttpServer
 
 class GetProjectRemoteIntegrationTests extends FunSpec {

@@ -21,7 +21,7 @@ object GenModel {
 
     def genProject(): Project =
       new Project(GenNative.genStringContaining(1, 20,
-                  ('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ Seq[Char]('_') ++ Seq[Char]('-')))
+        GenNative.alphaNumericCharacters ++ Seq[Char]('_', '-', '.')))
   }
 
   object net {

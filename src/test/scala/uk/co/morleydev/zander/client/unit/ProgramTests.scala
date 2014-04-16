@@ -11,7 +11,7 @@ import uk.co.morleydev.zander.client.gen.GenNative
 import uk.co.morleydev.zander.client.controller.{Controller, ControllerFactory}
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.arg.Operation.Operation
-import uk.co.morleydev.zander.client.data.net.exceptions.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
 
 class ProgramTests extends FunSpec with MockitoSugar {
 

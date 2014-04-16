@@ -9,8 +9,11 @@ import com.stackmob.newman.request.HttpRequest
 import com.stackmob.newman.ApacheHttpClient
 import com.stackmob.newman.dsl.GET
 import com.stackmob.newman.response.HttpResponseCode
-import uk.co.morleydev.zander.client.data.net.exceptions.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
 import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.util.Log
+import uk.co.morleydev.zander.client.data.GetProject
+import java.lang
 
 private object GetProjectRemoteDefaultDsl extends (URL => HttpRequest) {
   def apply(url : URL) : HttpRequest = {
@@ -23,15 +26,17 @@ class GetProjectRemote(url : URL,
                        get : (URL => HttpRequest) = GetProjectRemoteDefaultDsl,
                        implicit val executionContext : ExecutionContext = ExecutionContext.global)
   extends GetProject {
-
   override def apply(projectName: Project, compiler: Compiler): Future[ProjectDto] = {
-    get(new URL(url, "/" + projectName + "/" + compiler.toString)).apply
-      .transform(response =>
-        if (response.code != HttpResponseCode.Ok)
-          throw new ProjectNotFoundException
-        else
-          response.bodyString,
-      exception => throw new ProjectNotFoundException)
+    val targetUrl = new URL(url, "/" + projectName + "/" + compiler.toString)
+    get(targetUrl).apply
+      .transform(response => {
+      Log("Request to", targetUrl.toString, "returned", response.code)
+      if (response.code != HttpResponseCode.Ok)
+        throw new ProjectNotFoundException
+      else
+        response.bodyString
+    },
+        exception => throw new ProjectNotFoundException)
       .map(json => JacksMapper.readValue[ProjectDto](json))
   }
 }

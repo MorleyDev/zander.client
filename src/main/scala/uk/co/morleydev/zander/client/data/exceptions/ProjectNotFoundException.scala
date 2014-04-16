@@ -1,4 +1,4 @@
-package uk.co.morleydev.zander.client.data.net.exceptions
+package uk.co.morleydev.zander.client.data.exceptions
 
 class ProjectNotFoundException extends RuntimeException {
 

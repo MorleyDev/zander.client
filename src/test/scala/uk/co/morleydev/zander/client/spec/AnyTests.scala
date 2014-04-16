@@ -8,7 +8,7 @@ import uk.co.morleydev.zander.client.model.Configuration
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito
 import uk.co.morleydev.zander.client.gen.{GenStringArguments, GenNative}
-import uk.co.morleydev.zander.client.data.program.NativeProcessBuilderFactory
+import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
 
 class AnyTests extends FunSpec with MockitoSugar {
 

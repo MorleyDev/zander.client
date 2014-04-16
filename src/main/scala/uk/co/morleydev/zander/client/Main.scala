@@ -6,12 +6,12 @@ import com.lambdaworks.jacks.JacksMapper
 import uk.co.morleydev.zander.client.model.arg.{Project, Operation, Compiler, BuildMode}
 import uk.co.morleydev.zander.client.controller.ControllerFactoryImpl
 import java.io.FileNotFoundException
-import uk.co.morleydev.zander.client.util.NativeProcessBuilderImpl
-import uk.co.morleydev.zander.client.data.program.{NativeProcessBuilder, NativeProcessBuilderFactory}
+import uk.co.morleydev.zander.client.util.{Log, NativeProcessBuilderImpl}
+import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, NativeProcessBuilder}
 
 object Main {
 
-  object NativeProcessBuilderFactoryImpl$ extends NativeProcessBuilderFactory {
+  object NativeProcessBuilderFactoryImpl extends NativeProcessBuilderFactory {
     override def apply(commands :  Seq[String]): NativeProcessBuilder =
       new NativeProcessBuilderImpl(commands)
   }
@@ -34,7 +34,7 @@ object Main {
     val operation = extractEnum(Operation, args(0), ExitCodes.InvalidOperation)
     val project = try { new Project(args(1)) } catch { case e : IllegalArgumentException => exit(ExitCodes.InvalidProject); return }
     val compiler = extractEnum(Compiler, args(2), ExitCodes.InvalidCompiler)
-    val buildMode =extractEnum(BuildMode, args(3), ExitCodes.InvalidBuildMode)
+    val buildMode = extractEnum(BuildMode, args(3), ExitCodes.InvalidBuildMode)
     if (operation == null || compiler == null || buildMode == null)
       return
 
@@ -48,7 +48,7 @@ object Main {
     } catch {
       case e : FileNotFoundException =>
         println("Warning: Could not open config file " + configFile + ", using defaults")
-        "{ }"
+        JacksMapper.writeValueAsString(new Configuration())
     }
     val config = JacksMapper.readValue[Configuration](configJson)
 
@@ -58,6 +58,6 @@ object Main {
   }
 
   def main(args : Array[String]) {
-    main(args, "config.json", System.exit, NativeProcessBuilderFactoryImpl$)
+    main(args, "config.json", code => { Log("Exiting with code", code); System.exit(code) }, NativeProcessBuilderFactoryImpl)
   }
 }

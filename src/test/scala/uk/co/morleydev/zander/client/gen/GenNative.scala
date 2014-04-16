@@ -2,13 +2,22 @@ package uk.co.morleydev.zander.client.gen
 
 import scala.util.Random
 import java.net.URL
+import java.io.{ByteArrayInputStream, InputStream}
 
 object GenNative {
 
   private val random = new Random()
 
+  val alphaNumericCharacters : Seq[Char] = ('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')
+  val nonAsciiCharacters : Seq[Char] =
+    Iterator.continually(random.nextString(1))
+    .dropWhile(s => s(0).toInt < 256)
+    .map(s => s(0))
+    .take(20)
+    .toSeq
+
   def genAlphaNumericString(minLength : Int, maxLength : Int) : String =
-    random.alphanumeric.take(random.nextInt(maxLength - minLength + 1) + minLength).mkString
+    genStringContaining(minLength, maxLength, alphaNumericCharacters)
 
   def genAlphaNumericStringExcluding(minLength : Int, maxLength : Int, exclude : Seq[String]) : String =
     Iterator.continually(GenNative.genAlphaNumericString(minLength, maxLength))
@@ -31,4 +40,10 @@ object GenNative {
 
   def genHttpUrl() : URL =
     new URL("http://" + genAlphaNumericString(3, 20) + genOneOf(".co.uk", ".com", ".net", ".org"))
+
+  def genInputStreamString() : InputStream =
+    new ByteArrayInputStream(Iterator.continually(GenNative.genAlphaNumericString(10, 100))
+      .take(genInt(1, 10))
+      .mkString("\n")
+      .getBytes("UTF-8"))
 }

@@ -8,8 +8,8 @@ import uk.co.morleydev.zander.client.model.Configuration
 import uk.co.morleydev.zander.client.gen.GenStringArguments
 import uk.co.morleydev.zander.client.util.CreateMockHttpServer
 import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.data.program.NativeProcessBuilderFactory
 import uk.co.morleydev.zander.client.spec.{ResponseCodes, TestConfigurationFile}
+import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
 
 class InstallFailsTests extends FunSpec with MockitoSugar {
 

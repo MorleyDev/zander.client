@@ -2,19 +2,20 @@ package uk.co.morleydev.zander.client.util
 
 import scala.collection.JavaConversions
 import java.io.File
-import uk.co.morleydev.zander.client.data.program
+import uk.co.morleydev.zander.client.data.NativeProcessBuilder
 
-class NativeProcessBuilderImpl(args : Seq[String]) extends program.NativeProcessBuilder {
+class NativeProcessBuilderImpl(args : Seq[String]) extends NativeProcessBuilder {
 
   private val processBuilder = new java.lang.ProcessBuilder(JavaConversions.seqAsJavaList(args))
 
-  override def directory(directory: String): program.NativeProcessBuilder = {
+  override def directory(directory: File): NativeProcessBuilder = {
 
-    val dirFile = new File(directory)
-    if ( !dirFile.exists() )
-      dirFile.mkdirs()
+    Log("Process", args.mkString(" "), "in directory", directory.getPath)
 
-    processBuilder.directory(dirFile)
+    if ( !directory.exists() )
+      directory.mkdirs()
+
+    processBuilder.directory(directory)
     this
   }
 

@@ -5,7 +5,6 @@ import org.scalatest.FunSpec
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
 import uk.co.morleydev.zander.client.util.CreateMockHttpServer
 import scala.collection.mutable
-import uk.co.morleydev.zander.client.data.program.{NativeProcessBuilderFactory, NativeProcessBuilder}
 import org.mockito.{ArgumentMatcher, Matchers, Mockito}
 import uk.co.morleydev.zander.client.gen.{GenStringArguments, GenNative}
 import uk.co.morleydev.zander.client.util.Using._
@@ -13,7 +12,7 @@ import uk.co.morleydev.zander.client.model.{Configuration, ProgramConfiguration}
 import uk.co.morleydev.zander.client.spec.{ResponseCodes, TestConfigurationFile}
 import uk.co.morleydev.zander.client.Main
 import java.io.File
-import akka.util.ByteStringBuilder
+import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, NativeProcessBuilder}
 
 class GnuTests extends FunSpec with MockitoSugar {
 
@@ -22,13 +21,15 @@ class GnuTests extends FunSpec with MockitoSugar {
     val mockProcess = mock[Process]
     Mockito.when(mockProcess.exitValue())
       .thenReturn(0)
-    Mockito.when(mockProcess.getOutputStream)
-      .thenReturn(new ByteStringBuilder().asOutputStream)
+    Mockito.when(mockProcess.getInputStream)
+      .thenReturn(GenNative.genInputStreamString())
+    Mockito.when(mockProcess.getErrorStream)
+      .thenReturn(GenNative.genInputStreamString())
     Mockito.when(mockProcess.waitFor())
       .thenReturn(0)
 
     val mockProcessBuilder = mock[NativeProcessBuilder]
-    Mockito.when(mockProcessBuilder.directory(Matchers.any[String]()))
+    Mockito.when(mockProcessBuilder.directory(Matchers.any[File]()))
       .thenReturn(mockProcessBuilder)
     Mockito.when(mockProcessBuilder.start())
       .thenReturn(mockProcess)
@@ -84,17 +85,15 @@ class GnuTests extends FunSpec with MockitoSugar {
       val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = "./cache/directory/")
       using(new TestConfigurationFile(configuration)) {
         config =>
-          Main.main(arguments, config.file.getAbsolutePath, s => responseCode = s, mockProcessBuilderFactory)
+          Main.main(arguments, config.file.getPath, s => responseCode = s, mockProcessBuilderFactory)
 
       }
-
       it("Then the endpoint was requested") {
         provider.verify()
       }
       it("Then the git process was invoked") {
         Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "source"))
-        val programCacheDirectory = configuration.cache + "/" + arguments(1)
-        Mockito.verify(mockGitProcessBuilder._1).directory(programCacheDirectory)
+        Mockito.verify(mockGitProcessBuilder._1).directory(new File(configuration.cache, arguments(1)))
         Mockito.verify(mockGitProcessBuilder._1).start()
         Mockito.verify(mockGitProcessBuilder._2).waitFor()
       }
