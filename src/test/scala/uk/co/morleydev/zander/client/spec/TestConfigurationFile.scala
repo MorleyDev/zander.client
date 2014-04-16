@@ -21,6 +21,7 @@ class TestConfigurationFile(configuration : Configuration) extends AutoCloseable
   val file = createConfigFile("test_config.json")
 
   def close(): Unit = {
-    file.delete()
+    if(!file.delete())
+      println("Warning: test failed to delete configFile")
   }
 }

@@ -12,9 +12,13 @@ import scala.concurrent.duration.SECONDS
 class GitDownloadRemoteTests extends FunSpec with MockitoSugar {
 
   describe("Given a GitDownloadRemote") {
+    val mockProcess = mock[Process]
+
     val mockProcessBuilder = mock[NativeProcessBuilder]
     Mockito.when(mockProcessBuilder.directory(Matchers.any[String]))
            .thenReturn(mockProcessBuilder)
+    Mockito.when(mockProcessBuilder.start())
+           .thenReturn(mockProcess)
 
     val mockProcessBuilderFactory = mock[NativeProcessBuilderFactory]
     Mockito.when(mockProcessBuilderFactory.apply(Matchers.any[Seq[String]]))
@@ -39,6 +43,9 @@ class GitDownloadRemoteTests extends FunSpec with MockitoSugar {
       }
       it("Then the git process is started") {
         Mockito.verify(mockProcessBuilder).start()
+      }
+      it("Then the git process is waited for") {
+        Mockito.verify(mockProcess).waitFor()
       }
     }
   }

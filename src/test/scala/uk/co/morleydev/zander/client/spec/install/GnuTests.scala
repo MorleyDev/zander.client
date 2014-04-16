@@ -17,7 +17,7 @@ import akka.util.ByteStringBuilder
 
 class GnuTests extends FunSpec with MockitoSugar {
 
-  def createMockProcess(): NativeProcessBuilder = {
+  def createMockProcess(): (NativeProcessBuilder, Process) = {
 
     val mockProcess = mock[Process]
     Mockito.when(mockProcess.exitValue())
@@ -33,7 +33,7 @@ class GnuTests extends FunSpec with MockitoSugar {
     Mockito.when(mockProcessBuilder.start())
       .thenReturn(mockProcess)
 
-    mockProcessBuilder
+    (mockProcessBuilder, mockProcess)
   }
 
   class StringPathIsFilePath(val expectedPath: File) extends ArgumentMatcher[String] {
@@ -67,10 +67,10 @@ class GnuTests extends FunSpec with MockitoSugar {
       val mockCmakeInstallProcessBuilder = createMockProcess()
 
       val processQueue = new mutable.Queue[NativeProcessBuilder]
-      processQueue.enqueue(mockGitProcessBuilder)
-      processQueue.enqueue(mockCmakeProcessBuilder)
-      processQueue.enqueue(mockCmakeBuildProcessBuilder)
-      processQueue.enqueue(mockCmakeInstallProcessBuilder)
+      processQueue.enqueue(mockGitProcessBuilder._1)
+      processQueue.enqueue(mockCmakeProcessBuilder._1)
+      processQueue.enqueue(mockCmakeBuildProcessBuilder._1)
+      processQueue.enqueue(mockCmakeInstallProcessBuilder._1)
 
       val mockProcessBuilderFactory = mock[NativeProcessBuilderFactory]
       Mockito.when(mockProcessBuilderFactory.apply(Matchers.any[Seq[String]]))
@@ -94,8 +94,9 @@ class GnuTests extends FunSpec with MockitoSugar {
       it("Then the git process was invoked") {
         Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "source"))
         val programCacheDirectory = configuration.cache + "/" + arguments(1)
-        Mockito.verify(mockGitProcessBuilder).directory(programCacheDirectory)
-        Mockito.verify(mockGitProcessBuilder).start()
+        Mockito.verify(mockGitProcessBuilder._1).directory(programCacheDirectory)
+        Mockito.verify(mockGitProcessBuilder._1).start()
+        Mockito.verify(mockGitProcessBuilder._2).waitFor()
       }
 
       it("Then the expected return code is returned") {

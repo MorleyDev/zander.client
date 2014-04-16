@@ -41,7 +41,10 @@ object Main {
     val arguments = new Arguments(operation, project, compiler, buildMode)
 
     val configJson = try {
-      Source.fromFile(configFile).getLines().mkString
+      val file = Source.fromFile(configFile)
+      val json = file.getLines().mkString
+      file.close()
+      json
     } catch {
       case e : FileNotFoundException =>
         println("Warning: Could not open config file " + configFile + ", using defaults")

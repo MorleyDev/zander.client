@@ -14,6 +14,7 @@ class GitDownloadRemote(gitProgram : String,
       processBuilderFactory.apply(Seq[String](gitProgram, "clone", dto.git, "source"))
       .directory(programCacheDirectory + "/" + project)
       .start()
+      .waitFor()
     }
   }
 }
