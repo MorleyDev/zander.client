@@ -38,7 +38,7 @@ class ProgramTests extends FunSpec with MockitoSugar {
       Mockito.verify(mockControllerFactory).createInstallController(config)
     }
     it("Then the install controller is invoked") {
-      Mockito.verify(mockInstallController).apply(expectedOperation, expectedProjectName, expectedCompiler, expectedBuildMode)
+      Mockito.verify(mockInstallController).apply(expectedProjectName, expectedCompiler, expectedBuildMode)
     }
     it("Then the response code is returned") {
       assert(responseCode == ExitCodes.Success)
@@ -53,7 +53,7 @@ class ProgramTests extends FunSpec with MockitoSugar {
 
       Mockito.when(mockControllerFactory.createInstallController(Matchers.any[Configuration]()))
         .thenReturn(mockInstallController)
-      Mockito.when(mockInstallController.apply(Matchers.any[Operation](), Matchers.any[Project](), Matchers.any[Compiler](), Matchers.any[BuildMode]()))
+      Mockito.when(mockInstallController.apply(Matchers.any[Project](), Matchers.any[Compiler](), Matchers.any[BuildMode]()))
         .thenThrow(e)
 
       val program = new Program(mockControllerFactory)

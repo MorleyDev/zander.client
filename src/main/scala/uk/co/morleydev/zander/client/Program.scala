@@ -10,7 +10,7 @@ class Program(controllerFactory : ControllerFactory) {
     val installController = controllerFactory.createInstallController(config)
 
     try {
-      installController(args.operation, args.project, args.compiler, args.mode)
+      installController(args.project, args.compiler, args.mode)
       ExitCodes.Success
     } catch {
       case e : ProjectNotFoundException =>

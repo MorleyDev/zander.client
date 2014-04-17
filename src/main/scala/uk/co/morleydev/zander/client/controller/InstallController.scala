@@ -14,7 +14,7 @@ class InstallController(getProject : GetProject,
                         cmakePrebuild : CMakePrebuild,
                         implicit val executionContext : ExecutionContext = ExecutionContext.Implicits.global)
   extends Controller {
-  override def apply(operation: Operation, project: Project, compiler: Compiler, buildMode: BuildMode): Unit = {
+  override def apply(project: Project, compiler: Compiler, buildMode: BuildMode): Unit = {
     val result = getProject(project, compiler)
       .map(dto => gitDownload(project, dto))
       .map(dto => cmakePrebuild(project, compiler, buildMode))

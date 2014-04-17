@@ -27,16 +27,19 @@ class InstallControllerTests extends FunSpec with MockitoSugar {
       Mockito.when(mockGetProject(Matchers.any[Project](), Matchers.any[Compiler]()))
         .thenReturn(future(projectDto))
 
-      installController(GenNative.genOneFrom(Operation.values.toSeq),
-                        project,
+      val mode = GenNative.genOneFrom(BuildMode.values.toSeq)
+      installController(project,
                         compiler,
-                        GenNative.genOneFrom(BuildMode.values.toSeq))
+                        mode)
 
       it("Then the expected project is retrieved with the expected compiler") {
         Mockito.verify(mockGetProject)(project, compiler)
       }
       it("Then the git repository is downloaded") {
         Mockito.verify(mockGitDownload)(project, projectDto)
+      }
+      it("Then the cmake prebuild is ran") {
+        Mockito.verify(mockCmakePrebuild)(project, compiler, mode)
       }
     }
   }
