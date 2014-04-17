@@ -114,18 +114,18 @@ class GnuTests extends FunSpec with MockitoSugar {
           Mockito.verify(mockCmakeProcessBuilder._1).start()
           Mockito.verify(mockCmakeProcessBuilder._2).waitFor()
         }
-        //it("Then the cmake build process was invoked") {
-        //  Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", "."))
-        //  Mockito.verify(mockCmakeBuildProcessBuilder._1).directory(cmakeSourceTmpPath)
-        //  Mockito.verify(mockCmakeBuildProcessBuilder._1).start()
-        //  Mockito.verify(mockCmakeBuildProcessBuilder._2).waitFor()
-        //}
-        //it("Then the cmake install process was invoked") {
-        //  Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", ".", "--", "install"))
-        //  Mockito.verify(mockCmakeInstallProcessBuilder._1).directory(cmakeSourceTmpPath)
-        //  Mockito.verify(mockCmakeInstallProcessBuilder._1).start()
-        //  Mockito.verify(mockCmakeInstallProcessBuilder._2).waitFor()
-        //}
+        it("Then the cmake build process was invoked") {
+          Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", "."))
+          Mockito.verify(mockCmakeBuildProcessBuilder._1).directory(cmakeSourceTmpPath)
+          Mockito.verify(mockCmakeBuildProcessBuilder._1).start()
+          Mockito.verify(mockCmakeBuildProcessBuilder._2).waitFor()
+        }
+        it("Then the cmake install process was invoked") {
+          Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", ".", "--", "install"))
+          Mockito.verify(mockCmakeInstallProcessBuilder._1).directory(cmakeSourceTmpPath)
+          Mockito.verify(mockCmakeInstallProcessBuilder._1).start()
+          Mockito.verify(mockCmakeInstallProcessBuilder._2).waitFor()
+        }
         it("Then the expected return code is returned") {
           assert(responseCode == ResponseCodes.Success)
         }

@@ -10,14 +10,21 @@ import scala.concurrent.future
 import scala.concurrent.ExecutionContext.Implicits.global
 import uk.co.morleydev.zander.client.model.net.ProjectDto
 import uk.co.morleydev.zander.client.controller.InstallController
-import uk.co.morleydev.zander.client.data.{CMakePrebuild, GetProject, GitDownload}
+import uk.co.morleydev.zander.client.data._
 
 class InstallControllerTests extends FunSpec with MockitoSugar {
   describe("Given an install controller") {
     val mockGetProject = mock[GetProject]
     val mockGitDownload = mock[GitDownload]
     val mockCmakePrebuild = mock[CMakePrebuild]
-    val installController = new InstallController(mockGetProject, mockGitDownload, mockCmakePrebuild)
+    val mockCmakeBuild = mock[CMakeBuild]
+    val mockCmakeInstall = mock[CMakeInstall]
+
+    val installController = new InstallController(mockGetProject,
+      mockGitDownload,
+      mockCmakePrebuild,
+      mockCmakeBuild,
+      mockCmakeInstall)
 
     describe("when installing an existing project") {
       val project = GenModel.arg.genProject()
@@ -40,6 +47,12 @@ class InstallControllerTests extends FunSpec with MockitoSugar {
       }
       it("Then the cmake prebuild is ran") {
         Mockito.verify(mockCmakePrebuild)(project, compiler, mode)
+      }
+      it("Then the cmake build is ran") {
+        Mockito.verify(mockCmakeBuild)(project, compiler, mode)
+      }
+      it("Then the cmake install is ran") {
+        Mockito.verify(mockCmakeInstall)(project, compiler)
       }
     }
   }
