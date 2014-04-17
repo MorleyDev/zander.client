@@ -9,26 +9,15 @@ import java.io.{File, InputStreamReader, BufferedReader}
 import scala.io.Source
 
 class GitDownloadRemote(gitProgram : String,
-                        processBuilderFactory : NativeProcessBuilderFactory,
+                        programRunner : ProgramRunner,
                         programCacheDirectory : File,
                         implicit val executionContext : ExecutionContext = ExecutionContext.Implicits.global)
   extends GitDownload {
-  override def apply(project: Project, dto: ProjectDto): Future[Unit] = {
+  override def apply(project: Project, dto: ProjectDto): Unit = {
 
     val workingDirectory = new File(programCacheDirectory, project.value)
-    Log("Invoking git for", dto.git, workingDirectory)
-
-    future {
-      processBuilderFactory(Seq[String](gitProgram, "clone", dto.git, "source"))
-        .directory(workingDirectory)
-        .start()
-    }.map(process => {
-      Log("Git process started")
-      Source.fromInputStream(process.getInputStream).getLines().foreach(println(_))
-      Source.fromInputStream(process.getErrorStream).getLines().foreach(println(_))
-
-      val responseCode = process.waitFor()
-      Log("Git exited with response code", responseCode)
-    })
+    val command = Seq[String](gitProgram, "clone", dto.git, "source")
+    val responseCode = programRunner(command, workingDirectory)
+    Log("Git exited with response code", responseCode)
   }
 }

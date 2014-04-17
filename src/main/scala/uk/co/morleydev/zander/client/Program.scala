@@ -11,14 +11,14 @@ class Program(controllerFactory : ControllerFactory) {
 
     try {
       installController(args.operation, args.project, args.compiler, args.mode)
+      ExitCodes.Success
     } catch {
       case e : ProjectNotFoundException =>
-        return ExitCodes.EndpointNotFound
+        ExitCodes.EndpointNotFound
       case e : Exception =>
         println("Unexpected Error Occurred" )
         e.printStackTrace()
-        return ExitCodes.UnknownError
+        ExitCodes.UnknownError
     }
-    ExitCodes.Success
   }
 }

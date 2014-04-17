@@ -10,7 +10,7 @@ class NativeProcessBuilderImpl(args : Seq[String]) extends NativeProcessBuilder 
 
   override def directory(directory: File): NativeProcessBuilder = {
 
-    Log("Process", args.mkString(" "), "in directory", directory.getPath)
+    Log("Running", args.mkString(" "), "in directory", directory.getPath)
 
     if ( !directory.exists() )
       directory.mkdirs()
