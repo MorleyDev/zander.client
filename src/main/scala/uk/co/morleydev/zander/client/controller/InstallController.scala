@@ -4,7 +4,7 @@ import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
-import scala.concurrent.duration.{Duration, SECONDS}
+import scala.concurrent.duration.{Duration, MINUTES}
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.data._
 
@@ -23,6 +23,6 @@ class InstallController(getProject : GetProjectDto,
       .map(_ => sourceBuild(project, compiler, buildMode))
       .map(_ => sourceInstall(project, compiler))
       .map(_ => projectArtefactInstall(project, compiler, buildMode))
-    Await.result(result, Duration(60, SECONDS))
+    Await.result(result, Duration(60, MINUTES))
   }
 }
