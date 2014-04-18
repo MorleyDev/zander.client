@@ -68,7 +68,7 @@ object Main {
         .take(1)
         .toSeq
         .head
-      
+
       dirFile.mkdirs()
 
       override def close() = {

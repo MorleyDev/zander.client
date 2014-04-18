@@ -3,52 +3,19 @@ package uk.co.morleydev.zander.client.spec.install
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec}
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
-import uk.co.morleydev.zander.client.util.CreateMockHttpServer
-import org.mockito.{ArgumentMatcher, Matchers, Mockito}
+import uk.co.morleydev.zander.client.util.{CreateMockProcess, CreateMockHttpServer}
+import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.gen.{GenStringArguments, GenNative}
 import uk.co.morleydev.zander.client.util.Using._
 import uk.co.morleydev.zander.client.model.{Configuration, ProgramConfiguration}
 import uk.co.morleydev.zander.client.spec.{ResponseCodes, TestConfigurationFile}
 import uk.co.morleydev.zander.client.Main
 import java.io.File
-import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, NativeProcessBuilder}
-import org.mockito.stubbing.Answer
-import org.mockito.invocation.InvocationOnMock
+import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
 import org.apache.commons.io.FileUtils
 import scala.collection.JavaConversions
 
 class GnuTests extends FunSpec with MockitoSugar with BeforeAndAfter {
-
-  def createMockProcess(stubBehaviour: () => Int = () => 0): (NativeProcessBuilder, Process) = {
-
-    val mockProcess = mock[Process]
-    Mockito.when(mockProcess.exitValue())
-      .thenReturn(0)
-    Mockito.when(mockProcess.getInputStream)
-      .thenReturn(GenNative.genInputStreamString())
-    Mockito.when(mockProcess.getErrorStream)
-      .thenReturn(GenNative.genInputStreamString())
-    Mockito.when(mockProcess.waitFor())
-      .thenAnswer(new Answer[Int] {
-      override def answer(invocation: InvocationOnMock): Int = {
-        stubBehaviour()
-      }
-    })
-
-    val mockProcessBuilder = mock[NativeProcessBuilder]
-    Mockito.when(mockProcessBuilder.directory(Matchers.any[File]()))
-      .thenReturn(mockProcessBuilder)
-    Mockito.when(mockProcessBuilder.start())
-      .thenReturn(mockProcess)
-
-    (mockProcessBuilder, mockProcess)
-  }
-
-  class StringPathIsFilePath(val expectedPath: File) extends ArgumentMatcher[String] {
-    override def matches(argument: scala.Any): Boolean = {
-      new File(argument.asInstanceOf[String]).getAbsolutePath == expectedPath.getAbsolutePath
-    }
-  }
 
   def testCase(mode: String, cmakeBuildType: String) = {
     val arguments = Array[String]("install",
@@ -74,22 +41,22 @@ class GnuTests extends FunSpec with MockitoSugar with BeforeAndAfter {
         val targetLibDir = new File("lib")
         val targetBinDir = new File("bin")
 
-        val expectedFiles = Seq[String]("include/some_header",
-          "include/sub_dir/some_subheader.h",
-          "lib/some_library.a",
-          "lib/subdir/some_library.a",
-          "lib/some_dynamic.dll",
-          "lib/some_dynamic.so",
-          "lib/some_dynamic.so.12.2",
-          "lib/subdir2/some_dynamic.so",
-          "lib/subdir2/some_dynamic.so.12.32",
-          "lib/subdir2/some_dynamic.dll",
-          "bin/some_library.dll",
-          "bin/some_library.so",
-          "bin/some_library.so.12.25.a",
-          "bin/subdir/some_subdir_library.dll",
-          "bin/subdir2/some_subdir_library.so",
-          "bin/subdir/some_library.so.12.25.a")
+        val expectedFiles = Seq[String]("include/" + GenNative.genAlphaNumericString(1, 20),
+          "include/sub_dir/" + GenNative.genAlphaNumericString(1, 20) + ".h",
+          "lib/" + GenNative.genAlphaNumericString(1, 20) + ".a",
+          "lib/subdir/" + GenNative.genAlphaNumericString(1, 20) + ".a",
+          "lib/" + GenNative.genAlphaNumericString(1, 20) + ".dll",
+          "lib/" + GenNative.genAlphaNumericString(1, 20) + ".so",
+          "lib/" + GenNative.genAlphaNumericString(1, 20) + ".so.12.2",
+          "lib/subdir2/" + GenNative.genAlphaNumericString(1, 20) + ".so",
+          "lib/subdir2/" + GenNative.genAlphaNumericString(1, 20) + ".so.12.32",
+          "lib/subdir2/" + GenNative.genAlphaNumericString(1, 20) + ".dll",
+          "bin/" + GenNative.genAlphaNumericString(1, 20) + ".dll",
+          "bin/" + GenNative.genAlphaNumericString(1, 20) + ".so",
+          "bin/" + GenNative.genAlphaNumericString(1, 20) + ".so.12.25.a",
+          "bin/subdir/" + GenNative.genAlphaNumericString(1, 20) + ".dll",
+          "bin/subdir2/" + GenNative.genAlphaNumericString(1, 20) + ".so",
+          "bin/subdir/" + GenNative.genAlphaNumericString(1, 20) + ".so.12.25.a")
 
         val programs = new ProgramConfiguration(GenNative.genAlphaNumericString(3, 10),
           GenNative.genAlphaNumericString(3, 10),
@@ -98,10 +65,10 @@ class GnuTests extends FunSpec with MockitoSugar with BeforeAndAfter {
         val cacheDirectory = new File(configuration.cache)
         val temporaryDirectory = new File("tmp" + GenNative.genAlphaNumericString(1, 20))
 
-        val mockGitProcessBuilder = createMockProcess()
-        val mockCmakeProcessBuilder = createMockProcess()
-        val mockCmakeBuildProcessBuilder = createMockProcess()
-        val mockCmakeInstallProcessBuilder = createMockProcess(() => {
+        val mockGitProcessBuilder = CreateMockProcess()
+        val mockCmakeProcessBuilder = CreateMockProcess()
+        val mockCmakeBuildProcessBuilder = CreateMockProcess()
+        val mockCmakeInstallProcessBuilder = CreateMockProcess(() => {
           println("CMake Install Invoked")
           expectedFiles.foreach(path => {
             val file = new File(cacheDirectory, arguments(1) + "/" + arguments(2) + "." + arguments(3) + "/" + path)
