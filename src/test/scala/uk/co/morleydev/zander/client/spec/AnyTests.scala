@@ -22,13 +22,13 @@ class AnyTests extends FunSpec with MockitoSugar {
                                   GenStringArguments.genCompiler(),
                                   GenStringArguments.genBuildMode())
 
-    val mockExit = mock[Int => Unit]
+    var responseCode = 0
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
     }
 
     it("Then the program exits with the expected code") {
-      Mockito.verify(mockExit)(ResponseCodes.InvalidOperation)
+      assert(responseCode == ResponseCodes.InvalidOperation)
     }
   }
 
@@ -40,13 +40,13 @@ class AnyTests extends FunSpec with MockitoSugar {
       GenStringArguments.genProject(), compiler,
       GenStringArguments.genBuildMode())
 
-    val mockExit = mock[Int => Unit]
+    var responseCode = 0
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
     }
 
     it("Then the program exits with the expected code") {
-      Mockito.verify(mockExit)(ResponseCodes.InvalidCompiler)
+      assert(responseCode == ResponseCodes.InvalidCompiler)
     }
   }
 
@@ -59,13 +59,13 @@ class AnyTests extends FunSpec with MockitoSugar {
       GenStringArguments.genCompiler(),
       buildMode)
 
-    val mockExit = mock[Int => Unit]
+    var responseCode = -1
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
     }
 
     it("Then the program exits with the expected code") {
-      Mockito.verify(mockExit)(ResponseCodes.InvalidBuildMode)
+      assert(responseCode == ResponseCodes.InvalidBuildMode)
     }
   }
 
@@ -81,13 +81,13 @@ class AnyTests extends FunSpec with MockitoSugar {
                                   GenStringArguments.genCompiler(),
                                   GenStringArguments.genBuildMode())
 
-    val mockExit = mock[Int => Unit]
+    var responseCode = 0
     using(new TestConfigurationFile(new Configuration(GenNative.genHttpUrl().toString))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
     }
 
     it("Then the program exits with the expected code") {
-      Mockito.verify(mockExit)(ResponseCodes.InvalidProject)
+      assert(responseCode == ResponseCodes.InvalidProject)
     }
   }
 
@@ -100,13 +100,13 @@ class AnyTests extends FunSpec with MockitoSugar {
                                   GenStringArguments.genCompiler(),
                                   GenStringArguments.genBuildMode())
 
-    val mockExit = mock[Int => Unit]
+    var responseCode = 0
     using(new TestConfigurationFile(new Configuration(GenNative.genHttpUrl().toString))) { config =>
-      Main.main(arguments, config.file.getAbsolutePath, mockExit, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
     }
 
     it("Then the program exits with the expected code") {
-      Mockito.verify(mockExit)(ResponseCodes.InvalidProject)
+      assert(responseCode == ResponseCodes.InvalidProject)
     }
   }
 

@@ -2,11 +2,7 @@ package uk.co.morleydev.zander.client.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.File
-
-private object GetProgramDirectory extends (() => String) {
-  override def apply(): String = 
-    new File(getClass.getProtectionDomain.getCodeSource.getLocation.getPath).getParentFile.getAbsolutePath
-}
+import uk.co.morleydev.zander.client.util.GetProgramDirectory
 
 case class Configuration(@JsonProperty("server") server : String = "http://zander.morleydev.co.uk",
                          @JsonProperty("programs") programs : ProgramConfiguration = new ProgramConfiguration(),

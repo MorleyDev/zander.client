@@ -124,7 +124,7 @@ class GnuTests extends FunSpec with MockitoSugar with BeforeAndAfter {
 
         using(new TestConfigurationFile(configuration)) {
           config =>
-            Main.main(arguments, config.file.getPath, s => responseCode = s, mockProcessBuilderFactory, temporaryDirectory)
+            responseCode = Main.main(arguments, config.file.getPath, mockProcessBuilderFactory, temporaryDirectory)
         }
 
         val installedFiles = {
