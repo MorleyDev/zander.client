@@ -5,9 +5,10 @@ import scala.io.Source
 import com.lambdaworks.jacks.JacksMapper
 import uk.co.morleydev.zander.client.model.arg.{Project, Operation, Compiler, BuildMode}
 import uk.co.morleydev.zander.client.controller.ControllerFactoryImpl
-import java.io.FileNotFoundException
+import java.io.{File, FileNotFoundException}
 import uk.co.morleydev.zander.client.util.{Log, NativeProcessBuilderImpl}
 import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, NativeProcessBuilder}
+import java.util.UUID
 
 object Main {
 
@@ -19,7 +20,8 @@ object Main {
   def main(args : Array[String],
            configFile : String,
            exit : Int => Unit,
-           processBuilderFactory : NativeProcessBuilderFactory) {
+           processBuilderFactory : NativeProcessBuilderFactory,
+           temporaryDirectory : File) {
 
     def extractEnum(enum : Enumeration, value: String, failureCode: Int): enum.Value = {
       try {
@@ -52,12 +54,28 @@ object Main {
     }
     val config = JacksMapper.readValue[Configuration](configJson)
 
-    val program = new Program(new ControllerFactoryImpl(processBuilderFactory))
+    val program = new Program(new ControllerFactoryImpl(processBuilderFactory, temporaryDirectory))
     val returnCode = program.run(arguments, config)
     exit(returnCode)
   }
 
   def main(args : Array[String]) {
-    main(args, "config.json", code => { Log("Exiting with code", code); System.exit(code) }, NativeProcessBuilderFactoryImpl)
+
+    def GetProgramDirectory() : String =
+        new File(getClass.getProtectionDomain.getCodeSource.getLocation.getPath).getParentFile.getAbsolutePath
+
+    val temporaryDirectory = new File("zander-" + UUID.randomUUID().toString + "-tmp")
+
+    try {
+      main(args, new File(GetProgramDirectory(), "config.json").getAbsolutePath,
+        code => {
+          Log("Exiting with code", code); System.exit(code)
+        },
+        NativeProcessBuilderFactoryImpl,
+        temporaryDirectory)
+    } finally {
+      if (temporaryDirectory.exists())
+        temporaryDirectory.delete()
+    }
   }
 }

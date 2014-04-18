@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client.unit.data.net
 import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
 import java.net.URL
-import uk.co.morleydev.zander.client.data.net.GetProjectRemote
+import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
 import uk.co.morleydev.zander.client.model.arg.Compiler
 import org.mockito.{ArgumentMatcher, Mockito, Matchers}
 import scala.concurrent.{Await, future}
@@ -22,7 +22,7 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
     describe("When getting a project for a compiler succeeds") {
       val host = "http://www." + GenNative.genAlphaNumericString(1, 50) + ".com:" + GenNative.genInt(1000, 60000)
       val mockUrlGet: (URL => HttpRequest) = mock[(URL => HttpRequest)]
-      val getProjectRemote = new GetProjectRemote(new URL(host), mockUrlGet)
+      val getProjectRemote = new GetProjectDtoRemote(new URL(host), mockUrlGet)
 
       val mockHttpRequest = mock[HttpRequest]
       val mockHttpResponse = mock[HttpResponse]
@@ -61,7 +61,7 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
 
       val host = "http://www." + GenNative.genAlphaNumericString(1, 50) + ".com:" + GenNative.genInt(1000, 60000)
       val mockUrlGet: (URL => HttpRequest) = mock[(URL => HttpRequest)]
-      val getProjectRemote = new GetProjectRemote(new URL(host), mockUrlGet)
+      val getProjectRemote = new GetProjectDtoRemote(new URL(host), mockUrlGet)
 
       val mockHttpRequest = mock[HttpRequest]
       val mockHttpResponse = mock[HttpResponse]
@@ -88,7 +88,7 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
 
       val host = "http://www." + GenNative.genAlphaNumericString(1, 50) + ".com:" + GenNative.genInt(1000, 60000)
       val mockUrlGet: (URL => HttpRequest) = mock[(URL => HttpRequest)]
-      val getProjectRemote = new GetProjectRemote(new URL(host), mockUrlGet)
+      val getProjectRemote = new GetProjectDtoRemote(new URL(host), mockUrlGet)
 
       val mockHttpRequest = mock[HttpRequest]
       Mockito.when(mockUrlGet(Matchers.any[URL]()))

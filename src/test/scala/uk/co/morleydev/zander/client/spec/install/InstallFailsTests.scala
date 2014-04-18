@@ -10,6 +10,7 @@ import uk.co.morleydev.zander.client.util.CreateMockHttpServer
 import org.scalatest.mock.MockitoSugar
 import uk.co.morleydev.zander.client.spec.{ResponseCodes, TestConfigurationFile}
 import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
+import java.io.File
 
 class InstallFailsTests extends FunSpec with MockitoSugar {
 
@@ -25,7 +26,11 @@ class InstallFailsTests extends FunSpec with MockitoSugar {
 
       val configuration = new Configuration("http://localhost:24325", cache = "./cache/directory/")
       using(new TestConfigurationFile(configuration)) {
-        config => Main.main(arguments, config.file.getAbsolutePath, s => responseCode = s, mock[NativeProcessBuilderFactory])
+        config => Main.main(arguments,
+          config.file.getAbsolutePath,
+          s => responseCode = s,
+          mock[NativeProcessBuilderFactory],
+          new File("tmp"))
       }
       it("Then the expected return code is returned") {
         assert(responseCode == ResponseCodes.EndpointNotFound)
@@ -48,7 +53,11 @@ class InstallFailsTests extends FunSpec with MockitoSugar {
       var responseCode = 0
 
       using(new TestConfigurationFile(new Configuration("http://localhost:24325"))) {
-        config => Main.main(arguments, config.file.getAbsolutePath, s => responseCode = s, mock[NativeProcessBuilderFactory])
+        config => Main.main(arguments,
+          config.file.getAbsolutePath,
+          s => responseCode = s,
+          mock[NativeProcessBuilderFactory],
+          new File("tmp"))
       }
       it("Then the expected return code is returned") {
         assert(responseCode == ResponseCodes.EndpointNotFound)

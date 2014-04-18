@@ -5,6 +5,6 @@ import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
 import scala.concurrent.Future
 import uk.co.morleydev.zander.client.model.net.ProjectDto
 
-trait GetProject extends ((Project, Compiler) => Future[ProjectDto]) {
+trait GetProjectDto extends ((Project, Compiler) => Future[ProjectDto]) {
   override def apply(projectName: Project, compiler: Compiler): Future[ProjectDto]
 }

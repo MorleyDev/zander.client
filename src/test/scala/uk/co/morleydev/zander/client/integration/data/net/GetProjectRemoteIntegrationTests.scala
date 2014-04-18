@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client.integration.data.net
 
 import org.scalatest.FunSpec
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
-import uk.co.morleydev.zander.client.data.net.GetProjectRemote
+import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
 import java.net.URL
 import uk.co.morleydev.zander.client.gen.{GenModel, GenNative}
 import uk.co.morleydev.zander.client.model.arg.{Project, Compiler}
@@ -20,7 +20,7 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
     val mockHttpServer = CreateMockHttpServer(provider)
     mockHttpServer.server.start()
 
-    val getProjectRemote = new GetProjectRemote(new URL("http://localhost:" + mockHttpServer.port + "/"))
+    val getProjectRemote = new GetProjectDtoRemote(new URL("http://localhost:" + mockHttpServer.port + "/"))
 
     describe("When requesting a project") {
       val expectedProject = GenModel.net.genProjectDto()
@@ -61,7 +61,7 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
 
   describe("Given a GetProjectRemote function object and no server") {
 
-    val getProjectRemote = new GetProjectRemote(new URL("http://632a5d62-dafb-4c72-be18-11f29d890fbf.com/"))
+    val getProjectRemote = new GetProjectDtoRemote(new URL("http://632a5d62-dafb-4c72-be18-11f29d890fbf.com/"))
 
     describe("When requesting a project/compiler the future is awaited on") {
       var thrownException : Exception = null

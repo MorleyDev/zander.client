@@ -10,4 +10,4 @@ private object GetProgramDirectory extends (() => String) {
 
 case class Configuration(@JsonProperty("server") server : String = "http://zander.morleydev.co.uk",
                          @JsonProperty("programs") programs : ProgramConfiguration = new ProgramConfiguration(),
-                         @JsonProperty("cache") cache : String = GetProgramDirectory())
+                         @JsonProperty("cache") cache : String = new File(GetProgramDirectory(), "cache").getAbsolutePath)

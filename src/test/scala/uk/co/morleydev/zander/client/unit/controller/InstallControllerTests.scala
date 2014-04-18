@@ -2,36 +2,37 @@ package uk.co.morleydev.zander.client.unit.controller
 
 import org.scalatest.FunSpec
 import uk.co.morleydev.zander.client.gen.{GenModel, GenNative}
-import uk.co.morleydev.zander.client.model.arg.{Project, Operation, Compiler, BuildMode}
+import uk.co.morleydev.zander.client.model.arg.{Project, Compiler, BuildMode}
 import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
 import org.scalatest.mock.MockitoSugar
 import org.mockito.{Matchers, Mockito}
 import scala.concurrent.future
 import scala.concurrent.ExecutionContext.Implicits.global
-import uk.co.morleydev.zander.client.model.net.ProjectDto
 import uk.co.morleydev.zander.client.controller.InstallController
 import uk.co.morleydev.zander.client.data._
 
 class InstallControllerTests extends FunSpec with MockitoSugar {
   describe("Given an install controller") {
-    val mockGetProject = mock[GetProject]
-    val mockGitDownload = mock[GitDownload]
-    val mockCmakePrebuild = mock[CMakePrebuild]
-    val mockCmakeBuild = mock[CMakeBuild]
-    val mockCmakeInstall = mock[CMakeInstall]
+    val mockGetProjectDto = mock[GetProjectDto]
+    val mockSourceDownload = mock[ProjectSourceDownload]
+    val mockSourcePrebuild = mock[ProjectSourcePrebuild]
+    val mockSourceBuild = mock[ProjectSourceBuild]
+    val mockSourceInstall = mock[ProjectSourceInstall]
+    val mockArtefactInstall = mock[ProjectArtefactInstall]
 
-    val installController = new InstallController(mockGetProject,
-      mockGitDownload,
-      mockCmakePrebuild,
-      mockCmakeBuild,
-      mockCmakeInstall)
+    val installController = new InstallController(mockGetProjectDto,
+      mockSourceDownload,
+      mockSourcePrebuild,
+      mockSourceBuild,
+      mockSourceInstall,
+      mockArtefactInstall)
 
     describe("when installing an existing project") {
       val project = GenModel.arg.genProject()
       val compiler = GenNative.genOneFrom(Compiler.values.toSeq)
       val projectDto = GenModel.net.genProjectDto()
 
-      Mockito.when(mockGetProject(Matchers.any[Project](), Matchers.any[Compiler]()))
+      Mockito.when(mockGetProjectDto(Matchers.any[Project](), Matchers.any[Compiler]()))
         .thenReturn(future(projectDto))
 
       val mode = GenNative.genOneFrom(BuildMode.values.toSeq)
@@ -40,19 +41,22 @@ class InstallControllerTests extends FunSpec with MockitoSugar {
                         mode)
 
       it("Then the expected project is retrieved with the expected compiler") {
-        Mockito.verify(mockGetProject)(project, compiler)
+        Mockito.verify(mockGetProjectDto)(project, compiler)
       }
       it("Then the git repository is downloaded") {
-        Mockito.verify(mockGitDownload)(project, projectDto)
+        Mockito.verify(mockSourceDownload)(project, projectDto)
       }
-      it("Then the cmake prebuild is ran") {
-        Mockito.verify(mockCmakePrebuild)(project, compiler, mode)
+      it("Then the source prebuild is ran") {
+        Mockito.verify(mockSourcePrebuild)(project, compiler, mode)
       }
-      it("Then the cmake build is ran") {
-        Mockito.verify(mockCmakeBuild)(project, compiler, mode)
+      it("Then the source build is ran") {
+        Mockito.verify(mockSourceBuild)(project, compiler, mode)
       }
-      it("Then the cmake install is ran") {
-        Mockito.verify(mockCmakeInstall)(project, compiler)
+      it("Then the source install is ran") {
+        Mockito.verify(mockSourceInstall)(project, compiler)
+      }
+      it("Then the artefact install is ran") {
+        Mockito.verify(mockArtefactInstall)(project, compiler, mode)
       }
     }
   }

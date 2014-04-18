@@ -31,7 +31,7 @@ class CMakePrebuildLocalTests extends FunSpec with MockitoSugar {
         it("Then the cmake program was ran with the expected arguments in the expected directory") {
           val expectedArguments = Seq[String](cmake,
             new File(cache, project.value + "/source").getAbsolutePath,
-            "-G\"MinGW Makefiles\"",
+            "-G\"MinGW", "Makefiles\"",
             "-DCMAKE_BUILD_TYPE=" + buildType,
             "-DCMAKE_INSTALL_PREFIX=" + new File(cache, project.value + "/" + cachePath).getAbsolutePath)
 

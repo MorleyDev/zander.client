@@ -12,7 +12,7 @@ import com.stackmob.newman.response.HttpResponseCode
 import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.util.Log
-import uk.co.morleydev.zander.client.data.GetProject
+import uk.co.morleydev.zander.client.data.GetProjectDto
 import java.lang
 
 private object GetProjectRemoteDefaultDsl extends (URL => HttpRequest) {
@@ -22,10 +22,10 @@ private object GetProjectRemoteDefaultDsl extends (URL => HttpRequest) {
   }
 }
 
-class GetProjectRemote(url : URL,
+class GetProjectDtoRemote(url : URL,
                        get : (URL => HttpRequest) = GetProjectRemoteDefaultDsl,
                        implicit val executionContext : ExecutionContext = ExecutionContext.global)
-  extends GetProject {
+  extends GetProjectDto {
   override def apply(projectName: Project, compiler: Compiler): Future[ProjectDto] = {
     val targetUrl = new URL(url, "/" + projectName + "/" + compiler.toString)
     get(targetUrl).apply
