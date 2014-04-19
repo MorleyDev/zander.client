@@ -1,21 +1,22 @@
 package uk.co.morleydev.zander.client.spec.install
 
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpec}
+import org.scalatest.FunSpec
+import uk.co.morleydev.zander.client.gen.{GenNative, GenStringArguments}
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
 import uk.co.morleydev.zander.client.util.{CreateMockProcess, CreateMockHttpServer}
-import org.mockito.{Matchers, Mockito}
-import uk.co.morleydev.zander.client.gen.{GenStringArguments, GenNative}
-import uk.co.morleydev.zander.client.util.Using._
-import uk.co.morleydev.zander.client.model.{Configuration, ProgramConfiguration}
-import uk.co.morleydev.zander.client.spec.{ResponseCodes, TestConfigurationFile}
-import uk.co.morleydev.zander.client.Main
 import java.io.File
 import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
-import org.apache.commons.io.FileUtils
+import org.mockito.{Matchers, Mockito}
+import uk.co.morleydev.zander.client.util.Using._
+import uk.co.morleydev.zander.client.model.Configuration
+import uk.co.morleydev.zander.client.model.ProgramConfiguration
+import uk.co.morleydev.zander.client.spec.{ResponseCodes, TestConfigurationFile}
+import uk.co.morleydev.zander.client.Main
 import scala.collection.JavaConversions
+import org.apache.commons.io.FileUtils
 
-class GnuTests extends FunSpec with MockitoSugar with BeforeAndAfter {
+class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with MockitoSugar {
 
   def testCase(mode: String, cmakeBuildType: String) = {
     val arguments = Array[String]("install",
@@ -36,7 +37,7 @@ class GnuTests extends FunSpec with MockitoSugar with BeforeAndAfter {
       provider.expect(Method.GET, endpointUrl)
         .respondWith(200, "application/json", responseBody)
 
-      describe("When an install operation is carried out with arguments " + arguments.mkString(", ")) {
+      describe("When an install operation is carried out with arguments " + arguments.mkString(", ") + " and the source already exists") {
         val targetIncludeDir = new File("include")
         val targetLibDir = new File("lib")
         val targetBinDir = new File("bin")
@@ -64,6 +65,7 @@ class GnuTests extends FunSpec with MockitoSugar with BeforeAndAfter {
         val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = "cache")
         val cacheDirectory = new File(configuration.cache)
         val temporaryDirectory = new File("tmp" + GenNative.genAlphaNumericString(1, 20))
+        new File(cacheDirectory, arguments(1) + "/source").mkdirs()
 
         val mockGitProcessBuilder = CreateMockProcess()
         val mockCmakeProcessBuilder = CreateMockProcess()
@@ -109,11 +111,10 @@ class GnuTests extends FunSpec with MockitoSugar with BeforeAndAfter {
         it("Then the endpoint was requested") {
           provider.verify()
         }
-        it("Then the git process was invoked") {
-          Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "source"))
-          Mockito.verify(mockGitProcessBuilder._1).directory(new File(cacheDirectory, arguments(1)))
+        it("Then the git update was invoked") {
+          Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "pull"))
+          Mockito.verify(mockGitProcessBuilder._1).directory(new File(cacheDirectory, arguments(1) + "/source"))
           Mockito.verify(mockGitProcessBuilder._1).start()
-          Mockito.verify(mockGitProcessBuilder._2).waitFor()
         }
 
         val cmakeSourceTmpPath = temporaryDirectory

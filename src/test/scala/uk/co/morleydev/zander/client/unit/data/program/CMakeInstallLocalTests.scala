@@ -1,6 +1,6 @@
 package uk.co.morleydev.zander.client.unit.data.program
 
-import uk.co.morleydev.zander.client.data.program.{CMakeInstallLocal, ProgramRunner}
+import uk.co.morleydev.zander.client.data.program.{CMakeInstallCachedSource, ProgramRunner}
 import java.io.File
 import uk.co.morleydev.zander.client.gen.GenModel
 import org.mockito.Mockito
@@ -15,7 +15,7 @@ class CMakeInstallLocalTests extends FunSpec with MockitoSugar {
     val mockProgramRunner = mock[ProgramRunner]
     val tmpFilePath = new File("./tmp/path/place")
 
-    val cmakeInstallLocal = new CMakeInstallLocal(cmake, mockProgramRunner, tmpFilePath)
+    val cmakeInstallLocal = new CMakeInstallCachedSource(cmake, mockProgramRunner, tmpFilePath)
 
     describe("When invoking with a project, compiler and build mode") {
 

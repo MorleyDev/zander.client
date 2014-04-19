@@ -6,9 +6,9 @@ import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import java.io.File
 
-class CMakePrebuildLocal(cmakeProgram : String,
-                         runner : ProgramRunner,
-                         cache : File, temp : File) extends ProjectSourcePrebuild {
+class CMakePrebuildCachedSource(cmakeProgram : String,
+                                runner : ProgramRunner,
+                                cache : File, temp : File) extends ProjectSourcePrebuild {
   override def apply(project : Project, compiler : Compiler, mode : BuildMode) : Unit = {
 
     val buildType = mode match {

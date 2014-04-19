@@ -34,6 +34,8 @@ object GenModel {
         new URL(GenNative.genHttpUrl(), "%s/%s".format(user, project)).toString
     }
 
+    def genGitSupportingProjectDto() : ProjectDto = new ProjectDto(genGitUrl())
+
     def genProjectDto() : ProjectDto = new ProjectDto(genGitUrl())
   }
 }

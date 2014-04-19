@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.unit.data.program
 
 import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.data.program.{ProgramRunner, GitDownloadRemote}
+import uk.co.morleydev.zander.client.data.program.{ProgramRunner, GitDownloadSourceToCache}
 import org.scalatest.mock.MockitoSugar
 import uk.co.morleydev.zander.client.gen.{GenNative, GenModel}
 import org.mockito.Mockito
@@ -14,10 +14,10 @@ class GitDownloadRemoteTests extends FunSpec with MockitoSugar {
     val expectedCacheDirectory = new File("./some/cache/dir")
     val gitProcessName = GenNative.genAlphaNumericString(2, 5)
     val mockProgramRunner = mock[ProgramRunner]
-    val gitDownloadRemote = new GitDownloadRemote(gitProcessName, mockProgramRunner, expectedCacheDirectory)
+    val gitDownloadRemote = new GitDownloadSourceToCache(gitProcessName, mockProgramRunner, expectedCacheDirectory)
 
     describe("When downloading the remote git repository") {
-      val projectDto = GenModel.net.genProjectDto()
+      val projectDto = GenModel.net.genGitSupportingProjectDto()
       val expectedProjectDto = projectDto
       val expectedProject = GenModel.arg.genProject()
 

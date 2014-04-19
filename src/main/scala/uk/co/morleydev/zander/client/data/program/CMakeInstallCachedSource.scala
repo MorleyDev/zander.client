@@ -5,7 +5,7 @@ import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
 import java.io.File
 
-class CMakeInstallLocal(cmakeProgram : String,
+class CMakeInstallCachedSource(cmakeProgram : String,
                         runner : ProgramRunner,
                         temp : File) extends ProjectSourceInstall {
   override def apply(project : Project, compiler : Compiler) : Unit = {

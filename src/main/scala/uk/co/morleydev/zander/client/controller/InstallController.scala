@@ -7,9 +7,10 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.{Duration, MINUTES}
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.data._
+import uk.co.morleydev.zander.client.service.ProjectSourceAcquire
 
-class InstallController(getProject : GetProjectDto,
-                        sourceDownload : ProjectSourceDownload,
+class InstallController(getProjectDto : GetProjectDto,
+                        sourceAcquire : ProjectSourceAcquire,
                         sourcePrebuild : ProjectSourcePrebuild,
                         sourceBuild : ProjectSourceBuild,
                         sourceInstall : ProjectSourceInstall,
@@ -17,8 +18,8 @@ class InstallController(getProject : GetProjectDto,
                         implicit val executionContext : ExecutionContext = ExecutionContext.Implicits.global)
   extends Controller {
   override def apply(project: Project, compiler: Compiler, buildMode: BuildMode): Unit = {
-    val result = getProject(project, compiler)
-      .map(dto => sourceDownload(project, dto))
+    val result = getProjectDto(project, compiler)
+      .map(dto => sourceAcquire(project, dto))
       .map(_ => sourcePrebuild(project, compiler, buildMode))
       .map(_ => sourceBuild(project, compiler, buildMode))
       .map(_ => sourceInstall(project, compiler))

@@ -5,12 +5,13 @@ import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.gen.GenNative
 import org.mockito.stubbing.Answer
 import org.mockito.invocation.InvocationOnMock
-import java.io.File
+import java.io.{InputStream, File}
 import org.scalatest.mock.MockitoSugar
 
-object CreateMockProcess extends ((() => Int) => (NativeProcessBuilder, Process)) with MockitoSugar {
+object CreateMockProcess extends ((() => Int, InputStream) => (NativeProcessBuilder, Process)) with MockitoSugar {
 
-  def apply(stubBehaviour: () => Int = () => 0): (NativeProcessBuilder, Process) = {
+  def apply(stubBehaviour: () => Int = () => 0,
+            inputStream : InputStream = GenNative.genInputStreamString()): (NativeProcessBuilder, Process) = {
 
     val mockProcess = mock[Process]
     Mockito.when(mockProcess.exitValue())

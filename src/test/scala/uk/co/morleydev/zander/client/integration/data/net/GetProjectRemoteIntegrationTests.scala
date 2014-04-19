@@ -23,7 +23,7 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
     val getProjectRemote = new GetProjectDtoRemote(new URL("http://localhost:" + mockHttpServer.port + "/"))
 
     describe("When requesting a project") {
-      val expectedProject = GenModel.net.genProjectDto()
+      val expectedProject = GenModel.net.genGitSupportingProjectDto()
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
 

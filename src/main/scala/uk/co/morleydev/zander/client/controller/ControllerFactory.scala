@@ -10,6 +10,7 @@ import uk.co.morleydev.zander.client.model.Configuration
 import uk.co.morleydev.zander.client.data.fs.ProjectArtefactInstallFromCache
 import org.apache.commons.io.FileUtils
 import uk.co.morleydev.zander.client.util.Log
+import uk.co.morleydev.zander.client.service.impl.CachedSourceAcquire
 
 trait ControllerFactory {
   def createInstallController(config : Configuration) : Controller
@@ -22,17 +23,24 @@ class ControllerFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
     val getProjectRemote = new GetProjectDtoRemote(new URL(config.server))
     val programRunner = new LocalProgramRunner(processBuilderFactory)
     val cacheDirectory = new File(config.cache)
-    val gitDownloadRemote = new GitDownloadRemote(config.programs.git,
+    val gitDownloadRemote = new GitDownloadSourceToCache(config.programs.git,
       programRunner,
       cacheDirectory)
-    val cmakePrebuild = new CMakePrebuildLocal(config.programs.cmake,
+    val gitUpdateRemote = new GitUpdateCachedSource(config.programs.git,
+      cacheDirectory,
+      programRunner)
+    val sourceAcquire = new CachedSourceAcquire(cacheDirectory,
+      f => f.exists() && f.isDirectory,
+      gitDownloadRemote,
+      gitUpdateRemote)
+    val cmakePrebuild = new CMakePrebuildCachedSource(config.programs.cmake,
       programRunner,
       cacheDirectory,
       temporaryDirectory)
-    val cmakeBuild = new CMakeBuildLocal(config.programs.cmake,
+    val cmakeBuild = new CMakeBuildCachedSource(config.programs.cmake,
       programRunner,
       temporaryDirectory)
-    val cmakeInstall = new CMakeInstallLocal(config.programs.cmake,
+    val cmakeInstall = new CMakeInstallCachedSource(config.programs.cmake,
       programRunner,
       temporaryDirectory)
     println(new File("").getAbsoluteFile.toString)
@@ -51,7 +59,7 @@ class ControllerFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       })
 
     new InstallController(getProjectRemote,
-      gitDownloadRemote,
+      sourceAcquire,
       cmakePrebuild,
       cmakeBuild,
       cmakeInstall,

@@ -6,7 +6,7 @@ import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.arg.Project
 import java.io.File
 
-class CMakeBuildLocal(cmakeProgram : String,
+class CMakeBuildCachedSource(cmakeProgram : String,
                       runner : ProgramRunner,
                       temp : File) extends ProjectSourceBuild {
   override def apply(project : Project, compiler : Compiler, mode : BuildMode) : Unit = {

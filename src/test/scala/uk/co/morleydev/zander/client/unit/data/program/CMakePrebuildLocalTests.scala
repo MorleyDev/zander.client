@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client.unit.data.program
 
 import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.data.program.{ProgramRunner, CMakePrebuildLocal}
+import uk.co.morleydev.zander.client.data.program.{ProgramRunner, CMakePrebuildCachedSource}
 import uk.co.morleydev.zander.client.gen.{GenNative, GenModel}
 import org.mockito.Mockito
 import java.io.File
@@ -22,7 +22,7 @@ class CMakePrebuildLocalTests extends FunSpec with MockitoSugar {
       val cmake = GenNative.genAlphaNumericString(3, 10)
       val cache = new File("./cache/path")
       val tempPath = new File("./tmp/adsafaw")
-      val cmakePrebuildLocal = new CMakePrebuildLocal(cmake, mockProgramRunner, cache, tempPath)
+      val cmakePrebuildLocal = new CMakePrebuildCachedSource(cmake, mockProgramRunner, cache, tempPath)
 
       describe("When applied for a project on the " + compiler + " compiler and " + mode + " build") {
         val project = GenModel.arg.genProject()

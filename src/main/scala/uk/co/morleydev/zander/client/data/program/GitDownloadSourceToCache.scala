@@ -8,7 +8,7 @@ import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, ProjectS
 import java.io.{File, InputStreamReader, BufferedReader}
 import scala.io.Source
 
-class GitDownloadRemote(gitProgram : String,
+class GitDownloadSourceToCache(gitProgram : String,
                         programRunner : ProgramRunner,
                         programCacheDirectory : File,
                         implicit val executionContext : ExecutionContext = ExecutionContext.Implicits.global)
