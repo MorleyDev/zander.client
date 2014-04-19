@@ -21,7 +21,8 @@ object Main {
   def main(args : Array[String],
            configFile : String,
            processBuilderFactory : NativeProcessBuilderFactory,
-           temporaryDirectory : File) : Int = {
+           temporaryDirectory : File,
+           workingDirectory: File) : Int = {
 
     def extractEnum(enum : Enumeration, value: String): enum.Value = {
       try {
@@ -56,7 +57,7 @@ object Main {
     }
     val config = JacksMapper.readValue[Configuration](configJson)
 
-    val program = new Program(new ControllerFactoryImpl(processBuilderFactory, temporaryDirectory))
+    val program = new Program(new ControllerFactoryImpl(processBuilderFactory, temporaryDirectory, workingDirectory))
     program.run(arguments, config)
   }
 
@@ -82,7 +83,8 @@ object Main {
         main(args,
           new File(GetProgramDirectory(), "config.json").getAbsolutePath,
           NativeProcessBuilderFactoryImpl,
-          temporaryDirectory.dirFile)
+          temporaryDirectory.dirFile,
+          new File(""))
     }
 
     Log("Exiting with code %d".format(responseCode))

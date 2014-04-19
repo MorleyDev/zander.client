@@ -24,7 +24,11 @@ class AnyTests extends FunSpec with MockitoSugar {
 
     var responseCode = 0
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments,
+        config.file.getAbsolutePath,
+        mock[NativeProcessBuilderFactory],
+        new File("tmpAny0"),
+        new File("working_directory_AnyTests0"))
     }
 
     it("Then the program exits with the expected code") {
@@ -42,7 +46,11 @@ class AnyTests extends FunSpec with MockitoSugar {
 
     var responseCode = 0
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments,
+        config.file.getAbsolutePath,
+        mock[NativeProcessBuilderFactory],
+        new File("tmpAny1"),
+        new File("working_directory_AnyTests1"))
     }
 
     it("Then the program exits with the expected code") {
@@ -61,7 +69,11 @@ class AnyTests extends FunSpec with MockitoSugar {
 
     var responseCode = -1
     using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments,
+        config.file.getAbsolutePath,
+        mock[NativeProcessBuilderFactory],
+        new File("tmpAny2"),
+        new File("working_directory_AnyTests2"))
     }
 
     it("Then the program exits with the expected code") {
@@ -83,7 +95,11 @@ class AnyTests extends FunSpec with MockitoSugar {
 
     var responseCode = 0
     using(new TestConfigurationFile(new Configuration(GenNative.genHttpUrl().toString))) { config =>
-      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments,
+        config.file.getAbsolutePath,
+        mock[NativeProcessBuilderFactory],
+        new File("tmpAny3"),
+        new File("working_directory_AnyTests3"))
     }
 
     it("Then the program exits with the expected code") {
@@ -102,7 +118,11 @@ class AnyTests extends FunSpec with MockitoSugar {
 
     var responseCode = 0
     using(new TestConfigurationFile(new Configuration(GenNative.genHttpUrl().toString))) { config =>
-      responseCode = Main.main(arguments, config.file.getAbsolutePath, mock[NativeProcessBuilderFactory], new File("tmp"))
+      responseCode = Main.main(arguments,
+        config.file.getAbsolutePath,
+        mock[NativeProcessBuilderFactory],
+        new File("tmpAny4"),
+        new File("working_directory_AnyTests4"))
     }
 
     it("Then the program exits with the expected code") {

@@ -17,7 +17,8 @@ trait ControllerFactory {
 }
 
 class ControllerFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
-                            temporaryDirectory : File) extends ControllerFactory {
+                            temporaryDirectory : File,
+                            workingDirectory : File) extends ControllerFactory {
   def createInstallController(config : Configuration) : Controller = {
 
     val getProjectRemote = new GetProjectDtoRemote(new URL(config.server))
@@ -43,9 +44,9 @@ class ControllerFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
     val cmakeInstall = new CMakeInstallCachedSource(config.programs.cmake,
       programRunner,
       temporaryDirectory)
-    println(new File("").getAbsoluteFile.toString)
+
     val artefactInstall = new ProjectArtefactInstallFromCache(cacheDirectory,
-      new File("").getAbsoluteFile,
+      workingDirectory.getAbsoluteFile,
       (src, dst) => {
         if (src.exists()) {
           Log("%s copied to %s".format(src, dst))

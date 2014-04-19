@@ -7,9 +7,9 @@ import uk.co.morleydev.zander.client.model.Configuration
 
 class TestConfigurationFile(configuration : Configuration) extends AutoCloseable {
 
-  private def createConfigFile(filename : String) : File = {
+  private def createConfigFile() : File = {
     val configString = JacksMapper.writeValueAsString(configuration)
-    val configFile = new File(filename)
+    val configFile = File.createTempFile("config", ".json")
     configFile.createNewFile()
 
     using(new FileOutputStream(configFile)) {
@@ -18,7 +18,7 @@ class TestConfigurationFile(configuration : Configuration) extends AutoCloseable
     configFile
   }
 
-  val file = createConfigFile("test_config.json")
+  val file = createConfigFile()
 
   def close(): Unit = {
     if(!file.delete())

@@ -3,30 +3,41 @@ package uk.co.morleydev.zander.client.unit.model.arg
 import org.scalatest.FunSpec
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.gen.GenNative
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalacheck.Gen
 
-class ProjectTests extends FunSpec {
+class ProjectTests extends FunSpec with GeneratorDrivenPropertyChecks {
 
   private val validProjectCharacters = GenNative.alphaNumericCharacters ++ Seq[Char]('.', '_', '-')
+  private val invalidProjectCharacters = (0.toChar to 255.toChar).diff(validProjectCharacters)
 
   describe("Given a project string") {
+    describe("When initialising a valid project that is an alphanumeric string") {
 
-    Iterator.continually(GenNative.genStringContaining(1, 20, validProjectCharacters))
-      .take(100)
-      .toList.distinct
-      .foreach({
-      projectCode =>
-        describe("When initialising a valid project that is an alphanumeric string " + projectCode + " of length " + projectCode.size) {
-          val project = new Project(projectCode)
+      val validProjectGenerator: Gen[Project] =
+        Gen.oneOf(Iterator.continually(GenNative.genStringContaining(1, 20, validProjectCharacters))
+          .map(new Project(_))
+          .take(100)
+          .toSeq)
 
-          it("Then the project can be compared to another project") {
-            assert(!project.equals(new Project(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](projectCode)))))
-            assert(project.equals(new Project(projectCode)))
-          }
-          it("Then toString gives the expected string") {
-            assert(project.toString == projectCode)
+      it("Then the project can be compared to another project") {
+        forAll(validProjectGenerator) {
+          project: Project => {
+
+            assert(project != new Project(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](project.value))))
+            assert(project == new Project(project.value))
           }
         }
-    })
+      }
+      it("Then toString gives the expected string") {
+        forAll(validProjectGenerator) {
+          project =>
+
+            assert(project != new Project(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](project.value))))
+            assert(project == new Project(project.value))
+        }
+      }
+    }
 
     describe("When initialising a project with invalid alphanumeric length greater than 20") {
       var thrownException: Exception = null
@@ -58,25 +69,25 @@ class ProjectTests extends FunSpec {
       }
     }
 
-    Iterator.continually(GenNative.genStringContaining(1, 19, validProjectCharacters))
-      .take(100)
-      .map(s => s + GenNative.genOneFrom((0.toChar to 255.toChar).diff(validProjectCharacters)))
-      .toList.distinct
-      .foreach(project => {
-      describe("When initialising a project string " + project + " containing invalid characters") {
-        var thrownException: Exception = null
-        try {
-          new Project(project)
-        } catch {
-          case e: Exception => thrownException = e
-        }
-        it("Then an exception was thrown") {
-          assert(thrownException != null)
-        }
+    val invalidCharacterProjectStringGenerator : Gen[String] =
+      Gen.oneOf(Iterator.continually(GenNative.genStringContaining(1, 20, (0 to 255).map(_.toChar)))
+        .filter(c => c.count(invalidProjectCharacters.contains(_)) > 1)
+        .take(100)
+        .toSeq)
+
+      describe("When initialising a project string containing invalid characters") {
+
         it("Then the expected exception was thrown") {
+          forAll(invalidCharacterProjectStringGenerator) { project =>
+          var thrownException: Exception = null
+          try {
+            new Project(project)
+          } catch {
+            case e: Exception => thrownException = e
+          }
           assert(thrownException.isInstanceOf[IllegalArgumentException])
         }
       }
-    })
+    }
   }
 }

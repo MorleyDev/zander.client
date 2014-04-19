@@ -4,7 +4,12 @@ import com.github.kristofa.test.http.{MockHttpServer, AbstractHttpResponseProvid
 import uk.co.morleydev.zander.client.gen.GenNative
 import java.net.BindException
 
-case class MockServerAndPort(server : MockHttpServer, port : Int)
+class MockServerAndPort(val server : MockHttpServer, val port : Int) extends AutoCloseable {
+
+  override def close(): Unit = {
+
+  }
+}
 
 object CreateMockHttpServer extends (AbstractHttpResponseProvider => MockServerAndPort) {
 
