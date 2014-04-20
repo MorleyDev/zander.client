@@ -5,7 +5,7 @@ import scala.io.Source
 import com.lambdaworks.jacks.JacksMapper
 import uk.co.morleydev.zander.client.model.arg.{Project, Operation, BuildCompiler, BuildMode}
 import uk.co.morleydev.zander.client.controller.ControllerFactoryImpl
-import java.io.{File, FileNotFoundException}
+import java.io.{PrintWriter, File, FileNotFoundException}
 import uk.co.morleydev.zander.client.util.{Log, NativeProcessBuilderImpl, GetProgramDirectory}
 import uk.co.morleydev.zander.client.util.Using.using
 import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, NativeProcessBuilder}
@@ -47,13 +47,19 @@ object Main {
 
     val configJson = try {
       val file = Source.fromFile(configFile)
-      val json = file.getLines().mkString
+      val json = file.getLines().mkString("\n")
       file.close()
       json
     } catch {
       case e : FileNotFoundException =>
         println("Warning: Could not open config file " + configFile + ", using defaults")
-        JacksMapper.writeValueAsString(new Configuration())
+        val configJson = JacksMapper.writeValueAsString(new Configuration())
+        val configParentPath = new File(configFile).getParentFile
+        if (!configParentPath.exists())
+          configParentPath.mkdirs()
+
+        try { using(new PrintWriter(configFile)) { write => write.write(configJson) } } catch { case _: Throwable => }
+        configJson
     }
     val config = JacksMapper.readValue[Configuration](configJson)
 
@@ -84,7 +90,7 @@ object Main {
           new File(GetProgramDirectory(), "config.json").getAbsolutePath,
           NativeProcessBuilderFactoryImpl,
           temporaryDirectory.dirFile,
-          new File(""))
+          new File("").getAbsoluteFile)
     }
 
     Log("Exiting with code %d".format(responseCode))

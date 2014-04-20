@@ -24,7 +24,7 @@ class CachedSourceCompile(detailsReader : ProjectSourceDetailsReader,
     if (cachedVersion != v) {
       if (cachedVersion != null)
         deleteDirectory(p,c,m)
-      
+
       pre(p, c, m)
       build(p, c, m)
       install(p, c, m)
