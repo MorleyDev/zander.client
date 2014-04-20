@@ -18,7 +18,7 @@ import scala.io.Source
 import com.lambdaworks.jacks.JacksMapper
 import uk.co.morleydev.zander.client.model.store.ArtefactDetails
 
-class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with MockitoSugar with BeforeAndAfter {
+class GnuCachedSourceDoesNotExistCachedArtefactsDoNotExistTests extends FunSpec with MockitoSugar with BeforeAndAfter {
 
   def testCase(mode: String, cmakeBuildType: String) = {
     val arguments = Array[String]("install",
@@ -112,10 +112,13 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
                       workingDirectory.file)
                 }
 
-                val installedFiles = {
+                val installedFiles : Seq[File] = {
                   def seqOfFiles(dir: File) =
-                    JavaConversions.asScalaIterator(FileUtils.iterateFiles(dir, null, true)).toSeq
-                  seqOfFiles(targetIncludeDir) ++ seqOfFiles(targetLibDir) ++ seqOfFiles(targetBinDir)
+                    JavaConversions.asScalaIterator(FileUtils.iterateFiles(dir, null, true))
+                      .asInstanceOf[Iterator[File]]
+                      .toSeq
+                  (seqOfFiles(targetIncludeDir) ++ seqOfFiles(targetLibDir) ++ seqOfFiles(targetBinDir))
+                    .map(f => f.getAbsoluteFile)
                 }
 
                 val installedArtefactDetails = try {
@@ -177,8 +180,9 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
                   assert(responseCode == ResponseCodes.Success)
                 }
                 it("Then the files were installed locally") {
-                  assert(expectedFiles.map(filename => workingDirectory.sub(filename))
-                    .forall(f => installedFiles.contains(f)))
+                  val expectedWorkingDirectoryFiles = expectedFiles.map(filename => workingDirectory.sub(filename))
+
+                  assert(installedFiles.diff(expectedWorkingDirectoryFiles).size == 0)
                 }
                 it("Then the local artefacts were tagged with the git version") {
                   assert(installedArtefactDetails.version == expectedArtefactVersion)

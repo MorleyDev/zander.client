@@ -64,7 +64,12 @@ class ServiceFactory(processBuilderFactory : NativeProcessBuilderFactory,
       temporaryDirectory)
     val detailsWriter = new ProjectSourceDetailsWriterToCache(cacheDirectory, writeDataToFile)
 
-    new CachedSourceCompile(detailsReader, cmakePrebuild, cmakeBuild, cmakeInstall, detailsWriter)
+    new CachedSourceCompile(detailsReader,
+      (p,c,m) => FileUtils.deleteDirectory(new File(cacheDirectory, "%s/%s.%s".format(p,c,m))),
+      cmakePrebuild,
+      cmakeBuild,
+      cmakeInstall,
+      detailsWriter)
   }
 
   def createCachedArtefactAcquire(config : Configuration) : ProjectArtefactAcquire = {

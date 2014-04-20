@@ -9,13 +9,13 @@ import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
-import java.io.FileNotFoundException
+import java.io.{File, FileNotFoundException}
 import org.mockito.stubbing.Answer
 import org.mockito.invocation.InvocationOnMock
 import uk.co.morleydev.zander.client.model.store.SourceDetails
 
 class CachedSourceCompileTests extends FunSpec with MockitoSugar {
-  describe("Given a source details reader for the project does not exist") {
+  describe("Given a source details reader for a project") {
 
     val mockSourceDetailsReader = mock[ProjectSourceDetailsReader]
     Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode]))
@@ -31,12 +31,13 @@ class CachedSourceCompileTests extends FunSpec with MockitoSugar {
     val mockSourceDetailsWriter = mock[ProjectSourceDetailsWriter]
 
     val cachedSourceCompile = new CachedSourceCompile(mockSourceDetailsReader,
-                                                      mockPrebuild,
-                                                      mockBuild,
-                                                      mockInstall,
-                                                      mockSourceDetailsWriter)
+      null,
+      mockPrebuild,
+      mockBuild,
+      mockInstall,
+      mockSourceDetailsWriter)
 
-    describe("When compiling artefacts") {
+    describe("When the artefacts are not in the cache and compiling artefacts") {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
@@ -62,22 +63,19 @@ class CachedSourceCompileTests extends FunSpec with MockitoSugar {
     }
   }
 
-  describe("Given a source details reader for the project does exist") {
+  describe("Given a source details reader for the project") {
 
     val mockSourceDetailsReader = mock[ProjectSourceDetailsReader]
-
-    val mockPrebuild = mock[ProjectSourcePrebuild]
-    val mockBuild = mock[ProjectSourceBuild]
-    val mockInstall = mock[ProjectSourceInstall]
     val mockSourceDetailsWriter = mock[ProjectSourceDetailsWriter]
 
     val cachedSourceCompile = new CachedSourceCompile(mockSourceDetailsReader,
-      mockPrebuild,
-      mockBuild,
-      mockInstall,
+      null,
+      null,
+      null,
+      null,
       mockSourceDetailsWriter)
 
-    describe("When compiling artefacts and the version is current") {
+    describe("When the artefacts are in the cache and the version is current") {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
@@ -90,17 +88,55 @@ class CachedSourceCompileTests extends FunSpec with MockitoSugar {
       it("Then the source version is read") {
         Mockito.verify(mockSourceDetailsReader).apply(project, compiler, mode)
       }
-      it("Then the source is not prebuilt") {
-        Mockito.verify(mockPrebuild, Mockito.never()).apply(project, compiler, mode)
-      }
-      it("Then the source is not built") {
-        Mockito.verify(mockBuild, Mockito.never()).apply(project, compiler, mode)
-      }
-      it("Then the source is not installed to the cache") {
-        Mockito.verify(mockInstall, Mockito.never()).apply(project, compiler, mode)
-      }
       it("Then the source details are not written to the cache") {
         Mockito.verify(mockSourceDetailsWriter, Mockito.never()).apply(project, compiler, mode, version)
+      }
+    }
+  }
+
+  describe("Given a source details reader for the project") {
+
+    val mockSourceDetailsReader = mock[ProjectSourceDetailsReader]
+    val mockDirectoryDelete = mock[(Project, BuildCompiler, BuildMode) => Unit]
+    val mockPrebuild = mock[ProjectSourcePrebuild]
+    val mockBuild = mock[ProjectSourceBuild]
+    val mockInstall = mock[ProjectSourceInstall]
+    val mockSourceDetailsWriter = mock[ProjectSourceDetailsWriter]
+
+    val cachedSourceCompile = new CachedSourceCompile(mockSourceDetailsReader,
+      mockDirectoryDelete,
+      mockPrebuild,
+      mockBuild,
+      mockInstall,
+      mockSourceDetailsWriter)
+
+    describe("When the artefacts are in the cache and the version is outdated") {
+      val project = GenModel.arg.genProject()
+      val compiler = GenModel.arg.genCompiler()
+      val mode = GenModel.arg.genBuildMode()
+      val version = GenModel.store.genSourceVersion()
+      Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode]))
+        .thenReturn(new SourceDetails(GenModel.store.genSourceVersion().value))
+
+      cachedSourceCompile.apply(project, compiler, mode, version)
+
+      it("Then the source version is read") {
+        Mockito.verify(mockSourceDetailsReader).apply(project, compiler, mode)
+      }
+      it("Then the directory is deleted") {
+        Mockito.verify(mockDirectoryDelete).apply(project, compiler, mode)
+      }
+      it("Then the source is prebuilt") {
+        Mockito.verify(mockPrebuild).apply(project, compiler, mode)
+      }
+      it("Then the source is built") {
+        Mockito.verify(mockBuild).apply(project, compiler, mode)
+      }
+      it("Then the source is installed to the cache") {
+        Mockito.verify(mockInstall).apply(project, compiler, mode)
+      }
+      it("Then the source details are written to the cache") {
+        Mockito.verify(mockSourceDetailsWriter).apply(project, compiler, mode, version)
       }
     }
   }

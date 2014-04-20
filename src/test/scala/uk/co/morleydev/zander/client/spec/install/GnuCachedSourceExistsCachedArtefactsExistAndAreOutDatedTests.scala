@@ -1,25 +1,24 @@
 package uk.co.morleydev.zander.client.spec.install
 
-import org.scalatest.mock.MockitoSugar
 import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.gen.{GenNative, GenStringArguments}
+import org.scalatest.mock.MockitoSugar
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
-import uk.co.morleydev.zander.client.util.{TemporaryDirectory, CreateMockProcess, CreateMockHttpServer}
-import java.io.{ByteArrayInputStream, File}
+import uk.co.morleydev.zander.client.util.Using._
+import uk.co.morleydev.zander.client.util.{CreateMockProcess, TemporaryDirectory, CreateMockHttpServer}
+import uk.co.morleydev.zander.client.model.{Configuration, ProgramConfiguration}
+import uk.co.morleydev.zander.client.gen.{GenStringArguments, GenNative}
+import java.io.{PrintWriter, ByteArrayInputStream, File}
 import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
 import org.mockito.{Matchers, Mockito}
-import uk.co.morleydev.zander.client.util.Using._
-import uk.co.morleydev.zander.client.model.Configuration
-import uk.co.morleydev.zander.client.model.ProgramConfiguration
 import uk.co.morleydev.zander.client.spec.{ResponseCodes, TestConfigurationFile}
 import uk.co.morleydev.zander.client.Main
 import scala.collection.JavaConversions
 import org.apache.commons.io.FileUtils
-import uk.co.morleydev.zander.client.model.store.ArtefactDetails
 import com.lambdaworks.jacks.JacksMapper
+import uk.co.morleydev.zander.client.spec.model.{CachedArtefactDetails, InstalledArtefactDetails}
 import scala.io.Source
 
-class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with MockitoSugar {
+class GnuCachedSourceExistsCachedArtefactsExistAndAreOutDatedTests extends FunSpec with MockitoSugar {
 
   def testCase(mode: String, cmakeBuildType: String) = {
     val arguments = Array[String]("install",
@@ -27,7 +26,7 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
       "gnu",
       mode)
 
-    describe("Given the project/compiler endpoint exists") {
+    describe("Given a cached source and artefacts both exist") {
 
       val endpointUrl = "/" + arguments(1) + "/" + arguments(2)
       val gitUrl = "http://git_url/request/at_me"
@@ -41,7 +40,7 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
           provider.expect(Method.GET, endpointUrl)
             .respondWith(200, "application/json", responseBody)
 
-          describe("When an install operation is carried out with arguments " + arguments.mkString(", ") + " and the source already exists") {
+          describe("When an install operation is carried out with arguments " + arguments.mkString(", ") + " and the source already exists but is out of date") {
 
             val programs = new ProgramConfiguration(GenNative.genAlphaNumericString(3, 10),
               GenNative.genAlphaNumericString(3, 10),
@@ -51,7 +50,6 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
               new TemporaryDirectory(),
               new TemporaryDirectory()) {
               (workingDirectory, cacheDirectory, temporaryDirectory) =>
-
                 val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = cacheDirectory.file.getAbsolutePath)
 
                 val targetIncludeDir = new File(workingDirectory.file, "include")
@@ -75,9 +73,10 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
                   "bin/subdir2/" + GenNative.genAlphaNumericString(1, 20) + ".so",
                   "bin/subdir/" + GenNative.genAlphaNumericString(1, 20) + ".so.12.25.a")
 
-                new File(cacheDirectory.file, arguments(1) + "/source").mkdirs()
+                cacheDirectory.sub(arguments(1) + "/source").mkdirs()
 
                 val mockGitProcessBuilder = CreateMockProcess()
+
                 val mockCmakeProcessBuilder = CreateMockProcess()
                 val mockCmakeBuildProcessBuilder = CreateMockProcess()
                 val mockCmakeInstallProcessBuilder = CreateMockProcess(() => {
@@ -92,10 +91,27 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
                   0
                 })
 
-                val expectedArtefactVersion = GenNative.genAlphaNumericString(3, 100)
 
+                val oldArtefactVersion = GenNative.genAlphaNumericString(3, 100)
+                val cachedArtefactStore = cacheDirectory.sub("%s/%s.%s".format(arguments(1), arguments(2), arguments(3)))
+                cachedArtefactStore.mkdirs()
+                using(new PrintWriter(new File(cachedArtefactStore, "version.json"))) {
+                  writer =>
+                    writer.write(JacksMapper.writeValueAsString[CachedArtefactDetails](new CachedArtefactDetails(oldArtefactVersion)))
+                }
+
+                val expectedNotFoundFiles = Seq[String]("include/IshouldNotExist.h")
+                (expectedNotFoundFiles ++ expectedFiles).foreach(path => {
+                  val file = new File(cachedArtefactStore, path)
+                  if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
+                  if (file.createNewFile())
+                    println("Created file " + file)
+                  else println("Failed to create " + file)
+                })
+
+                val updatedArtefactVersion = GenNative.genAlphaNumericStringExcluding(3, 100, Seq[String](oldArtefactVersion))
                 val mockGitVersionProcessBuilder = CreateMockProcess(() => 0,
-                  new ByteArrayInputStream(expectedArtefactVersion.getBytes("UTF-8")))
+                  new ByteArrayInputStream(updatedArtefactVersion.getBytes("UTF-8")))
 
                 val mockProcessBuilderFactory = mock[NativeProcessBuilderFactory]
                 Mockito.when(mockProcessBuilderFactory.apply(Matchers.any[Seq[String]]))
@@ -118,18 +134,23 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
 
                 val installedFiles = {
                   def seqOfFiles(dir: File) =
-                    JavaConversions.asScalaIterator(FileUtils.iterateFiles(dir, null, true)).toSeq
-                  seqOfFiles(targetIncludeDir) ++ seqOfFiles(targetLibDir) ++ seqOfFiles(targetBinDir)
+                    JavaConversions.asScalaIterator(FileUtils.iterateFiles(dir, null, true))
+                      .asInstanceOf[Iterator[File]]
+                      .toSeq
+                  (seqOfFiles(targetIncludeDir) ++ seqOfFiles(targetLibDir) ++ seqOfFiles(targetBinDir))
+                    .map(f => f.getAbsoluteFile)
                 }
 
                 val installedArtefactDetails = try {
-                  JacksMapper.readValue[ArtefactDetails](
-                  using(Source.fromFile(
-                    workingDirectory.sub("%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))))) {
-                    source =>
-                      source.getLines().mkString
-                  })
-                } catch { case _: Throwable => new ArtefactDetails("") }
+                  JacksMapper.readValue[InstalledArtefactDetails](
+                    using(Source.fromFile(
+                      workingDirectory.sub("%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))))) {
+                      source =>
+                        source.getLines().mkString
+                    })
+                } catch {
+                  case _: Throwable => new InstalledArtefactDetails("")
+                }
 
                 it("Then the endpoint was requested") {
                   provider.verify()
@@ -177,17 +198,18 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
                   assert(responseCode == ResponseCodes.Success)
                 }
                 it("Then the files were installed locally") {
-                  assert(expectedFiles.map(filename => new File(workingDirectory.file, filename))
-                    .forall(f => installedFiles.contains(f)))
+                  val expectedWorkingDirectoryFiles = expectedFiles.map(filename => workingDirectory.sub(filename))
+                  assert(installedFiles.diff(expectedWorkingDirectoryFiles).size == 0)
                 }
                 it("Then the local artefacts were tagged with the git version") {
-                  assert(installedArtefactDetails.version == expectedArtefactVersion)
+                  assert(installedArtefactDetails.version == updatedArtefactVersion)
                 }
             }
           }
       }
     }
   }
+
   testCase("debug", "Debug")
   testCase("release", "Release")
 }

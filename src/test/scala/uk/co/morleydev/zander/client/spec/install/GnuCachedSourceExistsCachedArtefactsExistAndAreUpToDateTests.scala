@@ -18,7 +18,7 @@ import com.lambdaworks.jacks.JacksMapper
 import uk.co.morleydev.zander.client.spec.model.{CachedArtefactDetails, InstalledArtefactDetails}
 import scala.io.Source
 
-class GnuCachedSourceExistsArtefactsExistAndAreUpToDateTests extends FunSpec with MockitoSugar {
+class GnuCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends FunSpec with MockitoSugar {
 
   def testCase(mode: String, cmakeBuildType: String) = {
     val arguments = Array[String]("install",
@@ -113,8 +113,11 @@ class GnuCachedSourceExistsArtefactsExistAndAreUpToDateTests extends FunSpec wit
 
                 val installedFiles = {
                   def seqOfFiles(dir: File) =
-                    JavaConversions.asScalaIterator(FileUtils.iterateFiles(dir, null, true)).toSeq
-                  seqOfFiles(targetIncludeDir) ++ seqOfFiles(targetLibDir) ++ seqOfFiles(targetBinDir)
+                    JavaConversions.asScalaIterator(FileUtils.iterateFiles(dir, null, true))
+                      .asInstanceOf[Iterator[File]]
+                      .toSeq
+                  (seqOfFiles(targetIncludeDir) ++ seqOfFiles(targetLibDir) ++ seqOfFiles(targetBinDir))
+                    .map(f => f.getAbsoluteFile)
                 }
 
                 val installedArtefactDetails = try {
@@ -146,8 +149,8 @@ class GnuCachedSourceExistsArtefactsExistAndAreUpToDateTests extends FunSpec wit
                   assert(responseCode == ResponseCodes.Success)
                 }
                 it("Then the files were installed locally") {
-                  assert(expectedFiles.map(filename => new File(workingDirectory.file, filename))
-                    .forall(f => installedFiles.contains(f)))
+                  val expectedWorkingDirectoryFiles = expectedFiles.map(filename => workingDirectory.sub(filename))
+                  assert(installedFiles.diff(expectedWorkingDirectoryFiles).size == 0)
                 }
                 it("Then the local artefacts were tagged with the git version") {
                   assert(installedArtefactDetails.version == artefactVersion)
