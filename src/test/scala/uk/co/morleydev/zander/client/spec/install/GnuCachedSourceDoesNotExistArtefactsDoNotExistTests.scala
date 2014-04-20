@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils
 import scala.collection.JavaConversions
 import scala.io.Source
 import com.lambdaworks.jacks.JacksMapper
-import uk.co.morleydev.zander.client.model.store.InstalledArtefactDetails
+import uk.co.morleydev.zander.client.model.store.ArtefactDetails
 
 class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with MockitoSugar with BeforeAndAfter {
 
@@ -69,9 +69,9 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
                   new TemporaryDirectory(new File(configuration.cache))) {
               (workingDirectory, temporaryDirectory, cacheDirectory) =>
 
-                val targetIncludeDir = workingDirectory.subDirectory("include")
-                val targetLibDir = workingDirectory.subDirectory("lib")
-                val targetBinDir = workingDirectory.subDirectory("bin")
+                val targetIncludeDir = workingDirectory.sub("include")
+                val targetLibDir = workingDirectory.sub("lib")
+                val targetBinDir = workingDirectory.sub("bin")
 
                 val mockGitProcessBuilder = CreateMockProcess()
                 val mockCmakeProcessBuilder = CreateMockProcess()
@@ -79,7 +79,7 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
                 val mockCmakeInstallProcessBuilder = CreateMockProcess(() => {
                   println("CMake Install Invoked")
                   expectedFiles.foreach(path => {
-                    val file = cacheDirectory.subDirectory(arguments(1) + "/" + arguments(2) + "." + arguments(3) + "/" + path)
+                    val file = cacheDirectory.sub(arguments(1) + "/" + arguments(2) + "." + arguments(3) + "/" + path)
                     if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
                     if (file.createNewFile())
                       println("Created file " + file)
@@ -119,15 +119,15 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
                 }
 
                 val installedArtefactDetails = try {
-                  JacksMapper.readValue[InstalledArtefactDetails](
+                  JacksMapper.readValue[ArtefactDetails](
                   using(Source.fromFile(
-                    workingDirectory.subDirectory("%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))))) {
+                    workingDirectory.sub("%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))))) {
                     source =>
                       source.getLines().mkString
                   }
                 ) } catch { case e: Throwable =>
                   println(e)
-                  new InstalledArtefactDetails("")
+                  new ArtefactDetails("")
                 }
 
                 it("Then the endpoint was requested") {
@@ -141,7 +141,7 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
                 }
                 it("Then the git version is retrieved") {
                   Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "rev-parse", "HEAD"))
-                  Mockito.verify(mockGitVersionProcessBuilder._1).directory(cacheDirectory.subDirectory(arguments(1) + "/source"))
+                  Mockito.verify(mockGitVersionProcessBuilder._1).directory(cacheDirectory.sub(arguments(1) + "/source"))
                   Mockito.verify(mockGitVersionProcessBuilder._1).start()
                   Mockito.verify(mockGitVersionProcessBuilder._2).waitFor()
                 }
@@ -154,7 +154,7 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
                     cmakeSourcePath.getAbsolutePath,
                     "-G\"MinGW", "Makefiles\"",
                     "-DCMAKE_BUILD_TYPE=" + cmakeBuildType,
-                    "-DCMAKE_INSTALL_PREFIX=" + cacheDirectory.subDirectory(arguments(1) + "/" + arguments(2) + "." + mode).getAbsolutePath
+                    "-DCMAKE_INSTALL_PREFIX=" + cacheDirectory.sub(arguments(1) + "/" + arguments(2) + "." + mode).getAbsolutePath
                   ))
 
                   Mockito.verify(mockCmakeProcessBuilder._1).directory(cmakeSourceTmpPath.file)
@@ -177,7 +177,7 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
                   assert(responseCode == ResponseCodes.Success)
                 }
                 it("Then the files were installed locally") {
-                  assert(expectedFiles.map(filename => workingDirectory.subDirectory(filename))
+                  assert(expectedFiles.map(filename => workingDirectory.sub(filename))
                     .forall(f => installedFiles.contains(f)))
                 }
                 it("Then the local artefacts were tagged with the git version") {

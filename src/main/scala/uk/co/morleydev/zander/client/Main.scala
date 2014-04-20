@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client
 import uk.co.morleydev.zander.client.model.{Arguments, Configuration, ExitCodes}
 import scala.io.Source
 import com.lambdaworks.jacks.JacksMapper
-import uk.co.morleydev.zander.client.model.arg.{Project, Operation, Compiler, BuildMode}
+import uk.co.morleydev.zander.client.model.arg.{Project, Operation, BuildCompiler, BuildMode}
 import uk.co.morleydev.zander.client.controller.ControllerFactoryImpl
 import java.io.{File, FileNotFoundException}
 import uk.co.morleydev.zander.client.util.{Log, NativeProcessBuilderImpl, GetProgramDirectory}
@@ -35,7 +35,7 @@ object Main {
 
     val operation = extractEnum(Operation, args(0))
     val project = try { new Project(args(1)) } catch { case e : IllegalArgumentException => null }
-    val compiler = extractEnum(Compiler, args(2))
+    val compiler = extractEnum(BuildCompiler, args(2))
     val buildMode = extractEnum(BuildMode, args(3))
 
     if (operation == null) return ExitCodes.InvalidOperation

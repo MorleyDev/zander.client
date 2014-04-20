@@ -6,7 +6,7 @@ import uk.co.morleydev.zander.client.data.fs.ProjectArtefactVersionWriterToLocal
 import java.io.File
 import uk.co.morleydev.zander.client.gen.GenModel
 import com.lambdaworks.jacks.JacksMapper
-import uk.co.morleydev.zander.client.model.store.InstalledArtefactDetails
+import uk.co.morleydev.zander.client.model.store.ArtefactDetails
 import org.mockito.Mockito
 
 class ProjectArtefactVersionWriterToLocalTests extends FunSpec with MockitoSugar {
@@ -22,7 +22,7 @@ class ProjectArtefactVersionWriterToLocalTests extends FunSpec with MockitoSugar
     val buildMode = GenModel.arg.genBuildMode()
     val version = GenModel.store.genSourceVersion()
 
-    val expectedJson = JacksMapper.writeValueAsString[InstalledArtefactDetails](new InstalledArtefactDetails(version.value))
+    val expectedJson = JacksMapper.writeValueAsString[ArtefactDetails](new ArtefactDetails(version.value))
 
     writer.apply(project, compiler, buildMode, version)
 

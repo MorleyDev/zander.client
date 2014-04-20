@@ -1,8 +1,8 @@
 package uk.co.morleydev.zander.client.gen
 
-import uk.co.morleydev.zander.client.model.arg.{Project, BuildMode, Operation, Compiler}
+import uk.co.morleydev.zander.client.model.arg.{Project, BuildMode, Operation, BuildCompiler}
 import uk.co.morleydev.zander.client.model.arg.Operation.Operation
-import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.net.ProjectDto
 import scala.util.Random
@@ -16,7 +16,7 @@ object GenModel {
   object arg {
     def genOperation(): Operation = GenNative.genOneFrom(Operation.values.toSeq)
 
-    def genCompiler(): Compiler = GenNative.genOneFrom(Compiler.values.toSeq)
+    def genCompiler(): BuildCompiler = GenNative.genOneFrom(BuildCompiler.values.toSeq)
 
     def genBuildMode(): BuildMode = GenNative.genOneFrom(BuildMode.values.toSeq)
 

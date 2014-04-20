@@ -1,6 +1,6 @@
 package uk.co.morleydev.zander.client.data.net
 
-import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.net.ProjectDto
 import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,7 +26,7 @@ class GetProjectDtoRemote(url : URL,
                        get : (URL => HttpRequest) = GetProjectRemoteDefaultDsl,
                        implicit val executionContext : ExecutionContext = ExecutionContext.global)
   extends GetProjectDto {
-  override def apply(projectName: Project, compiler: Compiler): Future[ProjectDto] = {
+  override def apply(projectName: Project, compiler: BuildCompiler): Future[ProjectDto] = {
     val targetUrl = new URL(url, "/" + projectName + "/" + compiler.toString)
     get(targetUrl).apply
       .transform(response => {

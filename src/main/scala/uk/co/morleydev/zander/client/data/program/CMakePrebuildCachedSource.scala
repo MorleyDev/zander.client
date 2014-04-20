@@ -2,14 +2,14 @@ package uk.co.morleydev.zander.client.data.program
 
 import uk.co.morleydev.zander.client.data.ProjectSourcePrebuild
 import uk.co.morleydev.zander.client.model.arg.{BuildMode, Project}
-import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import java.io.File
 
 class CMakePrebuildCachedSource(cmakeProgram : String,
                                 runner : ProgramRunner,
                                 cache : File, temp : File) extends ProjectSourcePrebuild {
-  override def apply(project : Project, compiler : Compiler, mode : BuildMode) : Unit = {
+  override def apply(project : Project, compiler : BuildCompiler, mode : BuildMode) : Unit = {
 
     val buildType = mode match {
       case BuildMode.Debug => ("Debug", "debug")

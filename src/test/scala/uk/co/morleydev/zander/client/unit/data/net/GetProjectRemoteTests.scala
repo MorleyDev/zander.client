@@ -4,7 +4,7 @@ import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
 import java.net.URL
 import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
-import uk.co.morleydev.zander.client.model.arg.Compiler
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler
 import org.mockito.{ArgumentMatcher, Mockito, Matchers}
 import scala.concurrent.{Await, future}
 import com.stackmob.newman.response.{HttpResponseCode, HttpResponse}
@@ -39,7 +39,7 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
 
       val project = GenModel.arg.genProject()
       val compilerString = GenStringArguments.genCompiler()
-      val compiler = Compiler.withName(compilerString)
+      val compiler = BuildCompiler.withName(compilerString)
       val expectedPath = host + "/" + project + "/" + compilerString
 
       val result = getProjectRemote.apply(project, compiler)

@@ -2,8 +2,8 @@ package uk.co.morleydev.zander.client.unit.controller
 
 import org.scalatest.FunSpec
 import uk.co.morleydev.zander.client.gen.{GenModel, GenNative}
-import uk.co.morleydev.zander.client.model.arg.{Project, Compiler, BuildMode}
-import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
+import uk.co.morleydev.zander.client.model.arg.{Project, BuildCompiler, BuildMode}
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import org.scalatest.mock.MockitoSugar
 import org.mockito.{Matchers, Mockito}
 import scala.concurrent.future
@@ -32,10 +32,10 @@ class InstallControllerTests extends FunSpec with MockitoSugar {
              .thenReturn(sourceVersion)
 
       val project = GenModel.arg.genProject()
-      val compiler = GenNative.genOneFrom(Compiler.values.toSeq)
+      val compiler = GenNative.genOneFrom(BuildCompiler.values.toSeq)
       val projectDto = GenModel.net.genGitSupportingProjectDto()
 
-      Mockito.when(mockGetProjectDto(Matchers.any[Project](), Matchers.any[Compiler]()))
+      Mockito.when(mockGetProjectDto(Matchers.any[Project](), Matchers.any[BuildCompiler]()))
         .thenReturn(future(projectDto))
 
       val mode = GenNative.genOneFrom(BuildMode.values.toSeq)
@@ -48,7 +48,7 @@ class InstallControllerTests extends FunSpec with MockitoSugar {
         Mockito.verify(mockSourceAcquire)(project, projectDto)
       }
       it("Then the source is compiled") {
-        Mockito.verify(mockSourceCompile)(project, compiler, mode)
+        Mockito.verify(mockSourceCompile)(project, compiler, mode, sourceVersion)
       }
       it("Then the local artefacts are acquire") {
         Mockito.verify(mockArtefactAcquire)(project, compiler, mode, sourceVersion)

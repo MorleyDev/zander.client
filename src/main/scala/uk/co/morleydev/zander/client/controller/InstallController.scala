@@ -1,6 +1,6 @@
 package uk.co.morleydev.zander.client.controller
 
-import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
@@ -15,10 +15,10 @@ class InstallController(getProjectDto : GetProjectDto,
                         projectArtefactInstall : ProjectArtefactAcquire,
                         implicit val executionContext : ExecutionContext = ExecutionContext.Implicits.global)
   extends Controller {
-  override def apply(project: Project, compiler: Compiler, buildMode: BuildMode): Unit = {
+  override def apply(project: Project, compiler: BuildCompiler, buildMode: BuildMode): Unit = {
     val result = getProjectDto(project, compiler)
       .map(dto => sourceAcquire(project, dto))
-      .map(version => { sourceCompile(project, compiler, buildMode); version })
+      .map(version => { sourceCompile(project, compiler, buildMode, version); version })
       .map(version => projectArtefactInstall(project, compiler, buildMode, version))
     Await.result(result, Duration(60, MINUTES))
   }

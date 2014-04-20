@@ -7,7 +7,7 @@ class TemporaryDirectory(var file : File, createDir : Boolean = false) extends A
   if (createDir)
     file.mkdirs()
 
-  def subDirectory(s : String) : File =
+  def sub(s : String) : File =
     new File(file, s)
 
   override def close(): Unit = {

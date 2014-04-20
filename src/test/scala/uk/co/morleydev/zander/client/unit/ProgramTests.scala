@@ -2,8 +2,8 @@ package uk.co.morleydev.zander.client.unit
 
 import org.scalatest.FunSpec
 import uk.co.morleydev.zander.client.Program
-import uk.co.morleydev.zander.client.model.arg.{Project, Compiler, BuildMode, Operation}
-import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
+import uk.co.morleydev.zander.client.model.arg.{Project, BuildCompiler, BuildMode, Operation}
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.{ExitCodes, Arguments, Configuration}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.{Matchers, Mockito}
@@ -15,7 +15,7 @@ import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
 
 class ProgramTests extends FunSpec with MockitoSugar {
 
-  val expectedCompiler = GenNative.genOneFrom(Compiler.values.toSeq)
+  val expectedCompiler = GenNative.genOneFrom(BuildCompiler.values.toSeq)
   val expectedBuildMode = GenNative.genOneFrom(BuildMode.values.toSeq)
   val expectedProjectName = new Project(GenNative.genAlphaNumericString(1, 20))
   
@@ -53,7 +53,7 @@ class ProgramTests extends FunSpec with MockitoSugar {
 
       Mockito.when(mockControllerFactory.createInstallController(Matchers.any[Configuration]()))
         .thenReturn(mockInstallController)
-      Mockito.when(mockInstallController.apply(Matchers.any[Project](), Matchers.any[Compiler](), Matchers.any[BuildMode]()))
+      Mockito.when(mockInstallController.apply(Matchers.any[Project](), Matchers.any[BuildCompiler](), Matchers.any[BuildMode]()))
         .thenThrow(e)
 
       val program = new Program(mockControllerFactory)

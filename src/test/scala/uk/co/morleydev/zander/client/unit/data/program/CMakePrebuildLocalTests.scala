@@ -6,14 +6,14 @@ import uk.co.morleydev.zander.client.data.program.{ProgramRunner, CMakePrebuildC
 import uk.co.morleydev.zander.client.gen.{GenNative, GenModel}
 import org.mockito.Mockito
 import java.io.File
-import uk.co.morleydev.zander.client.model.arg.Compiler.Compiler
-import uk.co.morleydev.zander.client.model.arg.Compiler
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.arg.BuildMode
 
 class CMakePrebuildLocalTests extends FunSpec with MockitoSugar {
 
-  def testCase(compiler: Compiler, mode: BuildMode, buildType: String, cachePath: String) = {
+  def testCase(compiler: BuildCompiler, mode: BuildMode, buildType: String, cachePath: String) = {
 
     describe("Given a CMakePrebuildLocal") {
 
@@ -40,6 +40,6 @@ class CMakePrebuildLocalTests extends FunSpec with MockitoSugar {
       }
     }
   }
-  testCase(Compiler.GnuCxx, BuildMode.Debug, "Debug", "gnu.debug")
-  testCase(Compiler.GnuCxx, BuildMode.Release, "Release", "gnu.release")
+  testCase(BuildCompiler.GnuCxx, BuildMode.Debug, "Debug", "gnu.debug")
+  testCase(BuildCompiler.GnuCxx, BuildMode.Release, "Release", "gnu.release")
 }
