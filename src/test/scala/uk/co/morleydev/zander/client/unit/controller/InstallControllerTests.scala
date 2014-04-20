@@ -10,25 +10,27 @@ import scala.concurrent.future
 import scala.concurrent.ExecutionContext.Implicits.global
 import uk.co.morleydev.zander.client.controller.InstallController
 import uk.co.morleydev.zander.client.data._
-import uk.co.morleydev.zander.client.service.ProjectSourceAcquire
+import uk.co.morleydev.zander.client.service.{ProjectArtefactAcquire, ProjectSourceCompile, ProjectSourceAcquire}
+import uk.co.morleydev.zander.client.model.net.ProjectDto
 
 class InstallControllerTests extends FunSpec with MockitoSugar {
   describe("Given an install controller") {
     val mockGetProjectDto = mock[GetProjectDto]
     val mockSourceAcquire = mock[ProjectSourceAcquire]
-    val mockSourcePrebuild = mock[ProjectSourcePrebuild]
-    val mockSourceBuild = mock[ProjectSourceBuild]
-    val mockSourceInstall = mock[ProjectSourceInstall]
-    val mockArtefactInstall = mock[ProjectArtefactInstall]
+    val mockSourceCompile = mock[ProjectSourceCompile]
+    val mockArtefactAcquire = mock[ProjectArtefactAcquire]
 
     val installController = new InstallController(mockGetProjectDto,
       mockSourceAcquire,
-      mockSourcePrebuild,
-      mockSourceBuild,
-      mockSourceInstall,
-      mockArtefactInstall)
+      mockSourceCompile,
+      mockArtefactAcquire)
 
     describe("when installing an existing project") {
+
+      val sourceVersion = GenModel.store.genSourceVersion()
+      Mockito.when(mockSourceAcquire.apply(Matchers.any[Project], Matchers.any[ProjectDto]))
+             .thenReturn(sourceVersion)
+
       val project = GenModel.arg.genProject()
       val compiler = GenNative.genOneFrom(Compiler.values.toSeq)
       val projectDto = GenModel.net.genGitSupportingProjectDto()
@@ -37,9 +39,7 @@ class InstallControllerTests extends FunSpec with MockitoSugar {
         .thenReturn(future(projectDto))
 
       val mode = GenNative.genOneFrom(BuildMode.values.toSeq)
-      installController(project,
-                        compiler,
-                        mode)
+      installController(project, compiler, mode)
 
       it("Then the expected project is retrieved with the expected compiler") {
         Mockito.verify(mockGetProjectDto)(project, compiler)
@@ -47,17 +47,11 @@ class InstallControllerTests extends FunSpec with MockitoSugar {
       it("Then the source is acquired") {
         Mockito.verify(mockSourceAcquire)(project, projectDto)
       }
-      it("Then the source prebuild is ran") {
-        Mockito.verify(mockSourcePrebuild)(project, compiler, mode)
+      it("Then the source is compiled") {
+        Mockito.verify(mockSourceCompile)(project, compiler, mode)
       }
-      it("Then the source build is ran") {
-        Mockito.verify(mockSourceBuild)(project, compiler, mode)
-      }
-      it("Then the source install is ran") {
-        Mockito.verify(mockSourceInstall)(project, compiler)
-      }
-      it("Then the artefact install is ran") {
-        Mockito.verify(mockArtefactInstall)(project, compiler, mode)
+      it("Then the local artefacts are acquire") {
+        Mockito.verify(mockArtefactAcquire)(project, compiler, mode, sourceVersion)
       }
     }
   }

@@ -9,12 +9,16 @@ object GenNative {
   private val random = new Random()
 
   val alphaNumericCharacters : Seq[Char] = ('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9')
+  val asciiCharacters : Seq[Char] = (0 to 255).map(_.toChar).toSeq
   val nonAsciiCharacters : Seq[Char] =
     Iterator.continually(random.nextString(1))
     .dropWhile(s => s(0).toInt < 256)
     .map(s => s(0))
     .take(20)
     .toSeq
+
+  def genAsciiString(minLength : Int, maxLength : Int) : String =
+    genStringContaining(minLength, maxLength, asciiCharacters)
 
   def genAlphaNumericString(minLength : Int, maxLength : Int) : String =
     genStringContaining(minLength, maxLength, alphaNumericCharacters)

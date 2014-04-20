@@ -19,7 +19,7 @@ class CMakeInstallLocalTests extends FunSpec with MockitoSugar {
 
     describe("When invoking with a project, compiler and build mode") {
 
-      cmakeInstallLocal.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler())
+      cmakeInstallLocal.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler(), GenModel.arg.genBuildMode())
 
       it("Then the cmake install is invoked") {
         Mockito.verify(mockProgramRunner).apply(Seq[String](cmake, "--build", ".", "--", "install"), tmpFilePath)

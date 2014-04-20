@@ -7,6 +7,7 @@ import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.net.ProjectDto
 import scala.util.Random
 import java.net.URL
+import uk.co.morleydev.zander.client.model.store.SourceVersion
 
 object GenModel {
 
@@ -37,5 +38,10 @@ object GenModel {
     def genGitSupportingProjectDto() : ProjectDto = new ProjectDto(genGitUrl())
 
     def genProjectDto() : ProjectDto = new ProjectDto(genGitUrl())
+  }
+
+  object store {
+    def genSourceVersion() : SourceVersion =
+      new SourceVersion(GenNative.genAsciiString(3, 100))
   }
 }

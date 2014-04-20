@@ -3,17 +3,20 @@ package uk.co.morleydev.zander.client.spec.install
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec}
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
-import uk.co.morleydev.zander.client.util.{CreateMockProcess, CreateMockHttpServer}
+import uk.co.morleydev.zander.client.util.{TemporaryDirectory, CreateMockProcess, CreateMockHttpServer}
 import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.gen.{GenStringArguments, GenNative}
 import uk.co.morleydev.zander.client.util.Using.using
 import uk.co.morleydev.zander.client.model.{Configuration, ProgramConfiguration}
 import uk.co.morleydev.zander.client.spec.{ResponseCodes, TestConfigurationFile}
 import uk.co.morleydev.zander.client.Main
-import java.io.File
+import java.io.{ByteArrayInputStream, File}
 import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
 import org.apache.commons.io.FileUtils
 import scala.collection.JavaConversions
+import scala.io.Source
+import com.lambdaworks.jacks.JacksMapper
+import uk.co.morleydev.zander.client.model.store.InstalledArtefactDetails
 
 class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with MockitoSugar with BeforeAndAfter {
 
@@ -39,12 +42,6 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
 
           describe("When an install operation is carried out with arguments " + arguments.mkString(", ")) {
 
-            val workingDirectory = new File("working_directory_GnuCachedNoSourceNoArtefacts" + mode)
-            workingDirectory.mkdirs()
-            val targetIncludeDir = new File(workingDirectory, "include")
-            val targetLibDir = new File(workingDirectory, "lib")
-            val targetBinDir = new File(workingDirectory, "bin")
-
             val expectedFiles = Seq[String]("include/" + GenNative.genAlphaNumericString(1, 20),
               "include/sub_dir/" + GenNative.genAlphaNumericString(1, 20) + ".h",
               "lib/" + GenNative.genAlphaNumericString(1, 20) + ".a",
@@ -66,102 +63,132 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
               GenNative.genAlphaNumericString(3, 10),
               GenNative.genAlphaNumericString(3, 10))
             val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = "cache")
-            val cacheDirectory = new File(configuration.cache)
-            val temporaryDirectory = new File("tmp" + GenNative.genAlphaNumericString(1, 20))
 
-            val mockGitProcessBuilder = CreateMockProcess()
-            val mockCmakeProcessBuilder = CreateMockProcess()
-            val mockCmakeBuildProcessBuilder = CreateMockProcess()
-            val mockCmakeInstallProcessBuilder = CreateMockProcess(() => {
-              println("CMake Install Invoked")
-              expectedFiles.foreach(path => {
-                val file = new File(cacheDirectory, arguments(1) + "/" + arguments(2) + "." + arguments(3) + "/" + path)
-                if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
-                if (file.createNewFile())
-                  println("Created file " + file)
-                else println("Failed to create " + file)
-              })
-              0
-            })
+            using(new TemporaryDirectory(new File("working_directory_GnuCachedNoSourceNoArtefacts" + mode), true),
+                  new TemporaryDirectory(new File("tmp" + GenNative.genAlphaNumericString(1, 20))),
+                  new TemporaryDirectory(new File(configuration.cache))) {
+              (workingDirectory, temporaryDirectory, cacheDirectory) =>
 
-            val mockProcessBuilderFactory = mock[NativeProcessBuilderFactory]
-            Mockito.when(mockProcessBuilderFactory.apply(Matchers.any[Seq[String]]))
-              .thenReturn(mockGitProcessBuilder._1)
-              .thenReturn(mockCmakeProcessBuilder._1)
-              .thenReturn(mockCmakeBuildProcessBuilder._1)
-              .thenReturn(mockCmakeInstallProcessBuilder._1)
+                val targetIncludeDir = workingDirectory.subDirectory("include")
+                val targetLibDir = workingDirectory.subDirectory("lib")
+                val targetBinDir = workingDirectory.subDirectory("bin")
 
-            var responseCode = -1
+                val mockGitProcessBuilder = CreateMockProcess()
+                val mockCmakeProcessBuilder = CreateMockProcess()
+                val mockCmakeBuildProcessBuilder = CreateMockProcess()
+                val mockCmakeInstallProcessBuilder = CreateMockProcess(() => {
+                  println("CMake Install Invoked")
+                  expectedFiles.foreach(path => {
+                    val file = cacheDirectory.subDirectory(arguments(1) + "/" + arguments(2) + "." + arguments(3) + "/" + path)
+                    if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
+                    if (file.createNewFile())
+                      println("Created file " + file)
+                    else println("Failed to create " + file)
+                  })
+                  0
+                })
 
-            using(new TestConfigurationFile(configuration)) {
-              config =>
-                responseCode = Main.main(arguments,
-                  config.file.getPath,
-                  mockProcessBuilderFactory,
-                  temporaryDirectory,
-                  workingDirectory)
-            }
+                val expectedArtefactVersion = GenNative.genAlphaNumericString(3, 100)
 
-            val installedFiles = {
-              def seqOfFiles(dir: File) =
-                JavaConversions.asScalaIterator(FileUtils.iterateFiles(dir, null, true)).toSeq
-              seqOfFiles(targetIncludeDir) ++ seqOfFiles(targetLibDir) ++ seqOfFiles(targetBinDir)
-            }
+                val mockGitVersionProcessBuilder = CreateMockProcess(() => 0,
+                  new ByteArrayInputStream(expectedArtefactVersion.getBytes("UTF-8")))
 
-            FileUtils.deleteDirectory(temporaryDirectory)
-            FileUtils.deleteDirectory(cacheDirectory)
-            FileUtils.deleteDirectory(targetIncludeDir)
-            FileUtils.deleteDirectory(targetLibDir)
-            FileUtils.deleteDirectory(targetBinDir)
-            FileUtils.deleteDirectory(workingDirectory)
+                val mockProcessBuilderFactory = mock[NativeProcessBuilderFactory]
+                Mockito.when(mockProcessBuilderFactory.apply(Matchers.any[Seq[String]]))
+                  .thenReturn(mockGitProcessBuilder._1)
+                  .thenReturn(mockGitVersionProcessBuilder._1)
+                  .thenReturn(mockCmakeProcessBuilder._1)
+                  .thenReturn(mockCmakeBuildProcessBuilder._1)
+                  .thenReturn(mockCmakeInstallProcessBuilder._1)
 
-            it("Then the endpoint was requested") {
-              provider.verify()
-            }
-            it("Then the git process was invoked") {
-              Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "source"))
-              Mockito.verify(mockGitProcessBuilder._1).directory(new File(cacheDirectory, arguments(1)))
-              Mockito.verify(mockGitProcessBuilder._1).start()
-              Mockito.verify(mockGitProcessBuilder._2).waitFor()
-            }
+                var responseCode = -1
 
-            val cmakeSourceTmpPath = temporaryDirectory
-            it("Then the cmake process was invoked") {
-              val cmakeSourcePath = new File(cacheDirectory, arguments(1) + "/source")
+                using(new TestConfigurationFile(configuration)) {
+                  config =>
+                    responseCode = Main.main(arguments,
+                      config.file.getPath,
+                      mockProcessBuilderFactory,
+                      temporaryDirectory.file,
+                      workingDirectory.file)
+                }
 
-              Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake,
-                cmakeSourcePath.getAbsolutePath,
-                "-G\"MinGW", "Makefiles\"",
-                "-DCMAKE_BUILD_TYPE=" + cmakeBuildType,
-                "-DCMAKE_INSTALL_PREFIX=" + new File(cacheDirectory, arguments(1) + "/" + arguments(2) + "." + mode).getAbsolutePath
-              ))
+                val installedFiles = {
+                  def seqOfFiles(dir: File) =
+                    JavaConversions.asScalaIterator(FileUtils.iterateFiles(dir, null, true)).toSeq
+                  seqOfFiles(targetIncludeDir) ++ seqOfFiles(targetLibDir) ++ seqOfFiles(targetBinDir)
+                }
 
-              Mockito.verify(mockCmakeProcessBuilder._1).directory(cmakeSourceTmpPath)
-              Mockito.verify(mockCmakeProcessBuilder._1).start()
-              Mockito.verify(mockCmakeProcessBuilder._2).waitFor()
-            }
-            it("Then the cmake build process was invoked") {
-              Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", "."))
-              Mockito.verify(mockCmakeBuildProcessBuilder._1).directory(cmakeSourceTmpPath)
-              Mockito.verify(mockCmakeBuildProcessBuilder._1).start()
-              Mockito.verify(mockCmakeBuildProcessBuilder._2).waitFor()
-            }
-            it("Then the cmake install process was invoked") {
-              Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", ".", "--", "install"))
-              Mockito.verify(mockCmakeInstallProcessBuilder._1).directory(cmakeSourceTmpPath)
-              Mockito.verify(mockCmakeInstallProcessBuilder._1).start()
-              Mockito.verify(mockCmakeInstallProcessBuilder._2).waitFor()
-            }
-            it("Then the expected return code is returned") {
-              assert(responseCode == ResponseCodes.Success)
-            }
-            it("Then the files were installed locally") {
-              assert(expectedFiles.map(filename => new File(workingDirectory, filename)).forall(f => installedFiles.contains(f)))
+                val installedArtefactDetails = try {
+                  JacksMapper.readValue[InstalledArtefactDetails](
+                  using(Source.fromFile(
+                    workingDirectory.subDirectory("%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))))) {
+                    source =>
+                      source.getLines().mkString
+                  }
+                ) } catch { case e: Throwable =>
+                  println(e)
+                  new InstalledArtefactDetails("")
+                }
+
+                it("Then the endpoint was requested") {
+                  provider.verify()
+                }
+                it("Then the git process was invoked") {
+                  Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "source"))
+                  Mockito.verify(mockGitProcessBuilder._1).directory(new File(cacheDirectory.file, arguments(1)))
+                  Mockito.verify(mockGitProcessBuilder._1).start()
+                  Mockito.verify(mockGitProcessBuilder._2).waitFor()
+                }
+                it("Then the git version is retrieved") {
+                  Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "rev-parse", "HEAD"))
+                  Mockito.verify(mockGitVersionProcessBuilder._1).directory(cacheDirectory.subDirectory(arguments(1) + "/source"))
+                  Mockito.verify(mockGitVersionProcessBuilder._1).start()
+                  Mockito.verify(mockGitVersionProcessBuilder._2).waitFor()
+                }
+
+                val cmakeSourceTmpPath = temporaryDirectory
+                it("Then the cmake process was invoked") {
+                  val cmakeSourcePath = new File(cacheDirectory.file, arguments(1) + "/source")
+
+                  Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake,
+                    cmakeSourcePath.getAbsolutePath,
+                    "-G\"MinGW", "Makefiles\"",
+                    "-DCMAKE_BUILD_TYPE=" + cmakeBuildType,
+                    "-DCMAKE_INSTALL_PREFIX=" + cacheDirectory.subDirectory(arguments(1) + "/" + arguments(2) + "." + mode).getAbsolutePath
+                  ))
+
+                  Mockito.verify(mockCmakeProcessBuilder._1).directory(cmakeSourceTmpPath.file)
+                  Mockito.verify(mockCmakeProcessBuilder._1).start()
+                  Mockito.verify(mockCmakeProcessBuilder._2).waitFor()
+                }
+                it("Then the cmake build process was invoked") {
+                  Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", "."))
+                  Mockito.verify(mockCmakeBuildProcessBuilder._1).directory(cmakeSourceTmpPath.file)
+                  Mockito.verify(mockCmakeBuildProcessBuilder._1).start()
+                  Mockito.verify(mockCmakeBuildProcessBuilder._2).waitFor()
+                }
+                it("Then the cmake install process was invoked") {
+                  Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", ".", "--", "install"))
+                  Mockito.verify(mockCmakeInstallProcessBuilder._1).directory(cmakeSourceTmpPath.file)
+                  Mockito.verify(mockCmakeInstallProcessBuilder._1).start()
+                  Mockito.verify(mockCmakeInstallProcessBuilder._2).waitFor()
+                }
+                it("Then the expected return code is returned") {
+                  assert(responseCode == ResponseCodes.Success)
+                }
+                it("Then the files were installed locally") {
+                  assert(expectedFiles.map(filename => workingDirectory.subDirectory(filename))
+                    .forall(f => installedFiles.contains(f)))
+                }
+                it("Then the local artefacts were tagged with the git version") {
+                  assert(installedArtefactDetails.version == expectedArtefactVersion)
+                }
             }
           }
       }
     }
   }
+
   testCase("debug", "Debug")
   testCase("release", "Release")
 }

@@ -24,7 +24,7 @@ class InstallFailsTests extends FunSpec with MockitoSugar {
 
       var responseCode = 0
 
-      val configuration = new Configuration("http://localhost:24325")
+      val configuration = new Configuration("http://localhost:24325", cache = "cache_InstallFailsTests1")
       using(new TestConfigurationFile(configuration)) {
         config =>
           responseCode = Main.main(arguments,
@@ -54,7 +54,7 @@ class InstallFailsTests extends FunSpec with MockitoSugar {
 
           var responseCode = 0
 
-          using(new TestConfigurationFile(new Configuration("http://localhost:24325"))) {
+          using(new TestConfigurationFile(new Configuration("http://localhost:24325", cache = "cache_InstallFailsTests1"))) {
             config =>
               responseCode = Main.main(arguments,
                 config.file.getAbsolutePath,

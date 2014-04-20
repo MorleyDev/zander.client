@@ -7,23 +7,19 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.{Duration, MINUTES}
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.data._
-import uk.co.morleydev.zander.client.service.ProjectSourceAcquire
+import uk.co.morleydev.zander.client.service.{ProjectArtefactAcquire, ProjectSourceCompile, ProjectSourceAcquire}
 
 class InstallController(getProjectDto : GetProjectDto,
                         sourceAcquire : ProjectSourceAcquire,
-                        sourcePrebuild : ProjectSourcePrebuild,
-                        sourceBuild : ProjectSourceBuild,
-                        sourceInstall : ProjectSourceInstall,
-                        projectArtefactInstall : ProjectArtefactInstall,
+                        sourceCompile : ProjectSourceCompile,
+                        projectArtefactInstall : ProjectArtefactAcquire,
                         implicit val executionContext : ExecutionContext = ExecutionContext.Implicits.global)
   extends Controller {
   override def apply(project: Project, compiler: Compiler, buildMode: BuildMode): Unit = {
     val result = getProjectDto(project, compiler)
       .map(dto => sourceAcquire(project, dto))
-      .map(_ => sourcePrebuild(project, compiler, buildMode))
-      .map(_ => sourceBuild(project, compiler, buildMode))
-      .map(_ => sourceInstall(project, compiler))
-      .map(_ => projectArtefactInstall(project, compiler, buildMode))
+      .map(version => { sourceCompile(project, compiler, buildMode); version })
+      .map(version => projectArtefactInstall(project, compiler, buildMode, version))
     Await.result(result, Duration(60, MINUTES))
   }
 }

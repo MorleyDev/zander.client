@@ -17,7 +17,7 @@ object CreateMockProcess extends ((() => Int, InputStream) => (NativeProcessBuil
     Mockito.when(mockProcess.exitValue())
       .thenReturn(0)
     Mockito.when(mockProcess.getInputStream)
-      .thenReturn(GenNative.genInputStreamString())
+      .thenReturn(inputStream)
     Mockito.when(mockProcess.getErrorStream)
       .thenReturn(GenNative.genInputStreamString())
     Mockito.when(mockProcess.waitFor())
