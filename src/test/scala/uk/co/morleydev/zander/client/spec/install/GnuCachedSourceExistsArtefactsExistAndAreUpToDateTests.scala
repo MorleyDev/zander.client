@@ -45,12 +45,12 @@ class GnuCachedSourceExistsArtefactsExistAndAreUpToDateTests extends FunSpec wit
             val programs = new ProgramConfiguration(GenNative.genAlphaNumericString(3, 10),
               GenNative.genAlphaNumericString(3, 10),
               GenNative.genAlphaNumericString(3, 10))
-            val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = "cache_GnuCachedSourceNoArtefacts0" + mode)
 
-            using(new TemporaryDirectory(new File("working_directory_GnuCachedSourceAndArtefactsUpToDate0" + mode), true),
-              new TemporaryDirectory(new File(configuration.cache)),
-              new TemporaryDirectory(new File("tmp" + GenNative.genAlphaNumericString(1, 20)))) {
+            using(new TemporaryDirectory(true),
+              new TemporaryDirectory(),
+              new TemporaryDirectory()) {
               (workingDirectory, cacheDirectory, temporaryDirectory) =>
+                val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = cacheDirectory.file.getAbsolutePath)
 
                 val targetIncludeDir = new File(workingDirectory.file, "include")
                 val targetLibDir = new File(workingDirectory.file, "lib")
@@ -73,7 +73,7 @@ class GnuCachedSourceExistsArtefactsExistAndAreUpToDateTests extends FunSpec wit
                   "bin/subdir2/" + GenNative.genAlphaNumericString(1, 20) + ".so",
                   "bin/subdir/" + GenNative.genAlphaNumericString(1, 20) + ".so.12.25.a")
 
-                new File(cacheDirectory.file, arguments(1) + "/source").mkdirs()
+                cacheDirectory.sub(arguments(1) + "/source").mkdirs()
 
                 val mockGitProcessBuilder = CreateMockProcess()
 
@@ -133,7 +133,7 @@ class GnuCachedSourceExistsArtefactsExistAndAreUpToDateTests extends FunSpec wit
                 }
                 it("Then the git update was invoked") {
                   Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "pull"))
-                  Mockito.verify(mockGitProcessBuilder._1).directory(new File(cacheDirectory.file, arguments(1) + "/source"))
+                  Mockito.verify(mockGitProcessBuilder._1).directory(cacheDirectory.sub(arguments(1) + "/source"))
                   Mockito.verify(mockGitProcessBuilder._1).start()
                 }
                 it("Then the git version is retrieved") {

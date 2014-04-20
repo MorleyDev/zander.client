@@ -46,12 +46,13 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
             val programs = new ProgramConfiguration(GenNative.genAlphaNumericString(3, 10),
               GenNative.genAlphaNumericString(3, 10),
               GenNative.genAlphaNumericString(3, 10))
-            val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = "cache_GnuCachedSourceNoArtefacts0" + mode)
 
-            using(new TemporaryDirectory(new File("working_directory_GnuCachedSourceNoArtefacts0" + mode), true),
-              new TemporaryDirectory(new File(configuration.cache)),
-              new TemporaryDirectory(new File("tmp" + GenNative.genAlphaNumericString(1, 20)))) {
+            using(new TemporaryDirectory(true),
+              new TemporaryDirectory(),
+              new TemporaryDirectory()) {
               (workingDirectory, cacheDirectory, temporaryDirectory) =>
+
+                val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = cacheDirectory.file.getAbsolutePath)
 
                 val targetIncludeDir = new File(workingDirectory.file, "include")
                 val targetLibDir = new File(workingDirectory.file, "lib")
@@ -82,7 +83,7 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
                 val mockCmakeInstallProcessBuilder = CreateMockProcess(() => {
                   println("CMake Install Invoked")
                   expectedFiles.foreach(path => {
-                    val file = new File(cacheDirectory.file, arguments(1) + "/" + arguments(2) + "." + arguments(3) + "/" + path)
+                    val file = cacheDirectory.sub(arguments(1) + "/" + arguments(2) + "." + arguments(3) + "/" + path)
                     if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
                     if (file.createNewFile())
                       println("Created file " + file)
@@ -135,8 +136,14 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
                 }
                 it("Then the git update was invoked") {
                   Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "pull"))
-                  Mockito.verify(mockGitProcessBuilder._1).directory(new File(cacheDirectory.file, arguments(1) + "/source"))
+                  Mockito.verify(mockGitProcessBuilder._1).directory(cacheDirectory.sub(arguments(1) + "/source"))
                   Mockito.verify(mockGitProcessBuilder._1).start()
+                }
+                it("Then the git version is retrieved") {
+                  Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "rev-parse", "HEAD"))
+                  Mockito.verify(mockGitVersionProcessBuilder._1).directory(cacheDirectory.sub(arguments(1) + "/source"))
+                  Mockito.verify(mockGitVersionProcessBuilder._1).start()
+                  Mockito.verify(mockGitVersionProcessBuilder._2).waitFor()
                 }
 
                 val cmakeSourceTmpPath = temporaryDirectory.file
@@ -165,12 +172,6 @@ class GnuCachedSourceExistsArtefactsDoNotExistTests extends FunSpec with Mockito
                   Mockito.verify(mockCmakeInstallProcessBuilder._1).directory(cmakeSourceTmpPath)
                   Mockito.verify(mockCmakeInstallProcessBuilder._1).start()
                   Mockito.verify(mockCmakeInstallProcessBuilder._2).waitFor()
-                }
-                it("Then the git version is retrieved") {
-                  Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "rev-parse", "HEAD"))
-                  Mockito.verify(mockGitVersionProcessBuilder._1).directory(cacheDirectory.sub(arguments(1) + "/source"))
-                  Mockito.verify(mockGitVersionProcessBuilder._1).start()
-                  Mockito.verify(mockGitVersionProcessBuilder._2).waitFor()
                 }
                 it("Then the expected return code is returned") {
                   assert(responseCode == ResponseCodes.Success)

@@ -62,12 +62,12 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
             val programs = new ProgramConfiguration(GenNative.genAlphaNumericString(3, 10),
               GenNative.genAlphaNumericString(3, 10),
               GenNative.genAlphaNumericString(3, 10))
-            val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = "cache")
 
-            using(new TemporaryDirectory(new File("working_directory_GnuCachedNoSourceNoArtefacts" + mode), true),
-                  new TemporaryDirectory(new File("tmp" + GenNative.genAlphaNumericString(1, 20))),
-                  new TemporaryDirectory(new File(configuration.cache))) {
+            using(new TemporaryDirectory(true),
+                  new TemporaryDirectory(),
+                  new TemporaryDirectory()) {
               (workingDirectory, temporaryDirectory, cacheDirectory) =>
+                val configuration = new Configuration("http://localhost:" + mockHttpServer.port, programs, cache = cacheDirectory.file.getAbsolutePath)
 
                 val targetIncludeDir = workingDirectory.sub("include")
                 val targetLibDir = workingDirectory.sub("lib")
@@ -135,7 +135,7 @@ class GnuCachedSourceDoesNotExistArtefactsDoNotExistTests extends FunSpec with M
                 }
                 it("Then the git process was invoked") {
                   Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "source"))
-                  Mockito.verify(mockGitProcessBuilder._1).directory(new File(cacheDirectory.file, arguments(1)))
+                  Mockito.verify(mockGitProcessBuilder._1).directory(cacheDirectory.sub(arguments(1)))
                   Mockito.verify(mockGitProcessBuilder._1).start()
                   Mockito.verify(mockGitProcessBuilder._2).waitFor()
                 }
