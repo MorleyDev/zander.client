@@ -19,7 +19,7 @@ class GetGitSourceVersion(git : String,
     val exitCode = process.waitFor()
     if (exitCode != 0)
       throw new GitVersionCheckFailedException(exitCode)
-    
+
     new SourceVersion(version)
   }
 }

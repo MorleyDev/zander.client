@@ -53,7 +53,7 @@ object Main {
       json
     } catch {
       case e : FileNotFoundException =>
-        println("Warning: Could not open config file " + configFile + ", using defaults")
+        Log("Warning: Could not open config file " + configFile + ", using defaults")
         val configJson = JacksMapper.writeValueAsString(new Configuration())
         val configParentPath = new File(configFile).getParentFile
         if (!configParentPath.exists())

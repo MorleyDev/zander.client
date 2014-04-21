@@ -75,13 +75,10 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
     mockCmakeProcessBuilder = CreateMockProcess()
     mockCmakeBuildProcessBuilder = CreateMockProcess()
     mockCmakeInstallProcessBuilder = CreateMockProcess(() => {
-      println("CMake Install Invoked")
       expectedFiles.foreach(path => {
         val file = cache.sub(arguments(1) + "/" + arguments(2) + "." + arguments(3) + "/" + path)
         if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
-        if (file.createNewFile())
-          println("Created file " + file)
-        else println("Failed to create " + file)
+        file.createNewFile()
       })
       0
     })
@@ -123,9 +120,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
     files.foreach(path => {
       val file = new File(cachedArtefactStore, path)
       if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
-      if (file.createNewFile())
-        println("Created file " + file)
-      else println("Failed to create " + file)
+      file.createNewFile()
     })
     this
   }
@@ -185,7 +180,6 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
       )
     } catch {
       case e: Throwable =>
-        println(e)
         new InstalledArtefactDetails("")
     }
     this

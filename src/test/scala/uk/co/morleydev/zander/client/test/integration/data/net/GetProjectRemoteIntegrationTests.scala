@@ -45,16 +45,19 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
           provider.expect(Method.GET, "/" + project + "/" + compiler.toString)
             .respondWith(404, "application/json", "{\"code\":\"ResourceNotFound\",\"message\":\"/" + project + "/" + compiler + " does not exist\"}")
 
-          var thrownException: Exception = null
+          var thrownException: Throwable = null
           val projectFuture = getProjectRemote.apply(project, compiler)
           try {
             Await.result(projectFuture, Duration(1, SECONDS))
           } catch {
-            case e: ProjectNotFoundException => thrownException = e
-            case p: Exception => println(p)
+            case e: Throwable => thrownException = e
+          }
+
+          it("Then an exception is thrown") {
+            assert(thrownException != null)
           }
           it("Then the expected exception is thrown") {
-            assert(thrownException != null)
+            assert(thrownException.isInstanceOf[ProjectNotFoundException])
           }
         }
     }
@@ -65,16 +68,18 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
     val getProjectRemote = new GetProjectDtoRemote(new URL("http://632a5d62-dafb-4c72-be18-11f29d890fbf.com/"))
 
     describe("When requesting a project/compiler the future is awaited on") {
-      var thrownException : Exception = null
+      var thrownException : Throwable = null
       val projectFuture = getProjectRemote.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler())
       try {
         Await.result(projectFuture, Duration(1, SECONDS))
       } catch {
-        case e : ProjectNotFoundException => thrownException = e
-        case p : Exception => println(p)
+        case e : Throwable => thrownException = e
+      }
+      it("Then an exception is thrown") {
+        assert(thrownException != null)
       }
       it("Then the expected exception is thrown") {
-        assert(thrownException != null)
+        assert(thrownException.isInstanceOf[ProjectNotFoundException])
       }
     }
   }
