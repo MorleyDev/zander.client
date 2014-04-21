@@ -5,12 +5,14 @@ import java.io.{PrintWriter, File}
 import uk.co.morleydev.zander.client.data.program._
 import uk.co.morleydev.zander.client.service.impl.{CachedArtefactAcquire, CachedSourceCompile, CachedSourceAcquire}
 import uk.co.morleydev.zander.client.model.Configuration
-import uk.co.morleydev.zander.client.data.fs.{ProjectSourceDetailsReaderFromCache, ProjectSourceDetailsWriterToCache, ProjectArtefactVersionWriterToLocal, ProjectArtefactInstallFromCache}
+import uk.co.morleydev.zander.client.data.fs._
 import uk.co.morleydev.zander.client.util.Log
 import uk.co.morleydev.zander.client.util.Using.using
 import org.apache.commons.io.FileUtils
 import scala.io.Source
 import uk.co.morleydev.zander.client.data.map.{CMakeBuildModeBuildTypeMap, CMakeCompilerGeneratorMap}
+import uk.co.morleydev.zander.client.model.Configuration
+import scala.collection.JavaConversions
 
 class ServiceFactory(processBuilderFactory : NativeProcessBuilderFactory,
                      temporaryDirectory : File,
@@ -94,8 +96,16 @@ class ServiceFactory(processBuilderFactory : NativeProcessBuilderFactory,
           Log.warning("%s copy to %s failed".format(src, dst))
       })
 
+    val listFilesInCache = new ProjectSourceListFilesInCache(cacheDirectory, file =>
+      if (file.exists())
+        JavaConversions.iterableAsScalaIterable(FileUtils.listFiles(file, null, true))
+          .asInstanceOf[Iterable[File]]
+          .toSeq
+      else
+        Seq[File]())
+
     val write = new ProjectArtefactVersionWriterToLocal(workingDirectory, writeDataToFile)
 
-    new CachedArtefactAcquire(install, write)
+    new CachedArtefactAcquire(install, listFilesInCache, write)
   }
 }

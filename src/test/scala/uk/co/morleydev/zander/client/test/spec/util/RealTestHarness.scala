@@ -99,7 +99,8 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
 
   def whenArtefactsAreLocallyInstalled() : RealTestHarness = {
     using(new PrintWriter(working.sub("%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))))) {
-      writer => JacksMapper.writeValue(writer, new InstalledArtefactDetails(GenNative.genAlphaNumericString(10, 100)))
+      writer => JacksMapper.writeValue(writer,
+        new InstalledArtefactDetails(GenNative.genAlphaNumericString(10, 100), Seq[String]()))
     }
     this
   }
@@ -159,8 +160,8 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
     installedFiles = {
       def seqOfFiles(dir: File) =
         if (dir.exists())
-          JavaConversions.asScalaIterator(FileUtils.iterateFiles(dir, null, true))
-            .asInstanceOf[Iterator[File]]
+          JavaConversions.collectionAsScalaIterable(FileUtils.listFiles(dir, null, true))
+            .asInstanceOf[Iterable[File]]
             .toSeq
         else
           Seq[File]()
@@ -180,7 +181,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
       )
     } catch {
       case e: Throwable =>
-        new InstalledArtefactDetails("")
+        new InstalledArtefactDetails("", List[String]())
     }
     this
   }
@@ -281,6 +282,13 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   def thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(version : String) : RealTestHarness = {
     parent._it("Then the installed files were tagged with the expected version") {
       assert(installedArtefactDetails.version == version)
+    }
+    this
+  }
+
+  def thenTheLocalArtefactsWereTaggedWithTheExpectedFiles(expectedFiles : Seq[String]) : RealTestHarness = {
+    parent._it("Then the installed files were tagged with the expected files") {
+      assert(installedArtefactDetails.files.diff(expectedFiles).size == 0)
     }
     this
   }

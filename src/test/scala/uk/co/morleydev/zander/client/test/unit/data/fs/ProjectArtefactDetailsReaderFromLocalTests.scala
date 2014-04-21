@@ -19,8 +19,10 @@ class ProjectArtefactDetailsReaderFromLocalTests extends FunSpec with MockitoSug
     describe("When reading from the working directory") {
 
       val expectedResultVersion = GenNative.genAsciiString(10, 100)
+      val expectedResultFiles = GenNative.genSequence(1, 10, () => GenNative.genAlphaNumericString(1, 20))
       Mockito.when(mockFileToStringReader.apply(Matchers.any[File]))
-        .thenReturn(JacksMapper.writeValueAsString[ArtefactDetails](new ArtefactDetails(expectedResultVersion)))
+        .thenReturn(JacksMapper.writeValueAsString[ArtefactDetails](new ArtefactDetails(expectedResultVersion,
+        expectedResultFiles)))
 
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
@@ -33,6 +35,9 @@ class ProjectArtefactDetailsReaderFromLocalTests extends FunSpec with MockitoSug
       }
       it("Then the expected Source Details are returned") {
         assert(result.version == expectedResultVersion)
+      }
+      it("Then the expected Source Files are returned") {
+        assert(result.files == expectedResultFiles)
       }
     }
   }

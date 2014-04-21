@@ -86,7 +86,8 @@ class InstallControllerTests extends FunSpec with MockitoSugar {
     describe("when installing a project and local artefacts exist") {
 
       Mockito.when(mockArtefactDetailsReader.apply(Matchers.any[Project](), Matchers.any[BuildCompiler](), Matchers.any[BuildMode]))
-        .thenReturn(new ArtefactDetails(GenModel.store.genSourceVersion().value))
+        .thenReturn(new ArtefactDetails(GenModel.store.genSourceVersion().value,
+                                        GenNative.genSequence(1, 10, () => GenNative.genAlphaNumericString(1,20))))
 
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
