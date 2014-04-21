@@ -4,7 +4,7 @@ import java.io.File
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.data.CompilerGeneratorMap
+import uk.co.morleydev.zander.client.data.{BuildModeBuildTypeMap, CompilerGeneratorMap}
 import uk.co.morleydev.zander.client.data.exception.CMakePreBuildFailedException
 import uk.co.morleydev.zander.client.data.program.{ProgramRunner, CMakePreBuildCachedSource}
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler
@@ -15,69 +15,74 @@ import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
 
 class CMakePrebuildCachedSourceTests extends FunSpec with MockitoSugar {
 
-  def testCase(compiler: BuildCompiler, mode: BuildMode, buildType: String, cachePath: String) = {
+  describe("Given a CMakePrebuildLocal") {
 
-    describe("Given a CMakePrebuildLocal") {
+    val mockProgramRunner = mock[ProgramRunner]
 
-      val mockProgramRunner = mock[ProgramRunner]
+    val cmake = GenNative.genAlphaNumericString(3, 10)
+    val cache = new File("./cache/path")
+    val tempPath = new File("./tmp/adsafaw")
+    val mockCompilerGeneratorMap = mock[CompilerGeneratorMap]
 
-      val cmake = GenNative.genAlphaNumericString(3, 10)
-      val cache = new File("./cache/path")
-      val tempPath = new File("./tmp/adsafaw")
-      val mockCompilerGeneratorMap = mock[CompilerGeneratorMap]
+    val mockBuildTypeMap = mock[BuildModeBuildTypeMap]
+    val buildType = GenNative.genAlphaNumericString(1, 20)
+    Mockito.when(mockBuildTypeMap.apply(Matchers.any[BuildMode]))
+      .thenReturn(buildType)
 
-      val cmakePrebuildLocal = new CMakePreBuildCachedSource(cmake,
-        mockProgramRunner,
-        cache,
-        tempPath,
-        mockCompilerGeneratorMap)
+    val cmakePrebuildLocal = new CMakePreBuildCachedSource(cmake,
+      mockProgramRunner,
+      cache,
+      tempPath,
+      mockCompilerGeneratorMap,
+      mockBuildTypeMap)
 
-      describe("When applied for a project on the " + compiler + " compiler and " + mode + " build") {
+    describe("When applied for a project") {
 
-        val expectedGenerator = GenNative.genSequence(1, 10, () => GenNative.genAlphaNumericString(1, 10))
-        Mockito.when(mockCompilerGeneratorMap.apply(Matchers.any[BuildCompiler]))
-          .thenReturn(expectedGenerator)
+      val expectedGenerator = GenNative.genSequence(1, 10, () => GenNative.genAlphaNumericString(1, 10))
+      Mockito.when(mockCompilerGeneratorMap.apply(Matchers.any[BuildCompiler]))
+        .thenReturn(expectedGenerator)
 
-        Mockito.when(mockProgramRunner.apply(Matchers.any[Seq[String]], Matchers.any[File]))
-          .thenReturn(0)
+      Mockito.when(mockProgramRunner.apply(Matchers.any[Seq[String]], Matchers.any[File]))
+        .thenReturn(0)
 
-        val project = GenModel.arg.genProject()
-        cmakePrebuildLocal.apply(project, compiler, mode)
+      val project = GenModel.arg.genProject()
+      val compiler = GenModel.arg.genCompiler()
+      val mode = GenModel.arg.genBuildMode()
+      cmakePrebuildLocal.apply(project, compiler, mode)
 
-        it("Then the generator for the compiler is acquired") {
-          Mockito.verify(mockCompilerGeneratorMap).apply(compiler)
-        }
-        it("Then the cmake program was ran with the expected arguments in the expected directory") {
-          val expectedArguments =
-            Seq[String](cmake, new File(cache, project.value + "/source").getAbsolutePath) ++
-              expectedGenerator ++
+      it("Then the generator for the compiler is acquired") {
+        Mockito.verify(mockCompilerGeneratorMap).apply(compiler)
+      }
+      it("Then the build type for the mode is acquired") {
+        Mockito.verify(mockBuildTypeMap).apply(mode)
+      }
+      it("Then the cmake program was ran with the expected arguments in the expected directory") {
+        val expectedArguments =
+          Seq[String](cmake, new File(cache, project.value + "/source").getAbsolutePath) ++
+            expectedGenerator ++
             Seq[String]("-DCMAKE_BUILD_TYPE=" + buildType,
-                        "-DCMAKE_INSTALL_PREFIX=" + new File(cache, project.value + "/" + cachePath).getAbsolutePath)
+              "-DCMAKE_INSTALL_PREFIX=" + new File(cache, "%s/%s.%s".format(project, compiler, mode)).getAbsolutePath)
 
-          Mockito.verify(mockProgramRunner).apply(expectedArguments, tempPath)
-        }
+        Mockito.verify(mockProgramRunner).apply(expectedArguments, tempPath)
       }
     }
   }
-
-  testCase(BuildCompiler.GnuCxx, BuildMode.Debug, "Debug", "gnu.debug")
-  testCase(BuildCompiler.GnuCxx, BuildMode.Release, "Release", "gnu.release")
-  testCase(BuildCompiler.VisualStudio10, BuildMode.Debug, "Debug", "msvc10.debug")
-  testCase(BuildCompiler.VisualStudio10, BuildMode.Release, "Release", "msvc10.release")
-  testCase(BuildCompiler.VisualStudio11, BuildMode.Debug, "Debug", "msvc11.debug")
-  testCase(BuildCompiler.VisualStudio11, BuildMode.Release, "Release", "msvc11.release")
-  testCase(BuildCompiler.VisualStudio12, BuildMode.Debug, "Debug", "msvc12.debug")
-  testCase(BuildCompiler.VisualStudio12, BuildMode.Release, "Release", "msvc12.release")
 
   describe("Given a CMakePrebuildLocal") {
 
     val mockProgramRunner = mock[ProgramRunner]
     val mockCompilerGeneratorMap = mock[CompilerGeneratorMap]
+
+    val mockBuildTypeMap = mock[BuildModeBuildTypeMap]
+    Mockito.when(mockBuildTypeMap.apply(Matchers.any[BuildMode]))
+      .thenReturn(GenNative.genAlphaNumericString(1, 20))
+
     val cmakePrebuildLocal = new CMakePreBuildCachedSource(GenNative.genAlphaNumericString(3, 10),
       mockProgramRunner,
       new File("./cache/path"),
       new File("./tmp/adsafaw"),
-      mockCompilerGeneratorMap)
+      mockCompilerGeneratorMap,
+      mockBuildTypeMap)
 
     describe("When applied for a project and the prebuild fails") {
 
@@ -87,11 +92,11 @@ class CMakePrebuildCachedSourceTests extends FunSpec with MockitoSugar {
       Mockito.when(mockProgramRunner.apply(Matchers.any[Seq[String]], Matchers.any[File]))
         .thenReturn(GenNative.genIntExcluding(-1000, 1000, Seq[Int](0)))
 
-      val thrownException : Throwable = try {
+      val thrownException: Throwable = try {
         cmakePrebuildLocal.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler(), GenModel.arg.genBuildMode())
         null
       } catch {
-        case e : Throwable => e
+        case e: Throwable => e
       }
       it("Then an exception was thrown") {
         assert(thrownException != null)

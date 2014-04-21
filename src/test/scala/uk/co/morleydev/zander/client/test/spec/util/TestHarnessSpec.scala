@@ -21,27 +21,29 @@ abstract class TestHarnessSpec extends FunSpec with MockitoSugar {
   }
 
   def runAllTestCmakeCases() {
-    cmakeTestCase("gnu", "debug", "Debug", "-G\"MinGW Makefiles\"")
-    cmakeTestCase("gnu", "release", "Release", "-G\"MinGW Makefiles\"")
+    def testFor(compiler : String, generator : String) {
+      cmakeTestCase(compiler, "debug", "Debug", generator)
+      cmakeTestCase(compiler, "release", "Release", generator)
+    }
 
-    cmakeTestCase("msvc10", "debug", "Debug", "-G\"Visual Studio 10\"")
-    cmakeTestCase("msvc10", "release", "Release", "-G\"Visual Studio 10\"")
-
-    cmakeTestCase("msvc11", "debug", "Debug", "-G\"Visual Studio 11\"")
-    cmakeTestCase("msvc11", "release", "Release", "-G\"Visual Studio 11\"")
-
-    cmakeTestCase("msvc12", "debug", "Debug", "-G\"Visual Studio 12\"")
-    cmakeTestCase("msvc12", "release", "Release", "-G\"Visual Studio 12\"")
+    testFor("gnu", "-G\"MinGW Makefiles\"")
+    testFor("msvc10", "-G\"Visual Studio 10\"")
+    testFor("msvc11", "-G\"Visual Studio 11\"")
+    testFor("msvc12", "-G\"Visual Studio 12\"")
+    testFor("msvc10w64", "-G\"Visual Studio 10 Win64\"")
+    testFor("msvc11w64", "-G\"Visual Studio 11 Win64\"")
+    testFor("msvc12w64", "-G\"Visual Studio 12 Win64\"")
   }
 
   def runAllTestNoBuildCases() {
-    noBuildTestCase("gnu", "debug")
-    noBuildTestCase("gnu", "release")
-    noBuildTestCase("msvc10", "debug")
-    noBuildTestCase("msvc10", "release")
-    noBuildTestCase("msvc11", "debug")
-    noBuildTestCase("msvc11", "release")
-    noBuildTestCase("msvc12", "debug")
-    noBuildTestCase("msvc12", "release")
+    def testFor(compiler : String) {
+      noBuildTestCase(compiler, "debug")
+      noBuildTestCase(compiler, "release")
+    }
+
+    testFor("gnu")
+    testFor("msvc10")
+    testFor("msvc11")
+    testFor("msvc12")
   }
 }
