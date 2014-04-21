@@ -10,14 +10,16 @@ import uk.co.morleydev.zander.client.model.arg.{BuildMode, Project}
 class CMakeInstallCachedSource(cmakeProgram : String,
                         runner : ProgramRunner,
                         temp : File) extends ProjectSourceInstall {
+
+  private val modeCMakeMap = Map[BuildMode, String](
+    BuildMode.Debug -> "Debug",
+    BuildMode.Release -> "Release"
+  )
+
   override def apply(project : Project, compiler : BuildCompiler, mode : BuildMode) : Unit = {
 
-    val config = mode match {
-      case BuildMode.Debug => "Debug"
-      case BuildMode.Release => "Release"
-    }
-
-    val exitCode = runner.apply(Seq[String](cmakeProgram, "--build", ".", "--config", config, "--target", "install"), temp)
+    val command = Seq[String](cmakeProgram, "--build", ".", "--config", modeCMakeMap(mode), "--target", "install")
+    val exitCode = runner.apply(command, temp)
     if (exitCode != 0)
       throw new CMakeInstallFailedException(exitCode)
   }

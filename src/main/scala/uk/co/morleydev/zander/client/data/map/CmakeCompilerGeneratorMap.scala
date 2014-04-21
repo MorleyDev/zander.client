@@ -5,11 +5,14 @@ import uk.co.morleydev.zander.client.model.arg.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 
 object CmakeCompilerGeneratorMap extends CompilerGeneratorMap {
+
+  private val buildCompilerGeneratorMap = Map[BuildCompiler, String](
+    BuildCompiler.GnuCxx -> "-G\"MinGW Makefiles\"",
+    BuildCompiler.VisualStudio10 -> "-G\"Visual Studio 10\"",
+    BuildCompiler.VisualStudio11 -> "-G\"Visual Studio 11\"",
+    BuildCompiler.VisualStudio12 -> "-G\"Visual Studio 12\""
+  )
+
   override def apply(compiler: BuildCompiler): Seq[String] =
-    (compiler match {
-      case BuildCompiler.GnuCxx => "-G\"MinGW Makefiles\""
-      case BuildCompiler.VisualStudio10 => "-G\"Visual Studio 10\""
-      case BuildCompiler.VisualStudio11 => "-G\"Visual Studio 11\""
-      case BuildCompiler.VisualStudio12 => "-G\"Visual Studio 12\""
-    }).split(" ")
+    buildCompilerGeneratorMap(compiler).split(" ")
 }

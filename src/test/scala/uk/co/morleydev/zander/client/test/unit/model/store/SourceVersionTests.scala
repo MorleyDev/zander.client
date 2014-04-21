@@ -34,6 +34,21 @@ class SourceVersionTests extends FunSpec with GeneratorDrivenPropertyChecks {
     }
   }
 
+  describe("Given a source version when comparing a type other than a SourceVersion") {
+    it("Then the result is not equal") {
+      forAll(versionGenerator) {
+        (s : SourceVersion) =>
+          assert(s != s.value)
+          assert(s != 42)
+          assert(s != "Hello World")
+
+          assert(!(s == s.value))
+          assert(!(s == 42))
+          assert(!(s == "Hello World"))
+      }
+    }
+  }
+
   describe("Given two equal source versions when comparing the versions") {
     it("Then the versions are equal") {
 
