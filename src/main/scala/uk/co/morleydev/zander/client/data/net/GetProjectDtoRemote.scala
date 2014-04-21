@@ -30,7 +30,7 @@ class GetProjectDtoRemote(url : URL,
     val targetUrl = new URL(url, "/" + projectName + "/" + compiler.toString)
     get(targetUrl).apply
       .transform(response => {
-      Log("Request to", targetUrl.toString, "returned", response.code)
+      Log.message("Request to %s returned %s".format(targetUrl, response.code))
       if (response.code != HttpResponseCode.Ok)
         throw new ProjectNotFoundException
       else

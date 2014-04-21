@@ -12,8 +12,8 @@ class LocalProgramRunner(processBuilderFactory : NativeProcessBuilderFactory) ex
       .directory(directory)
       .start()
 
-    Source.fromInputStream(process.getInputStream).getLines().foreach(Log(_))
-    Source.fromInputStream(process.getErrorStream).getLines().foreach(Log(_))
+    Source.fromInputStream(process.getInputStream).getLines().foreach(Log.message(_))
+    Source.fromInputStream(process.getErrorStream).getLines().foreach(Log.error(_))
 
     process.waitFor()
   }

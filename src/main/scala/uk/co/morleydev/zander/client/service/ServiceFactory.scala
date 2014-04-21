@@ -81,14 +81,14 @@ class ServiceFactory(processBuilderFactory : NativeProcessBuilderFactory,
       workingDirectory.getAbsoluteFile,
       (src, dst) => {
         if (src.exists()) {
-          Log("%s copied to %s".format(src, dst))
+          Log.message("%s copied to %s".format(src, dst))
           if (!dst.exists())
             dst.mkdirs()
 
           FileUtils.copyDirectory(src, dst)
         }
         else
-          Log("%s copy to %s failed".format(src, dst))
+          Log.warning("%s copy to %s failed".format(src, dst))
       })
 
     val write = new ProjectArtefactVersionWriterToLocal(workingDirectory, writeDataToFile)

@@ -18,7 +18,7 @@ class Program(controllerFactory : ControllerFactory) {
       case e : LocalArtefactsAlreadyExistException => ExitCodes.ArtefactsAlreadyInstalled
       case e : ProjectNotFoundException => ExitCodes.EndpointNotFound
       case e : Exception =>
-        Log("Unexpected Error Occurred" )
+        Log.error("Unexpected Error Occurred" )
         e.printStackTrace()
         ExitCodes.UnknownError
     }
