@@ -1,6 +1,8 @@
 package uk.co.morleydev.zander.client.util
 
 object Using {
+  import scala.language.reflectiveCalls
+
   def using[A, B <: { def close() : Unit }] (closeable: B) (f: B => A): A = {
     try {
       f(closeable)

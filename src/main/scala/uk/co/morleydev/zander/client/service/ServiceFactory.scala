@@ -10,6 +10,7 @@ import uk.co.morleydev.zander.client.util.Log
 import uk.co.morleydev.zander.client.util.Using.using
 import org.apache.commons.io.FileUtils
 import scala.io.Source
+import uk.co.morleydev.zander.client.data.map.CmakeCompilerGeneratorMap
 
 class ServiceFactory(processBuilderFactory : NativeProcessBuilderFactory,
                      temporaryDirectory : File,
@@ -55,7 +56,8 @@ class ServiceFactory(processBuilderFactory : NativeProcessBuilderFactory,
     val cmakePrebuild = new CMakePrebuildCachedSource(config.programs.cmake,
       programRunner,
       cacheDirectory,
-      temporaryDirectory)
+      temporaryDirectory,
+      CmakeCompilerGeneratorMap)
     val cmakeBuild = new CMakeBuildCachedSource(config.programs.cmake,
       programRunner,
       temporaryDirectory)
