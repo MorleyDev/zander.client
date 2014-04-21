@@ -1,12 +1,10 @@
-name := "zander.client"
+name := "zander_client"
 
 version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.10.3"
 
 mainClass in (Compile, run) := Some("uk.co.morleydev.zander.client.Main")
-
-mainClass in oneJar := Some("uk.co.morleydev.zander.client.Main")
 
 libraryDependencies += "com.lambdaworks" % "jacks_2.10" % "2.2.3"
 

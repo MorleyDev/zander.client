@@ -1,1 +1,1 @@
-seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
+packageArchetype.java_application
