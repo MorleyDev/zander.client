@@ -10,6 +10,7 @@ import uk.co.morleydev.zander.client.util.{Log, NativeProcessBuilderImpl, GetPro
 import uk.co.morleydev.zander.client.util.Using.using
 import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, NativeProcessBuilder}
 import java.util.UUID
+import org.apache.commons.io.FileUtils
 
 object Main {
 
@@ -79,7 +80,7 @@ object Main {
       dirFile.mkdirs()
 
       override def close() = {
-        dirFile.delete()
+        FileUtils.deleteDirectory(dirFile)
       }
     }
 
