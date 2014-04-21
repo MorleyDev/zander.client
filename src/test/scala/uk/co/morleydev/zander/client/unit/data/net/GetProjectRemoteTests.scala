@@ -13,7 +13,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.stackmob.newman.request.HttpRequest
 import uk.co.morleydev.zander.client.gen.{GenStringArguments, GenModel, GenNative}
-import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exception.ProjectNotFoundException
 
 class GetProjectRemoteTests extends FunSpec with MockitoSugar {
 

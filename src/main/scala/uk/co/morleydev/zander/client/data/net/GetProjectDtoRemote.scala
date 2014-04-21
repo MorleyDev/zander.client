@@ -9,7 +9,7 @@ import com.stackmob.newman.request.HttpRequest
 import com.stackmob.newman.ApacheHttpClient
 import com.stackmob.newman.dsl.GET
 import com.stackmob.newman.response.HttpResponseCode
-import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exception.ProjectNotFoundException
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.util.Log
 import uk.co.morleydev.zander.client.data.GetProjectDto

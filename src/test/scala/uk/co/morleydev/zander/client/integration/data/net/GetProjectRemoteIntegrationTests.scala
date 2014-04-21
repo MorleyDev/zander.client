@@ -7,7 +7,7 @@ import java.net.URL
 import uk.co.morleydev.zander.client.gen.GenModel
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exception.ProjectNotFoundException
 import uk.co.morleydev.zander.client.util.CreateMockHttpServer
 import uk.co.morleydev.zander.client.util.Using.using
 

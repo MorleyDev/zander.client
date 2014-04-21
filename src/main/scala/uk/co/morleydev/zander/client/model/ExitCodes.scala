@@ -1,6 +1,8 @@
 package uk.co.morleydev.zander.client.model
 
 object ExitCodes {
+  val ArtefactsAlreadyInstalled = 10
+
   val Success = 0
   val InvalidOperation = 1
   val InvalidProject = 2

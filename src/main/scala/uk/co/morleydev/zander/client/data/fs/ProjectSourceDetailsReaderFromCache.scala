@@ -12,7 +12,7 @@ class ProjectSourceDetailsReaderFromCache(cache : File, readFileToString : (File
   extends ProjectSourceDetailsReader {
 
   override def apply(project : Project, compiler : BuildCompiler, mode : BuildMode) : SourceDetails = {
-    val json = readFileToString(new File(cache, "/%s/%s.%s/version.json".format(project, compiler, mode)))
+    val json = readFileToString(new File(cache, "%s/%s.%s/version.json".format(project, compiler, mode)))
 
     JacksMapper.readValue[SourceDetails](json)
   }

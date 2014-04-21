@@ -11,7 +11,8 @@ import uk.co.morleydev.zander.client.gen.GenNative
 import uk.co.morleydev.zander.client.controller.{Controller, ControllerFactory}
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.arg.Operation.Operation
-import uk.co.morleydev.zander.client.data.exceptions.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exception.ProjectNotFoundException
+import uk.co.morleydev.zander.client.controller.exception.LocalArtefactsAlreadyExistException
 
 class ProgramTests extends FunSpec with MockitoSugar {
 
@@ -68,6 +69,8 @@ class ProgramTests extends FunSpec with MockitoSugar {
       }
     }
   }
+
   givenProgramWhenRunningControllerThrowsThenExpectedStatusCode(new RuntimeException, ExitCodes.UnknownError)
   givenProgramWhenRunningControllerThrowsThenExpectedStatusCode(new ProjectNotFoundException, ExitCodes.EndpointNotFound)
+  givenProgramWhenRunningControllerThrowsThenExpectedStatusCode(new LocalArtefactsAlreadyExistException, ExitCodes.ArtefactsAlreadyInstalled)
 }
