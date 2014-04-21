@@ -6,6 +6,7 @@ import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.arg.{BuildMode, Project}
 import java.io.File
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
+import uk.co.morleydev.zander.client.data.exception.CMakeBuildFailedException
 
 class CMakeBuildCachedSource(cmakeProgram : String,
                       runner : ProgramRunner,
@@ -17,6 +18,8 @@ class CMakeBuildCachedSource(cmakeProgram : String,
       case BuildMode.Release => "Release"
     }
 
-    runner.apply(Seq[String](cmakeProgram, "--build", ".", "--config", modeConfig), temp)
+    val exitCode = runner(Seq[String](cmakeProgram, "--build", ".", "--config", modeConfig), temp)
+    if (exitCode != 0)
+      throw new CMakeBuildFailedException(exitCode)
   }
 }

@@ -42,6 +42,11 @@ object GenNative {
   def genInt(minValue : Int, maxValue : Int) : Int =
     random.nextInt(maxValue - minValue + 1) + minValue
 
+  def genIntExcluding(minValue : Int, maxValue : Int, exclude : Seq[Int]) : Int =
+    Iterator.continually(random.nextInt(maxValue - minValue + 1) + minValue)
+            .dropWhile(exclude.contains(_))
+            .take(1).toList.head
+
   def genHttpUrl() : URL =
     new URL("http://" + genAlphaNumericString(3, 20) + genOneOf(".co.uk", ".com", ".net", ".org"))
 

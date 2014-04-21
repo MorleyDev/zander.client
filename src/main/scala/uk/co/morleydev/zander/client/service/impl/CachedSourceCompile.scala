@@ -4,13 +4,13 @@ import uk.co.morleydev.zander.client.service.ProjectSourceCompile
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
-import uk.co.morleydev.zander.client.data.{ProjectSourceDetailsWriter, ProjectSourceDetailsReader, ProjectSourceInstall, ProjectSourceBuild, ProjectSourcePrebuild}
+import uk.co.morleydev.zander.client.data.{ProjectSourceDetailsWriter, ProjectSourceDetailsReader, ProjectSourceInstall, ProjectSourceBuild, ProjectSourcePreBuild}
 import uk.co.morleydev.zander.client.model.store.SourceVersion
 import java.io.FileNotFoundException
 
 class CachedSourceCompile(detailsReader : ProjectSourceDetailsReader,
                           deleteDirectory : ((Project, BuildCompiler, BuildMode) => Unit),
-                          pre : ProjectSourcePrebuild,
+                          pre : ProjectSourcePreBuild,
                           build : ProjectSourceBuild,
                           install : ProjectSourceInstall,
                           detailsWriter : ProjectSourceDetailsWriter) extends ProjectSourceCompile {

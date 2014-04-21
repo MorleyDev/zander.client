@@ -5,6 +5,7 @@ import uk.co.morleydev.zander.client.model.arg.Project
 import java.io.File
 import scala.io.Source
 import uk.co.morleydev.zander.client.model.store.SourceVersion
+import uk.co.morleydev.zander.client.data.exception.GitVersionCheckFailedException
 
 class GetGitSourceVersion(git : String,
                           cache : File,
@@ -15,7 +16,10 @@ class GetGitSourceVersion(git : String,
       .start()
 
     val version = Source.fromInputStream(process.getInputStream).getLines().mkString("\n")
-    process.waitFor()
+    val exitCode = process.waitFor()
+    if (exitCode != 0)
+      throw new GitVersionCheckFailedException(exitCode)
+    
     new SourceVersion(version)
   }
 }

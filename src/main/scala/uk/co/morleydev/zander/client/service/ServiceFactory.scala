@@ -53,7 +53,7 @@ class ServiceFactory(processBuilderFactory : NativeProcessBuilderFactory,
         source => source.getLines().mkString("\n")
       })
 
-    val cmakePrebuild = new CMakePrebuildCachedSource(config.programs.cmake,
+    val cmakePrebuild = new CMakePreBuildCachedSource(config.programs.cmake,
       programRunner,
       cacheDirectory,
       temporaryDirectory,

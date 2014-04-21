@@ -4,5 +4,5 @@ import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 
-trait ProjectSourcePrebuild extends ((Project, BuildCompiler, BuildMode) => Unit) {
+trait ProjectSourcePreBuild extends ((Project, BuildCompiler, BuildMode) => Unit) {
 }

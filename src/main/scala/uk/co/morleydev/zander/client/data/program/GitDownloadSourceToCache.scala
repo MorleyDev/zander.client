@@ -7,6 +7,7 @@ import uk.co.morleydev.zander.client.util.Log
 import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, ProjectSourceDownload}
 import java.io.{File, InputStreamReader, BufferedReader}
 import scala.io.Source
+import uk.co.morleydev.zander.client.data.exception.GitDownloadFailedException
 
 class GitDownloadSourceToCache(gitProgram : String,
                         programRunner : ProgramRunner,
@@ -18,6 +19,7 @@ class GitDownloadSourceToCache(gitProgram : String,
     val workingDirectory = new File(programCacheDirectory, project.value)
     val command = Seq[String](gitProgram, "clone", dto.git, "source")
     val responseCode = programRunner(command, workingDirectory)
-    Log("Git exited with response code", responseCode)
+    if (responseCode != 0)
+      throw new GitDownloadFailedException(responseCode)
   }
 }

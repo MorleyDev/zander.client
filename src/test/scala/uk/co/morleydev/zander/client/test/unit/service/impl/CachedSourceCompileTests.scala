@@ -25,7 +25,7 @@ class CachedSourceCompileTests extends FunSpec with MockitoSugar {
               }
            })
 
-    val mockPrebuild = mock[ProjectSourcePrebuild]
+    val mockPrebuild = mock[ProjectSourcePreBuild]
     val mockBuild = mock[ProjectSourceBuild]
     val mockInstall = mock[ProjectSourceInstall]
     val mockSourceDetailsWriter = mock[ProjectSourceDetailsWriter]
@@ -98,7 +98,7 @@ class CachedSourceCompileTests extends FunSpec with MockitoSugar {
 
     val mockSourceDetailsReader = mock[ProjectSourceDetailsReader]
     val mockDirectoryDelete = mock[(Project, BuildCompiler, BuildMode) => Unit]
-    val mockPrebuild = mock[ProjectSourcePrebuild]
+    val mockPrebuild = mock[ProjectSourcePreBuild]
     val mockBuild = mock[ProjectSourceBuild]
     val mockInstall = mock[ProjectSourceInstall]
     val mockSourceDetailsWriter = mock[ProjectSourceDetailsWriter]

@@ -1,11 +1,11 @@
 package uk.co.morleydev.zander.client.data.program
 
-import uk.co.morleydev.zander.client.data.ProjectSourceInstall
-import uk.co.morleydev.zander.client.model.arg.{BuildMode, Project}
-import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import java.io.File
+import uk.co.morleydev.zander.client.data.ProjectSourceInstall
+import uk.co.morleydev.zander.client.data.exception.CMakeInstallFailedException
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
-import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
+import uk.co.morleydev.zander.client.model.arg.{BuildMode, Project}
 
 class CMakeInstallCachedSource(cmakeProgram : String,
                         runner : ProgramRunner,
@@ -17,6 +17,8 @@ class CMakeInstallCachedSource(cmakeProgram : String,
       case BuildMode.Release => "Release"
     }
 
-    runner.apply(Seq[String](cmakeProgram, "--build", ".", "--config", config, "--target", "install"), temp)
+    val exitCode = runner.apply(Seq[String](cmakeProgram, "--build", ".", "--config", config, "--target", "install"), temp)
+    if (exitCode != 0)
+      throw new CMakeInstallFailedException(exitCode)
   }
 }
