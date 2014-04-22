@@ -1,15 +1,15 @@
 package uk.co.morleydev.zander.client.test.spec.purge
 
-import uk.co.morleydev.zander.client.util.Using.using
 import uk.co.morleydev.zander.client.test.spec.util.TestHarnessSpec
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import java.io.File
+import uk.co.morleydev.zander.client.util.Using._
 import uk.co.morleydev.zander.client.test.spec.ResponseCodes
 
-class PurgeExistingArtefactsTests extends TestHarnessSpec {
+class PurgeExistingArtefactsWhenOverlappingWithAnotherInstallTests extends TestHarnessSpec {
   describe("Given locally installed artefacts") {
     describe("When purging") {
-      val expectedFiles = Seq[String]("include/" + GenNative.genAlphaNumericString(1, 20),
+      val expectedRemovedFiles = Seq[String]("include/" + GenNative.genAlphaNumericString(1, 20),
         "include/sub_dir/" + GenNative.genAlphaNumericString(1, 20) + ".h",
         "lib/" + GenNative.genAlphaNumericString(1, 20) + ".a",
         "lib/subdir/" + GenNative.genAlphaNumericString(1, 20) + ".a",
@@ -27,12 +27,22 @@ class PurgeExistingArtefactsTests extends TestHarnessSpec {
         "bin/subdir/" + GenNative.genAlphaNumericString(1, 20) + ".so.12.25.a")
         .map(s => new File(s).toString)
 
+      val overlappingFiles = Seq[String]("include/other_subdir/" + GenNative.genAlphaNumericString(1, 20) + ".h",
+        "bin/other_subdir/" + GenNative.genAlphaNumericString(1, 20) + ".so",
+        "lib/other_subdir/" + GenNative.genAlphaNumericString(1, 20) + ".a")
+
+      val otherProjectFiles = Seq[String]("include/other_subdir2/" + GenNative.genAlphaNumericString(1, 20) + ".h",
+        "bin/other_subdir2/" + GenNative.genAlphaNumericString(1, 20) + ".so",
+        "lib/other_subdir2/" + GenNative.genAlphaNumericString(1, 20) + ".a")
+
       using(this.start()) {
         harness =>
           harness.whenPurging()
-            .whenArtefactsAreLocallyInstalled(expectedFiles = expectedFiles)
+            .whenArtefactsAreLocallyInstalled(expectedFiles = expectedRemovedFiles ++ overlappingFiles)
+            .whenArtefactsAreLocallyInstalledForAnotherProject(expectedFiles = overlappingFiles ++ otherProjectFiles)
             .invokeMain()
-            .thenTheExpectedFilesWereRemovedLocally(expectedFiles)
+            .thenTheExpectedFilesWereRemovedLocally(expectedRemovedFiles)
+            .thenTheExpectedFilesWereInstalledLocally(overlappingFiles ++ otherProjectFiles)
             .thenTheLocalArtefactsWereNotTaggedWithDetails()
             .thenExpectedResponseCodeWasReturned(ResponseCodes.Success)
       }

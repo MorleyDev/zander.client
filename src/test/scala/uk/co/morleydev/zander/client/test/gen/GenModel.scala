@@ -23,6 +23,9 @@ object GenModel {
     def genProject(): Project =
       new Project(GenNative.genStringContaining(1, 20,
         GenNative.alphaNumericCharacters ++ Seq[Char]('_', '-', '.')))
+
+    def genProjectCompilerBuildModeTuple() : (Project, BuildCompiler, BuildMode) =
+      (genProject(), genCompiler(), genBuildMode())
   }
 
   object net {
@@ -41,7 +44,7 @@ object GenModel {
   }
 
   object store {
-    private def genArtefactFiles : Seq[String] =
+    def genArtefactFiles() : Seq[String] =
       GenNative.genSequence(1, 100, () => "include/" + GenNative.genAlphaNumericString(3, 100)) ++
         GenNative.genSequence(1, 100, () => "bin/" + GenNative.genAlphaNumericString(3, 100)) ++
         GenNative.genSequence(1, 100, () => "lib/" + GenNative.genAlphaNumericString(3, 100))
@@ -50,6 +53,6 @@ object GenModel {
       new SourceVersion(GenNative.genAlphaNumericString(3, 100))
 
     def genArtefactDetails() : ArtefactDetails =
-      new ArtefactDetails(GenNative.genAlphaNumericString(3, 100), genArtefactFiles)
+      new ArtefactDetails(GenNative.genAlphaNumericString(3, 100), genArtefactFiles())
   }
 }

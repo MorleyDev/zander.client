@@ -11,7 +11,7 @@ class PurgeFailsTests extends TestHarnessSpec {
         harness =>
           harness.whenPurging()
                  .invokeMain()
-                 .thenExpectedResponseCodeWasInstalled(ResponseCodes.ArtefactsNotInstalled)
+                 .thenExpectedResponseCodeWasReturned(ResponseCodes.ArtefactsNotInstalled)
       }
     }
   }

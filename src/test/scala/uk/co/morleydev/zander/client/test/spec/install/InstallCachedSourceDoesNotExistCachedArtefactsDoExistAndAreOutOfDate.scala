@@ -51,7 +51,7 @@ class InstallCachedSourceDoesNotExistCachedArtefactsDoExistAndAreOutOfDate exten
               .thenACMakePreBuildWasInvoked(cmakeBuildType, generator)
               .thenACMakeBuildWasInvoked(cmakeBuildType)
               .thenAMakeInstallWasInvoked(cmakeBuildType)
-              .thenExpectedResponseCodeWasInstalled(ResponseCodes.Success)
+              .thenExpectedResponseCodeWasReturned(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedFiles(expectedFiles)
               .thenTheExpectedFilesWereInstalledLocally(expectedFiles)

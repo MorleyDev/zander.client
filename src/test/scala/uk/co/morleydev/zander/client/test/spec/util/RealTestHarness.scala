@@ -113,6 +113,21 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
     this
   }
 
+  def whenArtefactsAreLocallyInstalledForAnotherProject(version: String = GenNative.genAlphaNumericString(10, 100),
+                                       expectedFiles: Seq[String] = Seq[String]()) : RealTestHarness = {
+    val thisProject = "%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))
+    val otherProject = Iterator.continually("%s.%s.%s.json".format(GenStringArguments.genProject(),
+      GenStringArguments.genCompiler(),
+      GenStringArguments.genBuildMode())).dropWhile(_ == thisProject).take(1).toList.head
+
+    using(new PrintWriter(working.sub(otherProject))) {
+      writer => JacksMapper.writeValue(writer,
+        new InstalledArtefactDetails(version, expectedFiles))
+    }
+    expectedFiles.map(f => working.sub(f)).foreach(f => { f.getParentFile.mkdirs(); f.createNewFile() })
+    this
+  }
+
   def whenTheCacheAlreadyContainsTheSourceCode() : RealTestHarness = {
     new File(cache.file, arguments(1) + "/source").mkdirs()
     this
@@ -201,7 +216,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
     this
   }
 
-  def thenExpectedResponseCodeWasInstalled(expected : Int) : RealTestHarness = {
+  def thenExpectedResponseCodeWasReturned(expected : Int) : RealTestHarness = {
     parent._it("Then the response code was as expected") {
       assert(responseCode == expected, "Expected %s but was %s".format(expected, responseCode))
     }
@@ -280,9 +295,12 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
 
   def thenTheExpectedFilesWereInstalledLocally(expectedFiles : Seq[String]) : RealTestHarness = {
     parent._it("Then the expected files were installed locally") {
+
       val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename))
-      assert(installedFiles.diff(expectedWorkingDirectoryFiles).size == 0,
-             "Expected %s but was %s".format(expectedFiles, installedFiles))
+
+      assert(expectedWorkingDirectoryFiles.forall(s => installedFiles.contains(s)),
+             "Expected files were not installed locally %s".format(expectedWorkingDirectoryFiles
+               .filterNot(s => installedFiles.contains(s)).toSeq))
     }
     this
   }
@@ -290,8 +308,10 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   def thenTheExpectedFilesWereRemovedLocally(expectedFiles : Seq[String]) : RealTestHarness = {
     parent._it("Then the expected files were removed locally") {
       val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename).getAbsolutePath)
-      val remainingFiles = installedFiles.diff(expectedWorkingDirectoryFiles)
-      assert(remainingFiles.size == 0, "Expected none of the following but they existed: %s".format(remainingFiles))
+
+      assert(expectedWorkingDirectoryFiles.forall(s => !installedFiles.contains(s)),
+        "Expected files were installed locally %s".format(expectedWorkingDirectoryFiles
+          .filter(s => installedFiles.contains(s)).toSeq))
     }
     this
   }

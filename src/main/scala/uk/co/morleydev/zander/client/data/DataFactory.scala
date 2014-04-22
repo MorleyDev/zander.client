@@ -152,5 +152,5 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
     new WriteProjectArtefactVersionToLocal(workingDirectory, writeDataToFile)
 
   override def createProjectArtefactDetailsDelete(): DeleteProjectArtefactDetails =
-    new DeleteProjectArtefactDetailsFromLocal(workingDirectory, f => f.delete())
+    new DeleteProjectArtefactDetailsFromLocal(workingDirectory, f => if (!f.delete()) Log.error("Could not delete file " + f.getPath))
 }

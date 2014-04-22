@@ -9,18 +9,21 @@ import org.mockito.Mockito
 
 class ProjectDeleteArtefactsFromLocalTests extends FunSpec with MockitoSugar {
   describe("Given project details containing artefacts") {
+
     val workingDirectory = new File("working")
     val mockDeleteFile = mock[File => Unit]
     val mockCleanDirectory = mock[File => Unit]
+
     val deleteFromlocal = new DeleteProjectArtefactsFromLocal(workingDirectory, mockDeleteFile, mockCleanDirectory)
+
     describe("When deleting files") {
 
-      val artefactDetails = GenModel.store.genArtefactDetails()
+      val artefactFiles = GenModel.store.genArtefactFiles()
 
-      deleteFromlocal.apply(artefactDetails)
+      deleteFromlocal.apply(artefactFiles)
 
       it("Then the files are deleted") {
-        artefactDetails.files
+        artefactFiles
           .map(f => new File(workingDirectory, f))
           .foreach(f => Mockito.verify(mockDeleteFile).apply(f))
       }
