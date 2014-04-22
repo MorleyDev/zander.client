@@ -2,25 +2,25 @@ package uk.co.morleydev.zander.client.test.unit.data.fs
 
 import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.data.fs.ProjectSourceDetailsReaderFromCache
+import uk.co.morleydev.zander.client.data.fs.ReadProjectCacheDetailsFromCache
 import java.io.File
 import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
 import org.mockito.{Matchers, Mockito}
 import com.lambdaworks.jacks.JacksMapper
-import uk.co.morleydev.zander.client.model.store.SourceDetails
+import uk.co.morleydev.zander.client.model.store.CacheDetails
 
 class ProjectSourceDetailsReaderFromCacheTests extends FunSpec with MockitoSugar {
   describe("Given a project source details reader") {
 
     val cache = new File("cache")
     val mockFileToStringReader = mock[File => String]
-    val reader = new ProjectSourceDetailsReaderFromCache(cache, mockFileToStringReader)
+    val reader = new ReadProjectCacheDetailsFromCache(cache, mockFileToStringReader)
 
     describe("When reading from the cache") {
 
       val expectedResultVersion = GenNative.genAsciiString(10, 100)
       Mockito.when(mockFileToStringReader.apply(Matchers.any[File]))
-             .thenReturn(JacksMapper.writeValueAsString[SourceDetails](new SourceDetails(expectedResultVersion)))
+             .thenReturn(JacksMapper.writeValueAsString[CacheDetails](new CacheDetails(expectedResultVersion)))
 
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()

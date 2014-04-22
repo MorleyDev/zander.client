@@ -6,15 +6,15 @@ import scala.concurrent.{Future, Await, future, ExecutionContext}
 import scala.concurrent.duration.{Duration, MINUTES}
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.data._
-import uk.co.morleydev.zander.client.service.{ProjectArtefactAcquire, ProjectSourceCompile, ProjectSourceAcquire}
+import uk.co.morleydev.zander.client.service.{AcquireProjectArtefacts, CompileProjectSource, AcquireProjectSource}
 import java.io.FileNotFoundException
 import uk.co.morleydev.zander.client.controller.exception.LocalArtefactsAlreadyExistException
 
-class InstallController(artefactDetailsReader : ProjectArtefactDetailsReader,
+class InstallController(artefactDetailsReader : ReadProjectArtefactDetails,
                         getProjectDto : GetProjectDto,
-                        sourceAcquire : ProjectSourceAcquire,
-                        sourceCompile : ProjectSourceCompile,
-                        projectArtefactInstall : ProjectArtefactAcquire,
+                        sourceAcquire : AcquireProjectSource,
+                        sourceCompile : CompileProjectSource,
+                        projectArtefactInstall : AcquireProjectArtefacts,
                         implicit val executionContext : ExecutionContext = ExecutionContext.Implicits.global)
   extends Controller {
 

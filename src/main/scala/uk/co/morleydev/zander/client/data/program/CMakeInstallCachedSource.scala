@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.data.program
 
 import java.io.File
-import uk.co.morleydev.zander.client.data.{BuildModeBuildTypeMap, ProjectSourceInstall}
+import uk.co.morleydev.zander.client.data.{BuildModeBuildTypeMap, InstallProjectCache}
 import uk.co.morleydev.zander.client.data.exception.CMakeInstallFailedException
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
@@ -10,7 +10,7 @@ import uk.co.morleydev.zander.client.model.arg.{BuildMode, Project}
 class CMakeInstallCachedSource(cmakeProgram : String,
                         runner : ProgramRunner,
                         temp : File,
-                        buildTypeMap : BuildModeBuildTypeMap) extends ProjectSourceInstall {
+                        buildTypeMap : BuildModeBuildTypeMap) extends InstallProjectCache {
 
   override def apply(project : Project, compiler : BuildCompiler, mode : BuildMode) : Unit = {
 

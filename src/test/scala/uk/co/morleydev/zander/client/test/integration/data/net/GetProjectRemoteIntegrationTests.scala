@@ -5,7 +5,7 @@ import java.net.URL
 import org.scalatest.FunSpec
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import uk.co.morleydev.zander.client.data.exception.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
 import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import uk.co.morleydev.zander.client.test.util.CreateMockHttpServer
@@ -18,7 +18,6 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
     val provider = new SimpleHttpResponseProvider()
     using(CreateMockHttpServer(provider)) {
       mockHttpServer =>
-        mockHttpServer.server.start()
 
         val getProjectRemote = new GetProjectDtoRemote(new URL("http://localhost:" + mockHttpServer.port + "/"))
 
@@ -33,7 +32,7 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
           val projectFuture = getProjectRemote.apply(project, compiler)
 
           it("Then the expected project is returned") {
-            val actualProject = Await.result(projectFuture, Duration(1, SECONDS))
+            val actualProject = Await.result(projectFuture, Duration(1, MINUTES))
             assert(actualProject.git.equals(expectedProject.git))
           }
         }
@@ -48,7 +47,7 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
           var thrownException: Throwable = null
           val projectFuture = getProjectRemote.apply(project, compiler)
           try {
-            Await.result(projectFuture, Duration(1, SECONDS))
+            Await.result(projectFuture, Duration(1, MINUTES))
           } catch {
             case e: Throwable => thrownException = e
           }
@@ -57,7 +56,7 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
             assert(thrownException != null)
           }
           it("Then the expected exception is thrown") {
-            assert(thrownException.isInstanceOf[ProjectNotFoundException])
+            assert(thrownException.isInstanceOf[ProjectEndpointNotFoundException])
           }
         }
     }
@@ -65,13 +64,13 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
 
   describe("Given a GetProjectRemote function object and no server") {
 
-    val getProjectRemote = new GetProjectDtoRemote(new URL("http://632a5d62-dafb-4c72-be18-11f29d890fbf.com/"))
+    val getProjectRemote = new GetProjectDtoRemote(new URL("http://localhost:7999/"))
 
     describe("When requesting a project/compiler the future is awaited on") {
       var thrownException : Throwable = null
       val projectFuture = getProjectRemote.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler())
       try {
-        Await.result(projectFuture, Duration(1, SECONDS))
+        Await.result(projectFuture, Duration(1, MINUTES))
       } catch {
         case e : Throwable => thrownException = e
       }
@@ -79,7 +78,8 @@ class GetProjectRemoteIntegrationTests extends FunSpec {
         assert(thrownException != null)
       }
       it("Then the expected exception is thrown") {
-        assert(thrownException.isInstanceOf[ProjectNotFoundException])
+        assert(thrownException.isInstanceOf[ProjectEndpointNotFoundException],
+               "Expected ProjectNotFoundException but was %s".format(thrownException.getClass.getSimpleName))
       }
     }
   }

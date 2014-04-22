@@ -12,7 +12,7 @@ class InstallFailsTests extends TestHarnessSpec {
         harness =>
           harness.whenInstalling()
             .invokeMain()
-            .thenTheResponseCodeWas(ResponseCodes.EndpointNotFound)
+            .thenExpectedResponseCodeWasInstalled(ResponseCodes.EndpointNotFound)
       }
     }
   }
@@ -25,7 +25,7 @@ class InstallFailsTests extends TestHarnessSpec {
             .whenInstalling()
             .expectRequestToArgumentEndpointThenReplyWith(404, "{ }")
             .invokeMain()
-            .thenTheResponseCodeWas(ResponseCodes.EndpointNotFound)
+            .thenExpectedResponseCodeWasInstalled(ResponseCodes.EndpointNotFound)
       }
     }
   }
@@ -37,7 +37,7 @@ class InstallFailsTests extends TestHarnessSpec {
           harness.whenInstalling()
             .whenArtefactsAreLocallyInstalled()
             .invokeMain()
-            .thenTheResponseCodeWas(ResponseCodes.ArtefactsAlreadyInstalled)
+            .thenExpectedResponseCodeWasInstalled(ResponseCodes.ArtefactsAlreadyInstalled)
       }
     }
   }

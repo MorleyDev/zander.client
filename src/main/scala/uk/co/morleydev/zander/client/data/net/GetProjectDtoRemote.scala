@@ -9,7 +9,7 @@ import com.stackmob.newman.request.HttpRequest
 import com.stackmob.newman.ApacheHttpClient
 import com.stackmob.newman.dsl.GET
 import com.stackmob.newman.response.HttpResponseCode
-import uk.co.morleydev.zander.client.data.exception.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.util.Log
 import uk.co.morleydev.zander.client.data.GetProjectDto
@@ -32,11 +32,11 @@ class GetProjectDtoRemote(url : URL,
       .transform(response => {
       Log.message("Request to %s returned %s".format(targetUrl, response.code))
       if (response.code != HttpResponseCode.Ok)
-        throw new ProjectNotFoundException
+        throw new ProjectEndpointNotFoundException
       else
         response.bodyString
     },
-        exception => throw new ProjectNotFoundException)
+        exception => new ProjectEndpointNotFoundException)
       .map(json => JacksMapper.readValue[ProjectDto](json))
   }
 }

@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client.test.unit.data.fs
 
 import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.data.fs.ProjectSourceListFilesInCache
+import uk.co.morleydev.zander.client.data.fs.ListProjectCacheFilesInCache
 import java.io.File
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import org.mockito.Mockito
@@ -13,7 +13,7 @@ class ProjectSourceListFilesInCacheTests extends FunSpec with MockitoSugar {
     val mockListFilesInDirectory = mock[File => Seq[File]]
 
     val cache = new File("cache")
-    val projectSourceListFilesInCache = new ProjectSourceListFilesInCache(cache, mockListFilesInDirectory)
+    val projectSourceListFilesInCache = new ListProjectCacheFilesInCache(cache, mockListFilesInDirectory)
 
     describe("When listing the files in the cache for a project/compiler/mode") {
       val project = GenModel.arg.genProject()

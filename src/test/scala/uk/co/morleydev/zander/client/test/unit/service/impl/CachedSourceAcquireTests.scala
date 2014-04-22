@@ -2,9 +2,9 @@ package uk.co.morleydev.zander.client.test.unit.service.impl
 
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.service.impl.CachedSourceAcquire
+import uk.co.morleydev.zander.client.service.impl.AcquireCachedSource
 import java.io.File
-import uk.co.morleydev.zander.client.data.{GetProjectSourceVersion, ProjectSourceUpdate, ProjectSourceDownload}
+import uk.co.morleydev.zander.client.data.{GetProjectSourceVersion, UpdateProjectSource, DownloadProjectSource}
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.model.arg.Project
@@ -14,11 +14,11 @@ class CachedSourceAcquireTests extends FunSpec with MockitoSugar {
 
     val cache = new File("cache")
     val mockDirectoryIsExists = mock[(File => Boolean)]
-    val mockSourceDownload = mock[ProjectSourceDownload]
-    val mockSourceUpdate = mock[ProjectSourceUpdate]
+    val mockSourceDownload = mock[DownloadProjectSource]
+    val mockSourceUpdate = mock[UpdateProjectSource]
     val mockGetSourceVersion = mock[GetProjectSourceVersion]
 
-    val gitCachedSourceAcquire = new CachedSourceAcquire(cache,
+    val gitCachedSourceAcquire = new AcquireCachedSource(cache,
       mockDirectoryIsExists,
       mockSourceDownload,
       mockSourceUpdate,

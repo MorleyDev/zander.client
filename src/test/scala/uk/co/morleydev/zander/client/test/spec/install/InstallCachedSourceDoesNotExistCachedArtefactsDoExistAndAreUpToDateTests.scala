@@ -49,7 +49,7 @@ class InstallCachedSourceDoesNotExistCachedArtefactsDoExistAndAreUpToDateTests e
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitCloneWasInvoked(gitUrl)
               .thenTheGitVersionWasRetrieved()
-              .thenTheResponseCodeWas(ResponseCodes.Success)
+              .thenExpectedResponseCodeWasInstalled(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedFiles(expectedFiles)
               .thenTheExpectedFilesWereInstalledLocally(expectedFiles)

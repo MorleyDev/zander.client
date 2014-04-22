@@ -10,7 +10,7 @@ import scala.concurrent.future
 import scala.concurrent.ExecutionContext.Implicits.global
 import uk.co.morleydev.zander.client.controller.InstallController
 import uk.co.morleydev.zander.client.data._
-import uk.co.morleydev.zander.client.service.{ProjectArtefactAcquire, ProjectSourceCompile, ProjectSourceAcquire}
+import uk.co.morleydev.zander.client.service.{AcquireProjectArtefacts, CompileProjectSource, AcquireProjectSource}
 import uk.co.morleydev.zander.client.model.net.ProjectDto
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.arg.BuildMode
@@ -22,11 +22,11 @@ import uk.co.morleydev.zander.client.controller.exception.LocalArtefactsAlreadyE
 
 class InstallControllerTests extends FunSpec with MockitoSugar {
   describe("Given an install controller") {
-    val mockArtefactDetailsReader = mock[ProjectArtefactDetailsReader]
+    val mockArtefactDetailsReader = mock[ReadProjectArtefactDetails]
     val mockGetProjectDto = mock[GetProjectDto]
-    val mockSourceAcquire = mock[ProjectSourceAcquire]
-    val mockSourceCompile = mock[ProjectSourceCompile]
-    val mockArtefactAcquire = mock[ProjectArtefactAcquire]
+    val mockSourceAcquire = mock[AcquireProjectSource]
+    val mockSourceCompile = mock[CompileProjectSource]
+    val mockArtefactAcquire = mock[AcquireProjectArtefacts]
 
     val installController = new InstallController(mockArtefactDetailsReader,
       mockGetProjectDto,
@@ -76,7 +76,7 @@ class InstallControllerTests extends FunSpec with MockitoSugar {
   }
 
   describe("Given an install controller") {
-    val mockArtefactDetailsReader = mock[ProjectArtefactDetailsReader]
+    val mockArtefactDetailsReader = mock[ReadProjectArtefactDetails]
     val installController = new InstallController(mockArtefactDetailsReader,
       null,
       null,

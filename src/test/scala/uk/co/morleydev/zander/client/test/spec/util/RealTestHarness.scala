@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client.test.spec.util
 
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
 import com.lambdaworks.jacks.JacksMapper
-import java.io.{PrintWriter, ByteArrayInputStream, File}
+import java.io.{FileNotFoundException, PrintWriter, ByteArrayInputStream, File}
 import org.apache.commons.io.FileUtils
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
@@ -21,6 +21,7 @@ import uk.co.morleydev.zander.client.test.util.{TemporaryDirectory, CreateMockPr
 import uk.co.morleydev.zander.client.util.Using._
 
 class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCloseable {
+
 
   private val programs = new ProgramConfiguration(GenNative.genAlphaNumericString(3, 10),
     GenNative.genAlphaNumericString(3, 10),
@@ -55,7 +56,6 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   def givenAServer() : RealTestHarness = {
     provider = new SimpleHttpResponseProvider()
     mockServer = CreateMockHttpServer(provider)
-    mockServer.server.start()
     this
   }
 
@@ -96,12 +96,20 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
     arguments = Array[String]("install", project, compiler, mode)
     this
   }
+  def whenPurging(project : String = GenStringArguments.genProject(),
+                  compiler : String = GenStringArguments.genCompiler(),
+                  mode : String = GenStringArguments.genBuildMode()) : RealTestHarness = {
+    arguments = Array[String]("purge", project, compiler, mode)
+    this
+  }
 
-  def whenArtefactsAreLocallyInstalled() : RealTestHarness = {
+  def whenArtefactsAreLocallyInstalled(version: String = GenNative.genAlphaNumericString(10, 100),
+                                       expectedFiles: Seq[String] = Seq[String]()) : RealTestHarness = {
     using(new PrintWriter(working.sub("%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))))) {
       writer => JacksMapper.writeValue(writer,
-        new InstalledArtefactDetails(GenNative.genAlphaNumericString(10, 100), Seq[String]()))
+        new InstalledArtefactDetails(version, expectedFiles))
     }
+    expectedFiles.map(f => working.sub(f)).foreach(f => { f.getParentFile.mkdirs(); f.createNewFile() })
     this
   }
 
@@ -168,7 +176,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
 
       (seqOfFiles(working.sub("include"))
         ++ seqOfFiles(working.sub("lib"))
-        ++ seqOfFiles(working.sub("bin")))
+        ++ seqOfFiles(working.sub("bin"))).toSeq
     }
 
     installedArtefactDetails = try {
@@ -180,8 +188,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
         }
       )
     } catch {
-      case e: Throwable =>
-        new InstalledArtefactDetails("", List[String]())
+      case e: FileNotFoundException => null
     }
     this
   }
@@ -194,9 +201,9 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
     this
   }
 
-  def thenTheResponseCodeWas(expected : Int) : RealTestHarness = {
+  def thenExpectedResponseCodeWasInstalled(expected : Int) : RealTestHarness = {
     parent._it("Then the response code was as expected") {
-      assert(responseCode == expected)
+      assert(responseCode == expected, "Expected %s but was %s".format(expected, responseCode))
     }
     this
   }
@@ -274,21 +281,41 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   def thenTheExpectedFilesWereInstalledLocally(expectedFiles : Seq[String]) : RealTestHarness = {
     parent._it("Then the expected files were installed locally") {
       val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename))
-      assert(installedFiles.diff(expectedWorkingDirectoryFiles).size == 0)
+      assert(installedFiles.diff(expectedWorkingDirectoryFiles).size == 0,
+             "Expected %s but was %s".format(expectedFiles, installedFiles))
     }
     this
   }
 
-  def thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(version : String) : RealTestHarness = {
+  def thenTheExpectedFilesWereRemovedLocally(expectedFiles : Seq[String]) : RealTestHarness = {
+    parent._it("Then the expected files were removed locally") {
+      val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename).getAbsolutePath)
+      val remainingFiles = installedFiles.diff(expectedWorkingDirectoryFiles)
+      assert(remainingFiles.size == 0, "Expected none of the following but they existed: %s".format(remainingFiles))
+    }
+    this
+  }
+
+  def thenTheLocalArtefactsWereNotTaggedWithDetails() : RealTestHarness = {
+    parent._it("Then the installed files were not tagged") {
+      assert(installedArtefactDetails == null,
+             "Expected %s.%s.%s.json to not exist but it existed".format(arguments(1), arguments(2), arguments(3)))
+    }
+    this
+  }
+
+  def thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(expectedVersion : String) : RealTestHarness = {
     parent._it("Then the installed files were tagged with the expected version") {
-      assert(installedArtefactDetails.version == version)
+      assert(installedArtefactDetails.version == expectedVersion,
+             "Expected %s but was %s".format(expectedVersion, installedArtefactDetails.version))
     }
     this
   }
 
   def thenTheLocalArtefactsWereTaggedWithTheExpectedFiles(expectedFiles : Seq[String]) : RealTestHarness = {
     parent._it("Then the installed files were tagged with the expected files") {
-      assert(installedArtefactDetails.files.diff(expectedFiles).size == 0)
+      assert(installedArtefactDetails.files.diff(expectedFiles).size == 0,
+        "Expected %s but was %s".format(expectedFiles, installedArtefactDetails.files))
     }
     this
   }

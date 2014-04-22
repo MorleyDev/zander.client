@@ -47,7 +47,7 @@ class InstallCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends T
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitUpdateWasInvoked()
               .thenTheGitVersionWasRetrieved()
-              .thenTheResponseCodeWas(ResponseCodes.Success)
+              .thenExpectedResponseCodeWasInstalled(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedFiles(expectedFiles)
               .thenTheExpectedFilesWereInstalledLocally(expectedFiles)

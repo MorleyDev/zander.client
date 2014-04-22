@@ -13,7 +13,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.stackmob.newman.request.HttpRequest
 import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenModel, GenNative}
-import uk.co.morleydev.zander.client.data.exception.ProjectNotFoundException
+import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
 
 class GetProjectRemoteTests extends FunSpec with MockitoSugar {
 
@@ -77,7 +77,7 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
       try {
         Await.result(getProjectRemote.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler()), Duration.create(1, SECONDS))
       } catch {
-        case e: ProjectNotFoundException => thrownException = e
+        case e: ProjectEndpointNotFoundException => thrownException = e
       }
       it("Then the expected exception is thrown") {
         assert(thrownException != null)
@@ -100,7 +100,7 @@ class GetProjectRemoteTests extends FunSpec with MockitoSugar {
       try {
         Await.result(getProjectRemote.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler()), Duration.create(1, SECONDS))
       } catch {
-        case e: ProjectNotFoundException => thrownException = e
+        case e: ProjectEndpointNotFoundException => thrownException = e
       }
       it("Then the expected exception is thrown") {
         assert(thrownException != null)

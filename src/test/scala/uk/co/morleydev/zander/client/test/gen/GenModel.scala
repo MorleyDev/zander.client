@@ -7,7 +7,7 @@ import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.net.ProjectDto
 import scala.util.Random
 import java.net.URL
-import uk.co.morleydev.zander.client.model.store.SourceVersion
+import uk.co.morleydev.zander.client.model.store.{ArtefactDetails, SourceVersion}
 
 object GenModel {
 
@@ -41,7 +41,15 @@ object GenModel {
   }
 
   object store {
+    private def genArtefactFiles : Seq[String] =
+      GenNative.genSequence(1, 100, () => "include/" + GenNative.genAlphaNumericString(3, 100)) ++
+        GenNative.genSequence(1, 100, () => "bin/" + GenNative.genAlphaNumericString(3, 100)) ++
+        GenNative.genSequence(1, 100, () => "lib/" + GenNative.genAlphaNumericString(3, 100))
+
     def genSourceVersion() : SourceVersion =
-      new SourceVersion(GenNative.genAsciiString(3, 100))
+      new SourceVersion(GenNative.genAlphaNumericString(3, 100))
+
+    def genArtefactDetails() : ArtefactDetails =
+      new ArtefactDetails(GenNative.genAlphaNumericString(3, 100), genArtefactFiles)
   }
 }

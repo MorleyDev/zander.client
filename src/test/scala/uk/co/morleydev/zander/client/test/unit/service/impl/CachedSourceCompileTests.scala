@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client.test.unit.service.impl
 
 import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.service.impl.CachedSourceCompile
+import uk.co.morleydev.zander.client.service.impl.CompileCachedProjectSource
 import uk.co.morleydev.zander.client.data._
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import org.mockito.{Matchers, Mockito}
@@ -12,25 +12,25 @@ import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import java.io.{File, FileNotFoundException}
 import org.mockito.stubbing.Answer
 import org.mockito.invocation.InvocationOnMock
-import uk.co.morleydev.zander.client.model.store.SourceDetails
+import uk.co.morleydev.zander.client.model.store.CacheDetails
 
 class CachedSourceCompileTests extends FunSpec with MockitoSugar {
   describe("Given a source details reader for a project") {
 
-    val mockSourceDetailsReader = mock[ProjectSourceDetailsReader]
+    val mockSourceDetailsReader = mock[ReadProjectCacheDetails]
     Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode]))
-           .thenAnswer(new Answer[SourceDetails] {
-              override def answer(invocation: InvocationOnMock): SourceDetails = {
+           .thenAnswer(new Answer[CacheDetails] {
+              override def answer(invocation: InvocationOnMock): CacheDetails = {
                 throw new FileNotFoundException()
               }
            })
 
-    val mockPrebuild = mock[ProjectSourcePreBuild]
-    val mockBuild = mock[ProjectSourceBuild]
-    val mockInstall = mock[ProjectSourceInstall]
-    val mockSourceDetailsWriter = mock[ProjectSourceDetailsWriter]
+    val mockPrebuild = mock[PreBuildProjectSource]
+    val mockBuild = mock[BuildProjectSource]
+    val mockInstall = mock[InstallProjectCache]
+    val mockSourceDetailsWriter = mock[WriteProjectSourceDetails]
 
-    val cachedSourceCompile = new CachedSourceCompile(mockSourceDetailsReader,
+    val cachedSourceCompile = new CompileCachedProjectSource(mockSourceDetailsReader,
       null,
       mockPrebuild,
       mockBuild,
@@ -65,10 +65,10 @@ class CachedSourceCompileTests extends FunSpec with MockitoSugar {
 
   describe("Given a source details reader for the project") {
 
-    val mockSourceDetailsReader = mock[ProjectSourceDetailsReader]
-    val mockSourceDetailsWriter = mock[ProjectSourceDetailsWriter]
+    val mockSourceDetailsReader = mock[ReadProjectCacheDetails]
+    val mockSourceDetailsWriter = mock[WriteProjectSourceDetails]
 
-    val cachedSourceCompile = new CachedSourceCompile(mockSourceDetailsReader,
+    val cachedSourceCompile = new CompileCachedProjectSource(mockSourceDetailsReader,
       null,
       null,
       null,
@@ -81,7 +81,7 @@ class CachedSourceCompileTests extends FunSpec with MockitoSugar {
       val mode = GenModel.arg.genBuildMode()
       val version = GenModel.store.genSourceVersion()
       Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode]))
-        .thenReturn(new SourceDetails(version.value))
+        .thenReturn(new CacheDetails(version.value))
 
       cachedSourceCompile.apply(project, compiler, mode, version)
 
@@ -96,14 +96,14 @@ class CachedSourceCompileTests extends FunSpec with MockitoSugar {
 
   describe("Given a source details reader for the project") {
 
-    val mockSourceDetailsReader = mock[ProjectSourceDetailsReader]
+    val mockSourceDetailsReader = mock[ReadProjectCacheDetails]
     val mockDirectoryDelete = mock[(Project, BuildCompiler, BuildMode) => Unit]
-    val mockPrebuild = mock[ProjectSourcePreBuild]
-    val mockBuild = mock[ProjectSourceBuild]
-    val mockInstall = mock[ProjectSourceInstall]
-    val mockSourceDetailsWriter = mock[ProjectSourceDetailsWriter]
+    val mockPrebuild = mock[PreBuildProjectSource]
+    val mockBuild = mock[BuildProjectSource]
+    val mockInstall = mock[InstallProjectCache]
+    val mockSourceDetailsWriter = mock[WriteProjectSourceDetails]
 
-    val cachedSourceCompile = new CachedSourceCompile(mockSourceDetailsReader,
+    val cachedSourceCompile = new CompileCachedProjectSource(mockSourceDetailsReader,
       mockDirectoryDelete,
       mockPrebuild,
       mockBuild,
@@ -116,7 +116,7 @@ class CachedSourceCompileTests extends FunSpec with MockitoSugar {
       val mode = GenModel.arg.genBuildMode()
       val version = GenModel.store.genSourceVersion()
       Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode]))
-        .thenReturn(new SourceDetails(GenModel.store.genSourceVersion().value))
+        .thenReturn(new CacheDetails(GenModel.store.genSourceVersion().value))
 
       cachedSourceCompile.apply(project, compiler, mode, version)
 

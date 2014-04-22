@@ -5,7 +5,7 @@ import java.io.File
 import org.mockito.Mockito
 import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.data.fs.ProjectArtefactVersionWriterToLocal
+import uk.co.morleydev.zander.client.data.fs.WriteProjectArtefactVersionToLocal
 import uk.co.morleydev.zander.client.model.store.ArtefactDetails
 import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
 
@@ -15,7 +15,7 @@ class ProjectArtefactVersionWriterToLocalTests extends FunSpec with MockitoSugar
     val mockFileWriter = mock[(String, File) => Unit]
 
     val workingDirectory = new File("some_working_dir")
-    val writer = new ProjectArtefactVersionWriterToLocal(workingDirectory, mockFileWriter)
+    val writer = new WriteProjectArtefactVersionToLocal(workingDirectory, mockFileWriter)
 
     val project = GenModel.arg.genProject()
     val compiler = GenModel.arg.genCompiler()

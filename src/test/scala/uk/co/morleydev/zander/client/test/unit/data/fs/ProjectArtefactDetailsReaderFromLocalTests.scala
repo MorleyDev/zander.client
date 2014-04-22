@@ -7,14 +7,14 @@ import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
 import org.mockito.{Matchers, Mockito}
 import com.lambdaworks.jacks.JacksMapper
 import uk.co.morleydev.zander.client.model.store.ArtefactDetails
-import uk.co.morleydev.zander.client.data.fs.ProjectArtefactDetailsReaderFromCache
+import uk.co.morleydev.zander.client.data.fs.ReadProjectArtefactDetailsFromLocal
 
 class ProjectArtefactDetailsReaderFromLocalTests extends FunSpec with MockitoSugar {
   describe("Given a project artefact details reader") {
 
     val workingDirectory = new File("wd")
     val mockFileToStringReader = mock[File => String]
-    val reader = new ProjectArtefactDetailsReaderFromCache(workingDirectory, mockFileToStringReader)
+    val reader = new ReadProjectArtefactDetailsFromLocal(workingDirectory, mockFileToStringReader)
 
     describe("When reading from the working directory") {
 

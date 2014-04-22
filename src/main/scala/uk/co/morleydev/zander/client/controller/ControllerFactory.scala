@@ -1,32 +1,43 @@
 package uk.co.morleydev.zander.client.controller
 
-import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
-import java.net.URL
-import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
 import java.io.File
+import java.net.URL
+import uk.co.morleydev.zander.client.data.fs.DeleteProjectArtefactsFromLocal
+import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
+import uk.co.morleydev.zander.client.data.{DataFactoryImpl, NativeProcessBuilderFactory}
 import uk.co.morleydev.zander.client.model.Configuration
-import uk.co.morleydev.zander.client.data.fs.ProjectArtefactDetailsReaderFromCache
-import uk.co.morleydev.zander.client.util.Using.using
-import uk.co.morleydev.zander.client.service.ServiceFactory
-import scala.io.Source
+import uk.co.morleydev.zander.client.model.arg.Operation
+import uk.co.morleydev.zander.client.model.arg.Operation.Operation
+import uk.co.morleydev.zander.client.service.ServiceFactoryImpl
 
 trait ControllerFactory {
-  def createInstallController(config : Configuration) : Controller
+  def createController(operation : Operation, config : Configuration) : Controller
 }
 
 class ControllerFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
                             temporaryDirectory : File,
                             workingDirectory : File) extends ControllerFactory {
 
-  private val serviceFactory = new ServiceFactory(processBuilderFactory, temporaryDirectory, workingDirectory)
+  private val serviceFactory = new ServiceFactoryImpl(processBuilderFactory, temporaryDirectory, workingDirectory)
+  private val dataFactory = new DataFactoryImpl(processBuilderFactory, temporaryDirectory, workingDirectory)
 
-  def createInstallController(config : Configuration) : Controller = {
+  private val configFactoryMap = Map[Operation, (Configuration => Controller)](
+    Operation.Install -> createInstallController,
+    Operation.Purge -> createPurgeController
+  )
 
-    val getProjectRemote = new GetProjectDtoRemote(new URL(config.server))
+  def createController(operation : Operation, config : Configuration) : Controller = configFactoryMap(operation)(config)
 
-    val artefactDetailsReader = new ProjectArtefactDetailsReaderFromCache(workingDirectory, f => using(Source.fromFile(f)) {
-      s => s.getLines().mkString("\n")
-    })
+  private def createPurgeController(config : Configuration) : Controller = {
+    val purgeFromLocal = serviceFactory.createArtefactPurgeFromLocal()
+
+    new PurgeController(purgeFromLocal)
+  }
+
+  private def createInstallController(config : Configuration) : Controller = {
+
+    val getProjectRemote = dataFactory.createGetProjectDtoRemote(config)
+    val artefactDetailsReader = dataFactory.createArtefactDetailsReaderFromLocal()
     val sourceAcquireService = serviceFactory.createGitSourceAcquire(config)
     val sourceCompileService = serviceFactory.createCMakeProjectSourceCompile(config)
     val artefactAcquire = serviceFactory.createCachedArtefactAcquire(config)

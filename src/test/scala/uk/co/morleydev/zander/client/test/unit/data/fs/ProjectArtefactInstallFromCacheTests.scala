@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client.test.unit.data.fs
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.FunSpec
 import java.io.File
-import uk.co.morleydev.zander.client.data.fs.ProjectArtefactInstallFromCache
+import uk.co.morleydev.zander.client.data.fs.InstallProjectArtefactFromCache
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import org.mockito.Mockito
 
@@ -13,7 +13,7 @@ class ProjectArtefactInstallFromCacheTests extends FunSpec with MockitoSugar {
     val cache = new File("some/cache/location")
     val workingDir = new File("")
     val mockCopyRecursive = mock[(File, File) => Unit]
-    val projectArtefactInstall = new ProjectArtefactInstallFromCache(cache, workingDir, mockCopyRecursive)
+    val projectArtefactInstall = new InstallProjectArtefactFromCache(cache, workingDir, mockCopyRecursive)
 
     describe("when installing artefacts from the cache") {
       val project = GenModel.arg.genProject()

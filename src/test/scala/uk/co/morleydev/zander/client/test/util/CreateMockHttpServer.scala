@@ -19,6 +19,7 @@ object CreateMockHttpServer extends (AbstractHttpResponseProvider => MockServerA
       .dropWhile(port => {
       try {
         mockHttpServer = new MockHttpServer(port, provider)
+        mockHttpServer.start()
         false
       } catch {
         case e : BindException => true

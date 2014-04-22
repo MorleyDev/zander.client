@@ -1,6 +1,6 @@
 package uk.co.morleydev.zander.client.data.program
 
-import uk.co.morleydev.zander.client.data.{BuildModeBuildTypeMap, CompilerGeneratorMap, ProjectSourcePreBuild}
+import uk.co.morleydev.zander.client.data.{BuildModeBuildTypeMap, CompilerGeneratorMap, PreBuildProjectSource}
 import uk.co.morleydev.zander.client.model.arg.{BuildMode, Project}
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
@@ -11,7 +11,7 @@ class CMakePreBuildCachedSource(cmakeProgram : String,
                                 runner : ProgramRunner,
                                 cache : File, temp : File,
                                 generatorMap : CompilerGeneratorMap,
-                                buildTypeMap : BuildModeBuildTypeMap) extends ProjectSourcePreBuild {
+                                buildTypeMap : BuildModeBuildTypeMap) extends PreBuildProjectSource {
 
   override def apply(project : Project, compiler : BuildCompiler, mode : BuildMode) : Unit = {
 
