@@ -12,6 +12,22 @@ import uk.co.morleydev.zander.client.util.Using._
 
 class AnyTests extends FunSpec with MockitoSugar {
 
+  describe("Given Zander when running with an invalid number of arguments") {
+    val arguments = GenNative.genSequence(0, 3, () => GenNative.genAlphaNumericString(1, 10)).toArray
+
+    val responseCode = using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
+      Main.main(arguments,
+        config.file.getAbsolutePath,
+        mock[NativeProcessBuilderFactory],
+        new File("tmpAny0"),
+        new File("working_directory_AnyTests0"))
+    }
+
+    it("Then the expected response code is returned") {
+      assert(responseCode == ResponseCodes.InvalidArgumentCount)
+    }
+  }
+
   describe("Given Zander when running an invalid operation") {
 
     val operation = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.operations)

@@ -6,6 +6,7 @@ object ResponseCodes {
   val InvalidProject = 2
   val InvalidCompiler = 3
   val InvalidBuildMode = 4
+  val InvalidArgumentCount = 5
   val ArtefactsAlreadyInstalled = 10
   val EndpointNotFound = -404
 }

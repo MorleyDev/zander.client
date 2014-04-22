@@ -25,6 +25,9 @@ object Main {
            temporaryDirectory : File,
            workingDirectory: File) : Int = {
 
+    if ( args.size != 4 )
+      return ExitCodes.InvalidArgumentCount
+
     def extractEnum(enum : Enumeration, value: String): enum.Value = {
       try {
         enum.withName(value)
