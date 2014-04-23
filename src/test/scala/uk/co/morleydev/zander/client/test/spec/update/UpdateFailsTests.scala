@@ -14,4 +14,31 @@ class UpdateFailsTests extends SpecTest {
       }
     }
   }
+
+  describe("Given locally installed artefacts") {
+    describe("When no server") {
+      using(this.start()) {
+        harness =>
+          harness.whenUpdating()
+            .whenTheArtefactsAreLocallyInstalled()
+            .invokeMain()
+            .thenExpectedResponseCodeWasReturned(ResponseCodes.EndpointNotFound)
+      }
+    }
+  }
+
+  describe("Given locally installed artefacts") {
+    describe("When server but the endpoint does not exist") {
+      using(this.start()) {
+        harness =>
+          harness.givenAServer()
+            .whenUpdating()
+            .expectRequestToArgumentEndpointThenReplyWith(404, "{ }")
+            .whenTheArtefactsAreLocallyInstalled()
+            .invokeMain()
+            .thenTheExpectedServerRequestsWereHandled()
+            .thenExpectedResponseCodeWasReturned(ResponseCodes.EndpointNotFound)
+      }
+    }
+  }
 }

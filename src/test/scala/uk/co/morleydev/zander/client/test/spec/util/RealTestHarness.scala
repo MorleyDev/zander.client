@@ -100,6 +100,11 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
                              mode : String = GenStringArguments.genBuildMode()): RealTestHarness =
     whenRanWithArguments(Array[String](operation, project, compiler, mode))
 
+  def whenGetting(project : String = GenStringArguments.genProject(),
+                  compiler : String = GenStringArguments.genCompiler(),
+                  mode : String = GenStringArguments.genBuildMode()) : RealTestHarness =
+    whenExecutingOperation("get", project, compiler, mode)
+
   def whenInstalling(project : String = GenStringArguments.genProject(),
                      compiler : String = GenStringArguments.genCompiler(),
                      mode : String = GenStringArguments.genBuildMode()) : RealTestHarness =
@@ -226,7 +231,12 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
     }
 
     parent.it("Then no exception escaped") {
-      parent._assert(thrownException == null)
+      val desc = if (thrownException == null)
+        ""
+      else
+        "Expected no exception to escape but " + thrownException.getStackTrace.mkString("\n")
+
+      parent._assert(thrownException == null, desc)
     }
     this
   }

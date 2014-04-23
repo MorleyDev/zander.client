@@ -1,11 +1,11 @@
 package uk.co.morleydev.zander.client.test.unit.controller
 
 import org.mockito.Mockito
-import uk.co.morleydev.zander.client.controller.InstallController
 import uk.co.morleydev.zander.client.service.DownloadAcquireInstallProjectArtefacts
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import uk.co.morleydev.zander.client.test.unit.UnitTest
 import uk.co.morleydev.zander.client.validator.ValidateArtefactDetailsExistence
+import uk.co.morleydev.zander.client.controller.impl.InstallController
 
 class InstallControllerTests extends UnitTest {
   describe("Given an install controller") {

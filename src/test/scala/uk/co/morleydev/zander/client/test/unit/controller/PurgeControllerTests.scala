@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.test.unit.controller
 
 import org.mockito.Mockito
-import uk.co.morleydev.zander.client.controller.PurgeController
+import uk.co.morleydev.zander.client.controller.impl.PurgeController
 import uk.co.morleydev.zander.client.service.PurgeProjectArtefacts
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import uk.co.morleydev.zander.client.test.unit.UnitTest

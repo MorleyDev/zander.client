@@ -13,10 +13,6 @@ abstract class SpecTest extends FunSpec with MockitoSugar {
     it(desc, SpecificationTag)(testFunc)
   }
 
-  def _assert(value : Boolean) : Unit = {
-    assert(value)
-  }
-
   def _assert(value : Boolean, hint : String) : Unit = {
     assert(value, hint)
   }

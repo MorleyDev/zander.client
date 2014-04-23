@@ -1,20 +1,21 @@
-package uk.co.morleydev.zander.client.service
+package uk.co.morleydev.zander.client.service.impl
 
 import java.io.File
 import org.apache.commons.io.FileUtils
 import scala.collection.JavaConversions
-import uk.co.morleydev.zander.client.data.map.{RemoveOverlappingFilesFromArtefactDetails, SplitJsonFileNameToProjectDetails}
-import uk.co.morleydev.zander.client.data.{DataFactoryImpl, NativeProcessBuilderFactory}
+import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
+import uk.co.morleydev.zander.client.data.impl.DataFactoryImpl
+import uk.co.morleydev.zander.client.data.map.{SplitJsonFileNameToProjectDetails, RemoveOverlappingFilesFromArtefactDetails}
 import uk.co.morleydev.zander.client.model.Configuration
-import uk.co.morleydev.zander.client.service.impl._
+import uk.co.morleydev.zander.client.service._
 
 class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
                          temporaryDirectory : File,
-                         workingDirectory : File) {
+                         workingDirectory : File) extends ServiceFactory {
 
   private val dataFactory = new DataFactoryImpl(processBuilderFactory, temporaryDirectory, workingDirectory)
 
-  def createGitSourceAcquire(config : Configuration) : AcquireProjectSource = {
+  override def createGitSourceAcquire(config : Configuration) : AcquireProjectSource = {
 
     val gitDownloadRemote = dataFactory.createGitDownloadRemote(config)
     val gitUpdateRemote = dataFactory.createGitUpdate(config)
@@ -27,7 +28,7 @@ class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
                             getGitSourceVersion)
   }
 
-  def createCMakeProjectSourceCompile(config : Configuration) : CompileProjectSource = {
+  override def createCMakeProjectSourceCompile(config : Configuration) : CompileProjectSource = {
 
     val cacheDirectory = new File(config.cache)
 
@@ -45,7 +46,7 @@ class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       detailsWriter)
   }
 
-  def createCachedArtefactAcquire(config : Configuration) : AcquireProjectArtefacts = {
+  override def createCachedArtefactAcquire(config : Configuration) : AcquireProjectArtefacts = {
 
     val install = dataFactory.createProjectArtefactInstallFromCache(config)
     val listFilesInCache = dataFactory.createProjectSourceListFilesInCache(config)
@@ -54,7 +55,7 @@ class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
     new AcquireCachedArtefacts(install, listFilesInCache, write)
   }
 
-  def createArtefactPurgeFromLocal() : PurgeProjectArtefacts = {
+  override def createArtefactPurgeFromLocal() : PurgeProjectArtefacts = {
     val getDetails = createGetAllProjectArtefactDetailsFromLocal()
     val deleteDetails = dataFactory.createProjectArtefactDetailsDelete()
     val deleteArtefacts = dataFactory.createProjectArtefactDeleteFromLocal()
@@ -68,13 +69,13 @@ class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
                                .toSeq
   }
 
-  def createGetAllProjectArtefactDetailsFromLocal() : GetAllProjectArtefactDetails =
+  override def createGetAllProjectArtefactDetailsFromLocal() : GetAllProjectArtefactDetails =
     new GetAllProjectArtefactDetailsFromLocal(workingDirectory,
       listFilesInDirectory,
       SplitJsonFileNameToProjectDetails,
       dataFactory.createArtefactDetailsReaderFromLocal())
 
-  def createDownloadAcquireInstallProjectArtefactsFromCacheToLocal(config : Configuration) : DownloadAcquireInstallProjectArtefacts = {
+  override def createDownloadAcquireInstallProjectArtefactsFromCacheToLocal(config : Configuration) : DownloadAcquireInstallProjectArtefacts = {
 
     val getDtoRemote = dataFactory.createGetProjectDtoRemote(config)
     val sourceAcquireService = createGitSourceAcquire(config)
@@ -82,5 +83,12 @@ class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
     val artefactAcquire = createCachedArtefactAcquire(config)
 
     new DownloadAcquireInstallProjectArtefactsFromCacheToLocal(getDtoRemote, sourceAcquireService, sourceCompileService, artefactAcquire)
+  }
+
+  override def createDownloadAcquireUpdateProjectArtefactsFromCacheToLocal(config : Configuration) : DownloadAcquireUpdateProjectArtefacts = {
+    val purge= createArtefactPurgeFromLocal()
+    val downloadAcquireInstall = createDownloadAcquireInstallProjectArtefactsFromCacheToLocal(config)
+
+    new DownloadAcquireUpdateProjectArtefactsFromCacheToLocal(purge,downloadAcquireInstall)
   }
 }

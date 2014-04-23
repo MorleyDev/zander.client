@@ -4,13 +4,13 @@ import uk.co.morleydev.zander.client.model.{Arguments, Configuration, ExitCodes}
 import scala.io.Source
 import com.lambdaworks.jacks.JacksMapper
 import uk.co.morleydev.zander.client.model.arg.{Project, Operation, BuildCompiler, BuildMode}
-import uk.co.morleydev.zander.client.controller.ControllerFactoryImpl
 import java.io.{PrintWriter, File, FileNotFoundException}
 import uk.co.morleydev.zander.client.util.{Log, NativeProcessBuilderImpl, GetProgramDirectory}
 import uk.co.morleydev.zander.client.util.Using.using
 import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, NativeProcessBuilder}
 import java.util.UUID
 import org.apache.commons.io.FileUtils
+import uk.co.morleydev.zander.client.controller.impl.ControllerFactoryImpl
 
 object Main {
 
@@ -74,7 +74,7 @@ object Main {
   def main(args : Array[String]) {
 
     class TemporaryDirectory extends AutoCloseable {
-      val dirFile = Iterator.continually(new File("zander-" + UUID.randomUUID().toString + "-tmp"))
+      val dirFile = Iterator.continually(new File("zander-" + args.mkString("-") + UUID.randomUUID().toString + "-tmp"))
         .dropWhile(_.exists())
         .take(1)
         .toSeq
