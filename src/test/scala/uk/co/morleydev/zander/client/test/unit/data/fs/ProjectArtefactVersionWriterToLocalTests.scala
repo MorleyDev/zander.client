@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client.test.unit.data.fs
 import com.lambdaworks.jacks.JacksMapper
 import java.io.File
 import org.mockito.Mockito
-import uk.co.morleydev.zander.client.data.fs.WriteProjectArtefactVersionToLocal
+import uk.co.morleydev.zander.client.data.fs.WriteProjectArtefactDetailsToLocal
 import uk.co.morleydev.zander.client.model.store.ArtefactDetails
 import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
 import uk.co.morleydev.zander.client.test.unit.UnitTest
@@ -14,7 +14,7 @@ class ProjectArtefactVersionWriterToLocalTests extends UnitTest {
     val mockFileWriter = mock[(String, File) => Unit]
 
     val workingDirectory = new File("some_working_dir")
-    val writer = new WriteProjectArtefactVersionToLocal(workingDirectory, mockFileWriter)
+    val writer = new WriteProjectArtefactDetailsToLocal(workingDirectory, mockFileWriter)
 
     val project = GenModel.arg.genProject()
     val compiler = GenModel.arg.genCompiler()

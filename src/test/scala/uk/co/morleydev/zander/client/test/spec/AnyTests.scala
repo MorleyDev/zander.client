@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client.test.spec
 import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenNative}
 import uk.co.morleydev.zander.client.util.Using._
 
-class AnyTests extends SpecificationTest {
+class AnyTests extends SpecTest {
 
   describe("Given Zander When running with an invalid number of arguments") {
     using(this.start()) {

@@ -3,9 +3,9 @@ package uk.co.morleydev.zander.client.test.spec.purge
 import uk.co.morleydev.zander.client.util.Using.using
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import java.io.File
-import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
+import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
 
-class PurgeExistingArtefactsTests extends SpecificationTest {
+class PurgeExistingArtefactsTests extends SpecTest {
   describe("Given locally installed artefacts") {
     describe("When purging") {
       val expectedFiles = Seq[String]("include/" + GenNative.genAlphaNumericString(1, 20),
@@ -29,7 +29,7 @@ class PurgeExistingArtefactsTests extends SpecificationTest {
       using(this.start()) {
         harness =>
           harness.whenPurging()
-            .whenArtefactsAreLocallyInstalled(expectedFiles = expectedFiles)
+            .whenTheArtefactsAreLocallyInstalled(expectedFiles = expectedFiles)
             .invokeMain()
             .thenTheExpectedFilesWereRemovedLocally(expectedFiles)
             .thenTheLocalArtefactsWereNotTaggedWithDetails()

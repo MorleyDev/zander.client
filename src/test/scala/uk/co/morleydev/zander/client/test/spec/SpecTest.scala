@@ -4,13 +4,17 @@ import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
 import uk.co.morleydev.zander.client.test.spec.util.RealTestHarness
 
-abstract class SpecificationTest extends FunSpec with MockitoSugar {
+abstract class SpecTest extends FunSpec with MockitoSugar {
 
   def start() : RealTestHarness =
     new RealTestHarness(this)
 
   def it(desc : String)(testFunc: => Unit) : Unit = {
     it(desc, SpecificationTag)(testFunc)
+  }
+
+  def _assert(value : Boolean) : Unit = {
+    assert(value)
   }
 
   def _assert(value : Boolean, hint : String) : Unit = {

@@ -5,10 +5,10 @@ import uk.co.morleydev.zander.client.test.gen.GenNative
 import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
 import java.io.File
 
-class InstallCachedSourceExistsCachedArtefactsExistAndAreOutDatedTests extends SpecTest {
+class InstallCachedSourceDoesNotExistCachedArtefactsDoExistAndAreOutOfDateTests extends SpecTest {
 
   override def cmakeTestCase(compiler : String, mode: String, cmakeBuildType: String, generator: String) = {
-    describe("Given the project/compiler endpoint exists and the cache already contains the source but no artefacts") {
+    describe("Given the project/compiler endpoint exists and the cache already out of date artefacts but no source") {
       describe("When install is carried out for %s.%s".format(compiler, mode)) {
 
         using(this.start()) {
@@ -41,12 +41,11 @@ class InstallCachedSourceExistsCachedArtefactsExistAndAreOutDatedTests extends S
               .givenGitIsPossible(artefactVersion)
               .givenFullCMakeBuildIsPossible(expectedFiles)
               .whenInstalling(compiler = compiler, mode = mode)
-              .whenTheCacheAlreadyContainsTheSourceCode()
               .whenTheCacheAlreadyContainsArtefacts(oldArtefactVersion, expectedFiles ++ Seq[String]("include/gone"))
               .expectSuccessfulRequest(gitUrl)
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
-              .thenAGitUpdateWasInvoked()
+              .thenAGitCloneWasInvoked(gitUrl)
               .thenTheGitVersionWasRetrieved()
               .thenACMakePreBuildWasInvoked(cmakeBuildType, generator)
               .thenACMakeBuildWasInvoked(cmakeBuildType)

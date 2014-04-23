@@ -33,7 +33,9 @@ trait DataFactory {
   def createCMakeInstallCachedSource(config : Configuration) : InstallProjectCache
 
   def createProjectArtefactInstallFromCache(config : Configuration) : InstallProjectArtefact
-  def createProjectArtefactVersionWriterToLocal() : WriteProjectArtefactVersion
+  def createProjectArtefactVersionWriterToLocal() : WriteProjectArtefactDetails
+
+  def createCheckArtefactDetailsExist() : CheckArtefactDetailsExist
 }
 
 class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
@@ -148,9 +150,12 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
         Seq[File]()
     )
 
-  override def createProjectArtefactVersionWriterToLocal() : WriteProjectArtefactVersion =
-    new WriteProjectArtefactVersionToLocal(workingDirectory, writeDataToFile)
+  override def createProjectArtefactVersionWriterToLocal() : WriteProjectArtefactDetails =
+    new WriteProjectArtefactDetailsToLocal(workingDirectory, writeDataToFile)
 
   override def createProjectArtefactDetailsDelete(): DeleteProjectArtefactDetails =
     new DeleteProjectArtefactDetailsFromLocal(workingDirectory, f => if (!f.delete()) Log.error("Could not delete file " + f.getPath))
+
+  override def createCheckArtefactDetailsExist(): CheckArtefactDetailsExist =
+    new CheckArtefactDetailsExistInLocal(workingDirectory, createArtefactDetailsReaderFromLocal())
 }

@@ -1,20 +1,18 @@
-package uk.co.morleydev.zander.client.test.spec.install
+package uk.co.morleydev.zander.client.test.spec.update
 
+import uk.co.morleydev.zander.client.test.spec.{ResponseCodes, SpecTest}
 import uk.co.morleydev.zander.client.util.Using._
 import uk.co.morleydev.zander.client.test.gen.GenNative
-import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
 import java.io.File
 
-class InstallCachedSourceExistsCachedArtefactsExistAndAreOutDatedTests extends SpecTest {
-
+class UpdateWithExistingOutOfDateArtefactsAndSourcesInTheCacheAndInstalledArtefactsThatAreUpToDateTests extends SpecTest {
   override def cmakeTestCase(compiler : String, mode: String, cmakeBuildType: String, generator: String) = {
-    describe("Given the project/compiler endpoint exists and the cache already contains the source but no artefacts") {
-      describe("When install is carried out for %s.%s".format(compiler, mode)) {
+    describe("Given the project/compiler endpoint exists and the cache already contains the source but out-of-date artefacts") {
+      describe("When up-to-date artefacts are installed and update is carried out for %s.%s".format(compiler, mode)) {
 
         using(this.start()) {
           testHarness =>
             val artefactVersion = GenNative.genAlphaNumericString(10, 100)
-            val oldArtefactVersion = GenNative.genAlphaNumericStringExcluding(10, 100, Seq[String](artefactVersion))
 
             val gitUrl = "http://git_url/request/at_me"
 
@@ -40,9 +38,11 @@ class InstallCachedSourceExistsCachedArtefactsExistAndAreOutDatedTests extends S
               .givenAServer()
               .givenGitIsPossible(artefactVersion)
               .givenFullCMakeBuildIsPossible(expectedFiles)
-              .whenInstalling(compiler = compiler, mode = mode)
+              .whenUpdating(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()
-              .whenTheCacheAlreadyContainsArtefacts(oldArtefactVersion, expectedFiles ++ Seq[String]("include/gone"))
+              .whenTheCacheAlreadyContainsArtefacts(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](artefactVersion)),
+                                                    expectedFiles)
+              .whenTheArtefactsAreLocallyInstalled(artefactVersion, expectedFiles)
               .expectSuccessfulRequest(gitUrl)
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()

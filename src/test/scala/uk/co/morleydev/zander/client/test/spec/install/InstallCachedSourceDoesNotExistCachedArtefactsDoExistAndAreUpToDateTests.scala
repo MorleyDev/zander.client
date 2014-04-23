@@ -3,9 +3,9 @@ package uk.co.morleydev.zander.client.test.spec.install
 import uk.co.morleydev.zander.client.util.Using.using
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import java.io.File
-import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
+import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
 
-class InstallCachedSourceDoesNotExistCachedArtefactsDoExistAndAreUpToDateTests extends SpecificationTest {
+class InstallCachedSourceDoesNotExistCachedArtefactsDoExistAndAreUpToDateTests extends SpecTest {
 
   override def cmakeTestCase(compiler: String, mode: String, cmakeBuildType: String, generator: String) = {
 

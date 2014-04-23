@@ -1,9 +1,9 @@
 package uk.co.morleydev.zander.client.test.spec.install
 
-import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
+import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
 import uk.co.morleydev.zander.client.util.Using.using
 
-class InstallFailsTests extends SpecificationTest {
+class InstallFailsTests extends SpecTest {
 
   describe("Given a server does not exist") {
     describe("When an install operation is carried out") {
@@ -34,7 +34,7 @@ class InstallFailsTests extends SpecificationTest {
       using(this.start()) {
         harness =>
           harness.whenInstalling()
-            .whenArtefactsAreLocallyInstalled()
+            .whenTheArtefactsAreLocallyInstalled()
             .invokeMain()
             .thenExpectedResponseCodeWasReturned(ResponseCodes.ArtefactsAlreadyInstalled)
       }

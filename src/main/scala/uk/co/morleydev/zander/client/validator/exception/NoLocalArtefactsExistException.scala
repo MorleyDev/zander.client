@@ -1,3 +1,3 @@
-package uk.co.morleydev.zander.client.service.exception
+package uk.co.morleydev.zander.client.validator.exception
 
 class NoLocalArtefactsExistException extends RuntimeException

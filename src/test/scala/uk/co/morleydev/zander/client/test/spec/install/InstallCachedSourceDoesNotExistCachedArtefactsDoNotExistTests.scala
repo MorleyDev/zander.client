@@ -2,10 +2,10 @@ package uk.co.morleydev.zander.client.test.spec.install
 
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import uk.co.morleydev.zander.client.util.Using.using
-import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
+import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
 import java.io.File
 
-class InstallCachedSourceDoesNotExistCachedArtefactsDoNotExistTests extends SpecificationTest {
+class InstallCachedSourceDoesNotExistCachedArtefactsDoNotExistTests extends SpecTest {
 
   override def cmakeTestCase(compiler: String, mode: String, cmakeBuildType: String, generator: String) = {
 
@@ -48,7 +48,7 @@ class InstallCachedSourceDoesNotExistCachedArtefactsDoNotExistTests extends Spec
               .thenTheGitVersionWasRetrieved()
               .thenACMakePreBuildWasInvoked(cmakeBuildType, generator)
               .thenACMakeBuildWasInvoked(cmakeBuildType)
-              .thenAMakeInstallWasInvoked(cmakeBuildType)
+              .thenACMakeInstallWasInvoked(cmakeBuildType)
               .thenExpectedResponseCodeWasReturned(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedFiles(expectedFiles)

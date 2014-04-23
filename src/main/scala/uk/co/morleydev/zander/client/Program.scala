@@ -3,9 +3,8 @@ package uk.co.morleydev.zander.client
 import uk.co.morleydev.zander.client.model.{ExitCodes, Arguments, Configuration}
 import uk.co.morleydev.zander.client.controller.ControllerFactory
 import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
-import uk.co.morleydev.zander.client.controller.exception.LocalArtefactsAlreadyExistException
 import uk.co.morleydev.zander.client.util.Log
-import uk.co.morleydev.zander.client.service.exception.NoLocalArtefactsExistException
+import uk.co.morleydev.zander.client.validator.exception.{NoLocalArtefactsExistException, LocalArtefactsAlreadyExistException}
 
 class Program(controllerFactory : ControllerFactory) {
   def run(args : Arguments, config : Configuration) : Int = {

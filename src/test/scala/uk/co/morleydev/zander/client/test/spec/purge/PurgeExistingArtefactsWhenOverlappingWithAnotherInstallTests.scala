@@ -3,9 +3,9 @@ package uk.co.morleydev.zander.client.test.spec.purge
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import java.io.File
 import uk.co.morleydev.zander.client.util.Using._
-import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
+import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
 
-class PurgeExistingArtefactsWhenOverlappingWithAnotherInstallTests extends SpecificationTest {
+class PurgeExistingArtefactsWhenOverlappingWithAnotherInstallTests extends SpecTest {
   describe("Given locally installed artefacts") {
     describe("When purging") {
       val expectedRemovedFiles = Seq[String]("include/" + GenNative.genAlphaNumericString(1, 20),
@@ -37,7 +37,7 @@ class PurgeExistingArtefactsWhenOverlappingWithAnotherInstallTests extends Speci
       using(this.start()) {
         harness =>
           harness.whenPurging()
-            .whenArtefactsAreLocallyInstalled(expectedFiles = expectedRemovedFiles ++ overlappingFiles)
+            .whenTheArtefactsAreLocallyInstalled(expectedFiles = expectedRemovedFiles ++ overlappingFiles)
             .whenArtefactsAreLocallyInstalledForAnotherProject(expectedFiles = overlappingFiles ++ otherProjectFiles)
             .invokeMain()
             .thenTheExpectedFilesWereRemovedLocally(expectedRemovedFiles)

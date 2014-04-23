@@ -1,20 +1,18 @@
-package uk.co.morleydev.zander.client.test.spec.install
+package uk.co.morleydev.zander.client.test.spec.update
 
-import uk.co.morleydev.zander.client.util.Using._
-import uk.co.morleydev.zander.client.test.gen.GenNative
-import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
 import java.io.File
+import uk.co.morleydev.zander.client.test.gen.GenNative
+import uk.co.morleydev.zander.client.test.spec.{ResponseCodes, SpecTest}
+import uk.co.morleydev.zander.client.util.Using._
 
-class InstallCachedSourceDoesNotExistCachedArtefactsDoExistAndAreOutOfDate extends SpecificationTest {
-
+class UpdateWithExistingOutOfDateArtefactsAndSourcesInTheCacheAndInstalledArtefactsThatAreOutOfDateTests extends SpecTest {
   override def cmakeTestCase(compiler : String, mode: String, cmakeBuildType: String, generator: String) = {
-    describe("Given the project/compiler endpoint exists and the cache already out of date artefacts but no source") {
-      describe("When install is carried out for %s.%s".format(compiler, mode)) {
+    describe("Given the project/compiler endpoint exists and the cache already contains the source but out-of-date artefacts") {
+      describe("When out-of-date artefacts are installed and update is carried out for %s.%s".format(compiler, mode)) {
 
         using(this.start()) {
           testHarness =>
             val artefactVersion = GenNative.genAlphaNumericString(10, 100)
-            val oldArtefactVersion = GenNative.genAlphaNumericStringExcluding(10, 100, Seq[String](artefactVersion))
 
             val gitUrl = "http://git_url/request/at_me"
 
@@ -40,16 +38,20 @@ class InstallCachedSourceDoesNotExistCachedArtefactsDoExistAndAreOutOfDate exten
               .givenAServer()
               .givenGitIsPossible(artefactVersion)
               .givenFullCMakeBuildIsPossible(expectedFiles)
-              .whenInstalling(compiler = compiler, mode = mode)
-              .whenTheCacheAlreadyContainsArtefacts(oldArtefactVersion, expectedFiles ++ Seq[String]("include/gone"))
+              .whenUpdating(compiler = compiler, mode = mode)
+              .whenTheCacheAlreadyContainsTheSourceCode()
+              .whenTheCacheAlreadyContainsArtefacts(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](artefactVersion)),
+                                                    expectedFiles)
+              .whenTheArtefactsAreLocallyInstalled(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](artefactVersion)),
+                expectedFiles)
               .expectSuccessfulRequest(gitUrl)
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
-              .thenAGitCloneWasInvoked(gitUrl)
+              .thenAGitUpdateWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenACMakePreBuildWasInvoked(cmakeBuildType, generator)
               .thenACMakeBuildWasInvoked(cmakeBuildType)
-              .thenAMakeInstallWasInvoked(cmakeBuildType)
+              .thenACMakeInstallWasInvoked(cmakeBuildType)
               .thenExpectedResponseCodeWasReturned(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedFiles(expectedFiles)

@@ -15,12 +15,12 @@ import uk.co.morleydev.zander.client.data.{NativeProcessBuilder, NativeProcessBu
 import uk.co.morleydev.zander.client.model.Configuration
 import uk.co.morleydev.zander.client.model.ProgramConfiguration
 import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenNative}
-import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, TestConfigurationFile}
+import uk.co.morleydev.zander.client.test.spec.{SpecTest, TestConfigurationFile}
 import uk.co.morleydev.zander.client.test.spec.model.{CachedArtefactDetails, InstalledArtefactDetails}
 import uk.co.morleydev.zander.client.test.util.{TemporaryDirectory, CreateMockProcess, CreateMockHttpServer, MockServerAndPort}
 import uk.co.morleydev.zander.client.util.Using._
 
-class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with AutoCloseable {
+class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable {
 
   private val programs = new ProgramConfiguration(GenNative.genAlphaNumericString(3, 10),
     GenNative.genAlphaNumericString(3, 10),
@@ -49,7 +49,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
 
   private var responseCode : Int = Int.MinValue
 
-  private var installedFiles : Seq[File] = null
+  private var installedFiles : Seq[String] = null
   private var installedArtefactDetails : InstalledArtefactDetails = null
 
   def givenAServer() : RealTestHarness = {
@@ -115,7 +115,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
                    mode : String = GenStringArguments.genBuildMode()) : RealTestHarness =
     whenExecutingOperation("update", project, compiler, mode)
 
-  def whenArtefactsAreLocallyInstalled(version: String = GenNative.genAlphaNumericString(10, 100),
+  def whenTheArtefactsAreLocallyInstalled(version: String = GenNative.genAlphaNumericString(10, 100),
                                        expectedFiles: Seq[String] = Seq[String]()) : RealTestHarness = {
     using(new PrintWriter(working.sub("%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))))) {
       writer => JacksMapper.writeValue(writer,
@@ -183,13 +183,18 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
 
     val configuration = new Configuration(host, programs, cache.file.getAbsolutePath)
 
-    using(new TestConfigurationFile(configuration)) {
-      config =>
-        responseCode = Main.main(arguments,
-          config.file.getPath,
-          mockProcessBuilderFactory,
-          tmp.file,
-          working.file)
+    val thrownException = try {
+      using(new TestConfigurationFile(configuration)) {
+        config =>
+          responseCode = Main.main(arguments,
+            config.file.getPath,
+            mockProcessBuilderFactory,
+            tmp.file,
+            working.file)
+      }
+      null
+    } catch {
+      case e : Throwable => e
     }
 
     installedFiles = {
@@ -197,13 +202,14 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
         if (dir.exists())
           JavaConversions.collectionAsScalaIterable(FileUtils.listFiles(dir, null, true))
             .asInstanceOf[Iterable[File]]
+            .map(f => f.getAbsolutePath)
             .toSeq
         else
-          Seq[File]()
+          Seq[String]()
 
       (seqOfFiles(working.sub("include"))
         ++ seqOfFiles(working.sub("lib"))
-        ++ seqOfFiles(working.sub("bin"))).toSeq
+        ++ seqOfFiles(working.sub("bin"))).toList
     }
 
     installedArtefactDetails = try {
@@ -217,6 +223,10 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
     } catch {
       case e: FileNotFoundException => null
       case e: ArrayIndexOutOfBoundsException => null
+    }
+
+    parent.it("Then no exception escaped") {
+      parent._assert(thrownException == null)
     }
     this
   }
@@ -295,7 +305,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
     this
   }
 
-  def thenAMakeInstallWasInvoked(buildType: String) : RealTestHarness = {
+  def thenACMakeInstallWasInvoked(buildType: String) : RealTestHarness = {
 
     parent.it("Then a make install was invoked") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", ".", "--config", buildType, "--target", "install"))
@@ -309,7 +319,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
   def thenTheExpectedFilesWereInstalledLocally(expectedFiles : Seq[String]) : RealTestHarness = {
     parent.it("Then the expected files were installed locally") {
 
-      val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename))
+      val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename).getAbsolutePath)
 
       parent._assert(expectedWorkingDirectoryFiles.forall(s => installedFiles.contains(s)),
              "Expected files were not installed locally %s".format(expectedWorkingDirectoryFiles
@@ -322,7 +332,8 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
     parent.it("Then the expected files were removed locally") {
       val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename).getAbsolutePath)
 
-      parent._assert(expectedWorkingDirectoryFiles.forall(s => !installedFiles.contains(s)),
+      val workingDirIsNotOverlapWithInstalled = expectedWorkingDirectoryFiles.forall(s => !installedFiles.contains(s))
+      parent._assert(workingDirIsNotOverlapWithInstalled,
         "Expected files were installed locally %s".format(expectedWorkingDirectoryFiles
           .filter(s => installedFiles.contains(s)).toSeq))
     }

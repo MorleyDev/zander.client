@@ -7,10 +7,10 @@ import uk.co.morleydev.zander.client.model.arg.BuildMode._
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.model.store.ArtefactDetails
 import uk.co.morleydev.zander.client.service.GetAllProjectArtefactDetails
-import uk.co.morleydev.zander.client.service.exception.NoLocalArtefactsExistException
 import uk.co.morleydev.zander.client.service.impl.LocalArtefactPurge
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import uk.co.morleydev.zander.client.test.unit.UnitTest
+import uk.co.morleydev.zander.client.validator.exception.NoLocalArtefactsExistException
 
 class LocalArtefactPurgeTests extends UnitTest {
 
@@ -54,49 +54,6 @@ class LocalArtefactPurgeTests extends UnitTest {
       }
       it("Then the expected artefact details are deleted") {
         Mockito.verify(mockProjectArtefactDeleteDetails).apply(project, compiler, mode)
-      }
-    }
-  }
-
-  describe("Given a purge of artefacts") {
-
-    val mockGetAllProjectArtefactDetails = mock[GetAllProjectArtefactDetails]
-    val mockProcessProjectArtefactDetails = mock[ProcessProjectArtefactDetailsMap]
-    val localArtefactPurge = new LocalArtefactPurge(mockGetAllProjectArtefactDetails, mockProcessProjectArtefactDetails, null, null)
-
-    describe("When purging and no artefact details are found") {
-
-      val project = GenModel.arg.genProject()
-      val compiler = GenModel.arg.genCompiler()
-      val mode = GenModel.arg.genBuildMode()
-
-      val artefactDetails = GenModel.store.genArtefactDetails()
-      val projectArtefactDetailsKeyValue = (project, compiler, mode) -> artefactDetails
-
-      val details = Map[(Project, BuildCompiler, BuildMode), ArtefactDetails](projectArtefactDetailsKeyValue)
-      Mockito.when(mockGetAllProjectArtefactDetails.apply())
-        .thenReturn(details)
-
-      Mockito.when(mockProcessProjectArtefactDetails.apply(Matchers.any[Map[(Project, BuildCompiler, BuildMode), ArtefactDetails]]))
-        .thenReturn(Map[(Project, BuildCompiler, BuildMode), ArtefactDetails]())
-
-      val thrownException : Throwable = try {
-
-        localArtefactPurge.apply(project, compiler, mode)
-        null
-      } catch {
-        case e : Throwable => e
-      }
-
-      it("Then the details are processed") {
-        Mockito.verify(mockProcessProjectArtefactDetails).apply(details)
-      }
-      it("Then an exception is thrown") {
-        assert(thrownException != null)
-      }
-      it("Then the expected exception is thrown") {
-        assert(thrownException.isInstanceOf[NoLocalArtefactsExistException],
-          "Expected NoLocalArtefactsExistException but was %s".format(thrownException.getClass.getSimpleName))
       }
     }
   }

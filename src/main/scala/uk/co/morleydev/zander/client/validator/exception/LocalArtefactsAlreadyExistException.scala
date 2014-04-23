@@ -1,4 +1,4 @@
-package uk.co.morleydev.zander.client.controller.exception
+package uk.co.morleydev.zander.client.validator.exception
 
 class LocalArtefactsAlreadyExistException extends RuntimeException
 

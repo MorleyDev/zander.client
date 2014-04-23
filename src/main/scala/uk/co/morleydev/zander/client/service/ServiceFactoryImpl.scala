@@ -1,16 +1,12 @@
 package uk.co.morleydev.zander.client.service
 
-import java.io.{PrintWriter, File}
+import java.io.File
 import org.apache.commons.io.FileUtils
 import scala.collection.JavaConversions
-import uk.co.morleydev.zander.client.data.fs._
+import uk.co.morleydev.zander.client.data.map.{RemoveOverlappingFilesFromArtefactDetails, SplitJsonFileNameToProjectDetails}
 import uk.co.morleydev.zander.client.data.{DataFactoryImpl, NativeProcessBuilderFactory}
 import uk.co.morleydev.zander.client.model.Configuration
 import uk.co.morleydev.zander.client.service.impl._
-import uk.co.morleydev.zander.client.util.Log
-import uk.co.morleydev.zander.client.util.Using.using
-import uk.co.morleydev.zander.client.model.Configuration
-import uk.co.morleydev.zander.client.data.map.{RemoveOverlappingFilesFromArtefactDetails, SplitJsonFileNameToProjectDetails}
 
 class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
                          temporaryDirectory : File,
@@ -77,4 +73,14 @@ class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       listFilesInDirectory,
       SplitJsonFileNameToProjectDetails,
       dataFactory.createArtefactDetailsReaderFromLocal())
+
+  def createDownloadAcquireInstallProjectArtefactsFromCacheToLocal(config : Configuration) : DownloadAcquireInstallProjectArtefacts = {
+
+    val getDtoRemote = dataFactory.createGetProjectDtoRemote(config)
+    val sourceAcquireService = createGitSourceAcquire(config)
+    val sourceCompileService = createCMakeProjectSourceCompile(config)
+    val artefactAcquire = createCachedArtefactAcquire(config)
+
+    new DownloadAcquireInstallProjectArtefactsFromCacheToLocal(getDtoRemote, sourceAcquireService, sourceCompileService, artefactAcquire)
+  }
 }
