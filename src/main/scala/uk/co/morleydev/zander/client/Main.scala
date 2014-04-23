@@ -73,6 +73,8 @@ object Main {
 
   def main(args : Array[String]) {
 
+    Log.enableLogging()
+
     class TemporaryDirectory extends AutoCloseable {
       val dirFile = Iterator.continually(new File("zander-" + args.mkString("-") + UUID.randomUUID().toString + "-tmp"))
         .dropWhile(_.exists())
