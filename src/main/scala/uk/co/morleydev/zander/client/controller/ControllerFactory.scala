@@ -23,16 +23,11 @@ class ControllerFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
 
   private val configFactoryMap = Map[Operation, (Configuration => Controller)](
     Operation.Install -> createInstallController,
-    Operation.Purge -> createPurgeController
+    Operation.Purge -> createPurgeController,
+    Operation.Update -> createUpdateController
   )
 
   def createController(operation : Operation, config : Configuration) : Controller = configFactoryMap(operation)(config)
-
-  private def createPurgeController(config : Configuration) : Controller = {
-    val purgeFromLocal = serviceFactory.createArtefactPurgeFromLocal()
-
-    new PurgeController(purgeFromLocal)
-  }
 
   private def createInstallController(config : Configuration) : Controller = {
 
@@ -47,5 +42,14 @@ class ControllerFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       sourceAcquireService,
       sourceCompileService,
       artefactAcquire)
+  }
+
+  private def createPurgeController(config : Configuration) : Controller = {
+    val purgeFromLocal = serviceFactory.createArtefactPurgeFromLocal()
+    new PurgeController(purgeFromLocal)
+  }
+
+  private def createUpdateController(config : Configuration) : Controller = {
+    new UpdateController
   }
 }

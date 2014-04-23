@@ -13,6 +13,10 @@ abstract class SpecificationTest extends FunSpec with MockitoSugar {
     it(desc, SpecificationTag)(testFunc)
   }
 
+  def _assert(value : Boolean, hint : String) : Unit = {
+    assert(value, hint)
+  }
+
   def cmakeTestCase(compiler : String, mode: String, cmakeBuildType: String, generator: String) {
     throw new NotImplementedError()
   }

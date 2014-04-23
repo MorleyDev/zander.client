@@ -110,6 +110,11 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
                   mode : String = GenStringArguments.genBuildMode()) : RealTestHarness =
     whenExecutingOperation("purge", project, compiler, mode)
 
+  def whenUpdating(project : String = GenStringArguments.genProject(),
+                   compiler : String = GenStringArguments.genCompiler(),
+                   mode : String = GenStringArguments.genBuildMode()) : RealTestHarness =
+    whenExecutingOperation("update", project, compiler, mode)
+
   def whenArtefactsAreLocallyInstalled(version: String = GenNative.genAlphaNumericString(10, 100),
                                        expectedFiles: Seq[String] = Seq[String]()) : RealTestHarness = {
     using(new PrintWriter(working.sub("%s.%s.%s.json".format(arguments(1), arguments(2), arguments(3))))) {
@@ -226,7 +231,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
 
   def thenExpectedResponseCodeWasReturned(expected : Int) : RealTestHarness = {
     parent.it("Then the response code was as expected") {
-      assert(responseCode == expected, "Expected %s but was %s".format(expected, responseCode))
+      parent._assert(responseCode == expected, "Expected %s but was %s".format(expected, responseCode))
     }
     this
   }
@@ -306,7 +311,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
 
       val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename))
 
-      assert(expectedWorkingDirectoryFiles.forall(s => installedFiles.contains(s)),
+      parent._assert(expectedWorkingDirectoryFiles.forall(s => installedFiles.contains(s)),
              "Expected files were not installed locally %s".format(expectedWorkingDirectoryFiles
                .filterNot(s => installedFiles.contains(s)).toSeq))
     }
@@ -317,7 +322,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
     parent.it("Then the expected files were removed locally") {
       val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename).getAbsolutePath)
 
-      assert(expectedWorkingDirectoryFiles.forall(s => !installedFiles.contains(s)),
+      parent._assert(expectedWorkingDirectoryFiles.forall(s => !installedFiles.contains(s)),
         "Expected files were installed locally %s".format(expectedWorkingDirectoryFiles
           .filter(s => installedFiles.contains(s)).toSeq))
     }
@@ -326,7 +331,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
 
   def thenTheLocalArtefactsWereNotTaggedWithDetails() : RealTestHarness = {
     parent.it("Then the installed files were not tagged") {
-      assert(installedArtefactDetails == null,
+      parent._assert(installedArtefactDetails == null,
              "Expected %s.%s.%s.json to not exist but it existed".format(arguments(1), arguments(2), arguments(3)))
     }
     this
@@ -334,7 +339,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
 
   def thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(expectedVersion : String) : RealTestHarness = {
     parent.it("Then the installed files were tagged with the expected version") {
-      assert(installedArtefactDetails.version == expectedVersion,
+      parent._assert(installedArtefactDetails.version == expectedVersion,
              "Expected %s but was %s".format(expectedVersion, installedArtefactDetails.version))
     }
     this
@@ -342,7 +347,7 @@ class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with Auto
 
   def thenTheLocalArtefactsWereTaggedWithTheExpectedFiles(expectedFiles : Seq[String]) : RealTestHarness = {
     parent.it("Then the installed files were tagged with the expected files") {
-      assert(installedArtefactDetails.files.diff(expectedFiles).size == 0,
+      parent._assert(installedArtefactDetails.files.diff(expectedFiles).size == 0,
         "Expected %s but was %s".format(expectedFiles, installedArtefactDetails.files))
     }
     this

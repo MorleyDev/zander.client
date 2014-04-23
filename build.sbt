@@ -12,7 +12,7 @@ libraryDependencies += "com.stackmob" % "newman_2.10" % "1.3.5"
 
 libraryDependencies += "org.apache.commons" % "commons-io" % "1.3.2"
             
-libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.1.2" % "test"
+libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.1.3" % "test"
 
 libraryDependencies += "org.scalacheck" % "scalacheck_2.10" % "1.11.3" % "test"
 
