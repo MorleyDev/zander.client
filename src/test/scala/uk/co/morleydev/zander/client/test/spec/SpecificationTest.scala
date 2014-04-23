@@ -1,15 +1,16 @@
-package uk.co.morleydev.zander.client.test.spec.util
+package uk.co.morleydev.zander.client.test.spec
 
-import org.scalatest.mock.MockitoSugar
 import org.scalatest.FunSpec
+import org.scalatest.mock.MockitoSugar
+import uk.co.morleydev.zander.client.test.spec.util.RealTestHarness
 
-abstract class TestHarnessSpec extends FunSpec with MockitoSugar {
+abstract class SpecificationTest extends FunSpec with MockitoSugar {
 
   def start() : RealTestHarness =
     new RealTestHarness(this)
 
-  def _it(desc : String)(testFunc: => Unit) : Unit = {
-    it(desc)(testFunc)
+  def it(desc : String)(testFunc: => Unit) : Unit = {
+    it(desc, SpecificationTag)(testFunc)
   }
 
   def cmakeTestCase(compiler : String, mode: String, cmakeBuildType: String, generator: String) {

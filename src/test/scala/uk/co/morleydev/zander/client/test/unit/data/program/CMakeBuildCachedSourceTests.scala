@@ -1,17 +1,15 @@
 package uk.co.morleydev.zander.client.test.unit.data.program
 
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.data.program.{ProgramRunner, CMakeBuildCachedSource}
 import java.io.File
-import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
 import org.mockito.{Matchers, Mockito}
-import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
-import uk.co.morleydev.zander.client.model.arg.BuildMode
-import uk.co.morleydev.zander.client.data.exception.CMakeBuildFailedException
 import uk.co.morleydev.zander.client.data.BuildModeBuildTypeMap
+import uk.co.morleydev.zander.client.data.exception.CMakeBuildFailedException
+import uk.co.morleydev.zander.client.data.program.{ProgramRunner, CMakeBuildCachedSource}
+import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
+import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class CMakeBuildCachedSourceTests extends FunSpec with MockitoSugar {
+class CMakeBuildCachedSourceTests extends UnitTest {
 
   describe("Given a CMakeBuildCachedSource") {
     describe("When invoking with a project, compiler and debug build mode") {

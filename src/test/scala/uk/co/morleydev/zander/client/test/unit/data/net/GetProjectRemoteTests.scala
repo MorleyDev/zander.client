@@ -1,21 +1,20 @@
 package uk.co.morleydev.zander.client.test.unit.data.net
 
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
+import com.stackmob.newman.request.HttpRequest
+import com.stackmob.newman.response.{HttpResponseCode, HttpResponse}
 import java.net.URL
+import org.mockito.{ArgumentMatcher, Mockito, Matchers}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, SECONDS}
+import scala.concurrent.{Await, future}
+import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
 import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler
-import org.mockito.{ArgumentMatcher, Mockito, Matchers}
-import scala.concurrent.{Await, future}
-import com.stackmob.newman.response.{HttpResponseCode, HttpResponse}
 import uk.co.morleydev.zander.client.model.net.ProjectDto
-import scala.concurrent.duration.{Duration, SECONDS}
-import scala.concurrent.ExecutionContext.Implicits.global
-import com.stackmob.newman.request.HttpRequest
 import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenModel, GenNative}
-import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class GetProjectRemoteTests extends FunSpec with MockitoSugar {
+class GetProjectRemoteTests extends UnitTest {
 
   describe("Given a GetProjectRemote function object") {
 

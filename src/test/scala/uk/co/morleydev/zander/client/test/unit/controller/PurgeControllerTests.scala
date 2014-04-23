@@ -1,13 +1,12 @@
 package uk.co.morleydev.zander.client.test.unit.controller
 
 import org.mockito.Mockito
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
 import uk.co.morleydev.zander.client.controller.PurgeController
 import uk.co.morleydev.zander.client.service.PurgeProjectArtefacts
 import uk.co.morleydev.zander.client.test.gen.GenModel
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class PurgeControllerTests extends FunSpec with MockitoSugar {
+class PurgeControllerTests extends UnitTest {
 
   describe("Given a purge controller") {
 

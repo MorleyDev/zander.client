@@ -2,18 +2,15 @@ package uk.co.morleydev.zander.client.test.unit.data.program
 
 import java.io.File
 import org.mockito.{Matchers, Mockito}
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.data.{BuildModeBuildTypeMap, CompilerGeneratorMap}
 import uk.co.morleydev.zander.client.data.exception.CMakePreBuildFailedException
 import uk.co.morleydev.zander.client.data.program.{ProgramRunner, CMakePreBuildCachedSource}
-import uk.co.morleydev.zander.client.model.arg.BuildCompiler
+import uk.co.morleydev.zander.client.data.{BuildModeBuildTypeMap, CompilerGeneratorMap}
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
-import uk.co.morleydev.zander.client.model.arg.BuildMode
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class CMakePrebuildCachedSourceTests extends FunSpec with MockitoSugar {
+class CMakePrebuildCachedSourceTests extends UnitTest {
 
   describe("Given a CMakePrebuildLocal") {
 

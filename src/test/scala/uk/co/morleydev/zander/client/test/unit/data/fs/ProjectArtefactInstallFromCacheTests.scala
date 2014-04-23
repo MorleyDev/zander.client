@@ -1,13 +1,12 @@
 package uk.co.morleydev.zander.client.test.unit.data.fs
 
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.FunSpec
 import java.io.File
+import org.mockito.Mockito
 import uk.co.morleydev.zander.client.data.fs.InstallProjectArtefactFromCache
 import uk.co.morleydev.zander.client.test.gen.GenModel
-import org.mockito.Mockito
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class ProjectArtefactInstallFromCacheTests extends FunSpec with MockitoSugar {
+class ProjectArtefactInstallFromCacheTests extends UnitTest {
 
   describe("Given a cache containing existing artefacts") {
     val cache = new File("some/cache/location")

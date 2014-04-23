@@ -1,11 +1,11 @@
 package uk.co.morleydev.zander.client.test.unit.model.store
 
-import org.scalatest.FunSpec
+import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import uk.co.morleydev.zander.client.model.store.SourceVersion
-import org.scalacheck.Gen
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class SourceVersionTests extends FunSpec with GeneratorDrivenPropertyChecks {
+class SourceVersionTests extends UnitTest with GeneratorDrivenPropertyChecks {
 
   implicit override val generatorDrivenConfig = PropertyCheckConfig(minSize = 10, maxSize = 20)
 

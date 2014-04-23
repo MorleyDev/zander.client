@@ -1,11 +1,11 @@
 package uk.co.morleydev.zander.client.test.unit.data.map
 
-import org.scalatest.FunSpec
 import uk.co.morleydev.zander.client.data.map.CMakeCompilerGeneratorMap
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class CMakeCompilerGeneratorMapTests extends FunSpec {
+class CMakeCompilerGeneratorMapTests extends UnitTest {
 
   private def testCase(compiler : BuildCompiler, generator : Seq[String]) {
 
@@ -18,6 +18,7 @@ class CMakeCompilerGeneratorMapTests extends FunSpec {
       }
     }
   }
+
   testCase(BuildCompiler.GnuCxx, Seq[String]("-G\"MinGW", "Makefiles\""))
   testCase(BuildCompiler.VisualStudio10, Seq[String]("-G\"Visual", "Studio", "10\""))
   testCase(BuildCompiler.VisualStudio11, Seq[String]("-G\"Visual", "Studio", "11\""))

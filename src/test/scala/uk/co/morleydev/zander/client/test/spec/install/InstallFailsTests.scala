@@ -1,10 +1,9 @@
 package uk.co.morleydev.zander.client.test.spec.install
 
-import uk.co.morleydev.zander.client.test.spec.ResponseCodes
-import uk.co.morleydev.zander.client.test.spec.util.TestHarnessSpec
+import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
 import uk.co.morleydev.zander.client.util.Using.using
 
-class InstallFailsTests extends TestHarnessSpec {
+class InstallFailsTests extends SpecificationTest {
 
   describe("Given a server does not exist") {
     describe("When an install operation is carried out") {

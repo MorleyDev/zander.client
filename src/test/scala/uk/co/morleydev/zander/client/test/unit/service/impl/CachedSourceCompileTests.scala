@@ -1,20 +1,19 @@
 package uk.co.morleydev.zander.client.test.unit.service.impl
 
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.service.impl.CompileCachedProjectSource
-import uk.co.morleydev.zander.client.data._
-import uk.co.morleydev.zander.client.test.gen.GenModel
-import org.mockito.{Matchers, Mockito}
-import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
-import uk.co.morleydev.zander.client.model.arg.Project
-import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
-import java.io.{File, FileNotFoundException}
-import org.mockito.stubbing.Answer
+import java.io.FileNotFoundException
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import org.mockito.{Matchers, Mockito}
+import uk.co.morleydev.zander.client.data._
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
+import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
+import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.model.store.CacheDetails
+import uk.co.morleydev.zander.client.service.impl.CompileCachedProjectSource
+import uk.co.morleydev.zander.client.test.gen.GenModel
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class CachedSourceCompileTests extends FunSpec with MockitoSugar {
+class CachedSourceCompileTests extends UnitTest {
   describe("Given a source details reader for a project") {
 
     val mockSourceDetailsReader = mock[ReadProjectCacheDetails]

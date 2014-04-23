@@ -1,13 +1,12 @@
 package uk.co.morleydev.zander.client.test.unit.data.fs
 
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
 import java.io.File
+import org.mockito.Mockito
 import uk.co.morleydev.zander.client.data.fs.DeleteProjectArtefactDetailsFromLocal
 import uk.co.morleydev.zander.client.test.gen.GenModel
-import org.mockito.Mockito
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class ProjectArtefactDeleteDetailsFromLocalTests extends FunSpec with MockitoSugar {
+class ProjectArtefactDeleteDetailsFromLocalTests extends UnitTest {
   describe("Given a project/compiler/mode to delete") {
 
     val workingDirectory = new File("working")

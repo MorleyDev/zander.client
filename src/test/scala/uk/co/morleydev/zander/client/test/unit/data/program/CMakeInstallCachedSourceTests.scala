@@ -2,16 +2,14 @@ package uk.co.morleydev.zander.client.test.unit.data.program
 
 import java.io.File
 import org.mockito.{Matchers, Mockito}
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
+import uk.co.morleydev.zander.client.data.BuildModeBuildTypeMap
+import uk.co.morleydev.zander.client.data.exception.CMakeInstallFailedException
 import uk.co.morleydev.zander.client.data.program.{CMakeInstallCachedSource, ProgramRunner}
-import uk.co.morleydev.zander.client.model.arg.BuildMode
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
-import uk.co.morleydev.zander.client.data.exception.{CMakeInstallFailedException, CMakePreBuildFailedException}
-import uk.co.morleydev.zander.client.data.BuildModeBuildTypeMap
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class CMakeInstallCachedSourceTests extends FunSpec with MockitoSugar {
+class CMakeInstallCachedSourceTests extends UnitTest {
 
   describe("Given a CMakeInstallLocal") {
 

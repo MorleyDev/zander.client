@@ -2,16 +2,16 @@ package uk.co.morleydev.zander.client.test.integration.data.net
 
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
 import java.net.URL
-import org.scalatest.FunSpec
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
 import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
 import uk.co.morleydev.zander.client.test.gen.GenModel
+import uk.co.morleydev.zander.client.test.integration.IntegrationTest
 import uk.co.morleydev.zander.client.test.util.CreateMockHttpServer
 import uk.co.morleydev.zander.client.util.Using.using
 
-class GetProjectRemoteIntegrationTests extends FunSpec {
+class GetProjectRemoteIntegrationTests extends IntegrationTest {
 
   describe("Given a GetProjectRemote function object and active server") {
 

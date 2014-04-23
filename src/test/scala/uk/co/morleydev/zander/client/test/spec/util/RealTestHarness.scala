@@ -15,13 +15,12 @@ import uk.co.morleydev.zander.client.data.{NativeProcessBuilder, NativeProcessBu
 import uk.co.morleydev.zander.client.model.Configuration
 import uk.co.morleydev.zander.client.model.ProgramConfiguration
 import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenNative}
-import uk.co.morleydev.zander.client.test.spec.TestConfigurationFile
+import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, TestConfigurationFile}
 import uk.co.morleydev.zander.client.test.spec.model.{CachedArtefactDetails, InstalledArtefactDetails}
 import uk.co.morleydev.zander.client.test.util.{TemporaryDirectory, CreateMockProcess, CreateMockHttpServer, MockServerAndPort}
 import uk.co.morleydev.zander.client.util.Using._
 
-class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCloseable {
-
+class RealTestHarness(parent : SpecificationTest) extends MockitoSugar with AutoCloseable {
 
   private val programs = new ProgramConfiguration(GenNative.genAlphaNumericString(3, 10),
     GenNative.genAlphaNumericString(3, 10),
@@ -90,18 +89,26 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
     this
   }
 
+  def whenRanWithArguments(args : Array[String]): RealTestHarness = {
+    arguments = args
+    this
+  }
+
+  def whenExecutingOperation(operation : String = GenStringArguments.genOperation(),
+                             project : String = GenStringArguments.genProject(),
+                             compiler : String = GenStringArguments.genCompiler(),
+                             mode : String = GenStringArguments.genBuildMode()): RealTestHarness =
+    whenRanWithArguments(Array[String](operation, project, compiler, mode))
+
   def whenInstalling(project : String = GenStringArguments.genProject(),
                      compiler : String = GenStringArguments.genCompiler(),
-                     mode : String = GenStringArguments.genBuildMode()) : RealTestHarness = {
-    arguments = Array[String]("install", project, compiler, mode)
-    this
-  }
+                     mode : String = GenStringArguments.genBuildMode()) : RealTestHarness =
+    whenExecutingOperation("install", project, compiler, mode)
+
   def whenPurging(project : String = GenStringArguments.genProject(),
                   compiler : String = GenStringArguments.genCompiler(),
-                  mode : String = GenStringArguments.genBuildMode()) : RealTestHarness = {
-    arguments = Array[String]("purge", project, compiler, mode)
-    this
-  }
+                  mode : String = GenStringArguments.genBuildMode()) : RealTestHarness =
+    whenExecutingOperation("purge", project, compiler, mode)
 
   def whenArtefactsAreLocallyInstalled(version: String = GenNative.genAlphaNumericString(10, 100),
                                        expectedFiles: Seq[String] = Seq[String]()) : RealTestHarness = {
@@ -204,27 +211,28 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
       )
     } catch {
       case e: FileNotFoundException => null
+      case e: ArrayIndexOutOfBoundsException => null
     }
     this
   }
 
   def thenTheExpectedServerRequestsWereHandled() : RealTestHarness = {
 
-    parent._it("Then the expected server requests were handled") {
+    parent.it("Then the expected server requests were handled") {
       mockServer.server.verify()
     }
     this
   }
 
   def thenExpectedResponseCodeWasReturned(expected : Int) : RealTestHarness = {
-    parent._it("Then the response code was as expected") {
+    parent.it("Then the response code was as expected") {
       assert(responseCode == expected, "Expected %s but was %s".format(expected, responseCode))
     }
     this
   }
 
   def thenAGitCloneWasInvoked(gitUrl : String) : RealTestHarness = {
-    parent._it("Then a git clone was invoked on " + gitUrl) {
+    parent.it("Then a git clone was invoked on " + gitUrl) {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "source"))
       Mockito.verify(mockGitProcessBuilder._1).directory(cache.sub(arguments(1)))
       Mockito.verify(mockGitProcessBuilder._1).start()
@@ -234,7 +242,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   }
 
   def thenAGitUpdateWasInvoked() : RealTestHarness = {
-    parent._it("Then a git update was invoked") {
+    parent.it("Then a git update was invoked") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "pull"))
       Mockito.verify(mockGitProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
       Mockito.verify(mockGitProcessBuilder._1).start()
@@ -244,7 +252,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   }
 
   def thenTheGitVersionWasRetrieved() : RealTestHarness = {
-    parent._it("Then the git source version was retrieved") {
+    parent.it("Then the git source version was retrieved") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "rev-parse", "HEAD"))
       Mockito.verify(mockGitVersionProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
       Mockito.verify(mockGitVersionProcessBuilder._1).start()
@@ -257,7 +265,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
 
     val generatorSequence = generator.split(' ')
 
-    parent._it("Then a cmake prebuild was invoked") {
+    parent.it("Then a cmake prebuild was invoked") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake,
         new File(cache.file, arguments(1) + "/source").getAbsolutePath) ++
         generatorSequence ++
@@ -273,7 +281,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   }
 
   def thenACMakeBuildWasInvoked(buildType : String) : RealTestHarness = {
-    parent._it("Then a cmake build was invoked") {
+    parent.it("Then a cmake build was invoked") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", ".", "--config", buildType))
       Mockito.verify(mockCmakeBuildProcessBuilder._1).directory(tmp.file)
       Mockito.verify(mockCmakeBuildProcessBuilder._1).start()
@@ -284,7 +292,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
 
   def thenAMakeInstallWasInvoked(buildType: String) : RealTestHarness = {
 
-    parent._it("Then a make install was invoked") {
+    parent.it("Then a make install was invoked") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake, "--build", ".", "--config", buildType, "--target", "install"))
       Mockito.verify(mockCmakeInstallProcessBuilder._1).directory(tmp.file)
       Mockito.verify(mockCmakeInstallProcessBuilder._1).start()
@@ -294,7 +302,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   }
 
   def thenTheExpectedFilesWereInstalledLocally(expectedFiles : Seq[String]) : RealTestHarness = {
-    parent._it("Then the expected files were installed locally") {
+    parent.it("Then the expected files were installed locally") {
 
       val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename))
 
@@ -306,7 +314,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   }
 
   def thenTheExpectedFilesWereRemovedLocally(expectedFiles : Seq[String]) : RealTestHarness = {
-    parent._it("Then the expected files were removed locally") {
+    parent.it("Then the expected files were removed locally") {
       val expectedWorkingDirectoryFiles = expectedFiles.map(filename => working.sub(filename).getAbsolutePath)
 
       assert(expectedWorkingDirectoryFiles.forall(s => !installedFiles.contains(s)),
@@ -317,7 +325,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   }
 
   def thenTheLocalArtefactsWereNotTaggedWithDetails() : RealTestHarness = {
-    parent._it("Then the installed files were not tagged") {
+    parent.it("Then the installed files were not tagged") {
       assert(installedArtefactDetails == null,
              "Expected %s.%s.%s.json to not exist but it existed".format(arguments(1), arguments(2), arguments(3)))
     }
@@ -325,7 +333,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   }
 
   def thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(expectedVersion : String) : RealTestHarness = {
-    parent._it("Then the installed files were tagged with the expected version") {
+    parent.it("Then the installed files were tagged with the expected version") {
       assert(installedArtefactDetails.version == expectedVersion,
              "Expected %s but was %s".format(expectedVersion, installedArtefactDetails.version))
     }
@@ -333,7 +341,7 @@ class RealTestHarness(parent : TestHarnessSpec) extends MockitoSugar with AutoCl
   }
 
   def thenTheLocalArtefactsWereTaggedWithTheExpectedFiles(expectedFiles : Seq[String]) : RealTestHarness = {
-    parent._it("Then the installed files were tagged with the expected files") {
+    parent.it("Then the installed files were tagged with the expected files") {
       assert(installedArtefactDetails.files.diff(expectedFiles).size == 0,
         "Expected %s but was %s".format(expectedFiles, installedArtefactDetails.files))
     }

@@ -1,15 +1,14 @@
 package uk.co.morleydev.zander.client.test.unit.data.fs
 
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
-import java.io.File
-import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
-import org.mockito.{Matchers, Mockito}
 import com.lambdaworks.jacks.JacksMapper
-import uk.co.morleydev.zander.client.model.store.ArtefactDetails
+import java.io.File
+import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.data.fs.ReadProjectArtefactDetailsFromLocal
+import uk.co.morleydev.zander.client.model.store.ArtefactDetails
+import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class ProjectArtefactDetailsReaderFromLocalTests extends FunSpec with MockitoSugar {
+class ProjectArtefactDetailsReaderFromLocalTests extends UnitTest {
   describe("Given a project artefact details reader") {
 
     val workingDirectory = new File("wd")

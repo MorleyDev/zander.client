@@ -1,14 +1,13 @@
 package uk.co.morleydev.zander.client.test.unit.data.program
 
-import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.data.program.{ProgramRunner, GitDownloadSourceToCache}
-import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
-import org.mockito.{Matchers, Mockito}
 import java.io.File
+import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.data.exception.GitDownloadFailedException
+import uk.co.morleydev.zander.client.data.program.{ProgramRunner, GitDownloadSourceToCache}
+import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class GitDownloadRemoteTests extends FunSpec with MockitoSugar {
+class GitDownloadRemoteTests extends UnitTest {
 
   describe("Given a GitDownloadRemote") {
     val expectedCacheDirectory = new File("./some/cache/dir")

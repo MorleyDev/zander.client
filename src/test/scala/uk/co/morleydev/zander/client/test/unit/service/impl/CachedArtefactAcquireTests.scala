@@ -1,13 +1,12 @@
 package uk.co.morleydev.zander.client.test.unit.service.impl
 
 import org.mockito.Mockito
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.service.impl.AcquireCachedArtefacts
 import uk.co.morleydev.zander.client.data.{ListProjectCacheFiles, WriteProjectArtefactVersion, InstallProjectArtefact}
+import uk.co.morleydev.zander.client.service.impl.AcquireCachedArtefacts
 import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class CachedArtefactAcquireTests extends FunSpec with MockitoSugar {
+class CachedArtefactAcquireTests extends UnitTest {
 
   describe("Given a cached artefact acquire service") {
     val mockArtefactInstall = mock[InstallProjectArtefact]

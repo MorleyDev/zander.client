@@ -2,14 +2,13 @@ package uk.co.morleydev.zander.client.test.unit.data.program
 
 import java.io.{ByteArrayInputStream, File}
 import org.mockito.{Matchers, Mockito}
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
+import uk.co.morleydev.zander.client.data.exception.GitVersionCheckFailedException
 import uk.co.morleydev.zander.client.data.program.GetGitSourceVersion
 import uk.co.morleydev.zander.client.data.{NativeProcessBuilder, NativeProcessBuilderFactory}
 import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
-import uk.co.morleydev.zander.client.data.exception.GitVersionCheckFailedException
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class GetGitSourceVersionTests extends FunSpec with MockitoSugar {
+class GetGitSourceVersionTests extends UnitTest {
 
   describe("Given a git source in the cache") {
 

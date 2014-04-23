@@ -1,9 +1,9 @@
 package uk.co.morleydev.zander.client.test.unit.util
 
-import org.scalatest.FunSpec
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 import uk.co.morleydev.zander.client.util.Using
 
-class UsingTests extends FunSpec {
+class UsingTests extends UnitTest {
 
   describe("Given an autoclosable") {
     class MockAutoCloseable {

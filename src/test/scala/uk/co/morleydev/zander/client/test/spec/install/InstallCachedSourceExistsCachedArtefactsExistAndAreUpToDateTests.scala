@@ -2,11 +2,10 @@ package uk.co.morleydev.zander.client.test.spec.install
 
 import uk.co.morleydev.zander.client.util.Using._
 import uk.co.morleydev.zander.client.test.gen.GenNative
-import uk.co.morleydev.zander.client.test.spec.ResponseCodes
-import uk.co.morleydev.zander.client.test.spec.util.TestHarnessSpec
+import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
 import java.io.File
 
-class InstallCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends TestHarnessSpec {
+class InstallCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends SpecificationTest {
 
   override def noBuildTestCase(compiler : String, mode: String) = {
     describe("Given the project/compiler endpoint exists and the cache already contains the source but no artefacts") {

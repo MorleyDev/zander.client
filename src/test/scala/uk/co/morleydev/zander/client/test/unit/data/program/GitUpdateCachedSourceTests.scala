@@ -1,14 +1,13 @@
 package uk.co.morleydev.zander.client.test.unit.data.program
 
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.data.program.{ProgramRunner, GitUpdateCachedSource}
-import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
 import java.io.File
 import org.mockito.{Matchers, Mockito}
-import uk.co.morleydev.zander.client.data.exception.{GitUpdateFailedException, GitDownloadFailedException}
+import uk.co.morleydev.zander.client.data.exception.GitUpdateFailedException
+import uk.co.morleydev.zander.client.data.program.{ProgramRunner, GitUpdateCachedSource}
+import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class GitUpdateCachedSourceTests extends FunSpec with MockitoSugar {
+class GitUpdateCachedSourceTests extends UnitTest {
 
   describe("Given a project and dto with a git repository") {
 

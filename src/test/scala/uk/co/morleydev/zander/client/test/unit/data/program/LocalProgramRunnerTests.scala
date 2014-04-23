@@ -1,14 +1,13 @@
 package uk.co.morleydev.zander.client.test.unit.data.program
 
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.data.program.LocalProgramRunner
-import org.mockito.{Matchers, Mockito}
-import uk.co.morleydev.zander.client.test.gen.GenNative
-import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, NativeProcessBuilder}
 import java.io.File
+import org.mockito.{Matchers, Mockito}
+import uk.co.morleydev.zander.client.data.program.LocalProgramRunner
+import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, NativeProcessBuilder}
+import uk.co.morleydev.zander.client.test.gen.GenNative
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class LocalProgramRunnerTests extends FunSpec with MockitoSugar {
+class LocalProgramRunnerTests extends UnitTest {
   describe("Given a local program runner") {
 
     val mockProcess = mock[Process]

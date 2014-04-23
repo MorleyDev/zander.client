@@ -1,15 +1,14 @@
 package uk.co.morleydev.zander.client.test.unit.data.fs
 
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.data.fs.ReadProjectCacheDetailsFromCache
-import java.io.File
-import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
-import org.mockito.{Matchers, Mockito}
 import com.lambdaworks.jacks.JacksMapper
+import java.io.File
+import org.mockito.{Matchers, Mockito}
+import uk.co.morleydev.zander.client.data.fs.ReadProjectCacheDetailsFromCache
 import uk.co.morleydev.zander.client.model.store.CacheDetails
+import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class ProjectSourceDetailsReaderFromCacheTests extends FunSpec with MockitoSugar {
+class ProjectSourceDetailsReaderFromCacheTests extends UnitTest {
   describe("Given a project source details reader") {
 
     val cache = new File("cache")

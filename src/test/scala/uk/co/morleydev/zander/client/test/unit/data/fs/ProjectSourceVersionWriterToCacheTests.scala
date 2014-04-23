@@ -1,15 +1,14 @@
 package uk.co.morleydev.zander.client.test.unit.data.fs
 
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.data.fs.WriteProjectSourceDetailsToCache
-import uk.co.morleydev.zander.client.test.gen.GenModel
 import com.lambdaworks.jacks.JacksMapper
-import uk.co.morleydev.zander.client.model.store.CacheDetails
 import java.io.File
 import org.mockito.Mockito
+import uk.co.morleydev.zander.client.data.fs.WriteProjectSourceDetailsToCache
+import uk.co.morleydev.zander.client.model.store.CacheDetails
+import uk.co.morleydev.zander.client.test.gen.GenModel
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class ProjectSourceVersionWriterToCacheTests extends FunSpec with MockitoSugar {
+class ProjectSourceVersionWriterToCacheTests extends UnitTest {
   describe("Given a project source version writer") {
 
     val cache = new File("cache")

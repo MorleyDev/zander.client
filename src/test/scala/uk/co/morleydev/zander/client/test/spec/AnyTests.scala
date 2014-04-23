@@ -1,148 +1,75 @@
 package uk.co.morleydev.zander.client.test.spec
 
-import java.io.File
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
-import scala.util.Random
-import uk.co.morleydev.zander.client.Main
-import uk.co.morleydev.zander.client.data.NativeProcessBuilderFactory
-import uk.co.morleydev.zander.client.model.Configuration
 import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenNative}
 import uk.co.morleydev.zander.client.util.Using._
 
-class AnyTests extends FunSpec with MockitoSugar {
+class AnyTests extends SpecificationTest {
 
-  describe("Given Zander when running with an invalid number of arguments") {
-    val arguments = GenNative.genSequence(0, 3, () => GenNative.genAlphaNumericString(1, 10)).toArray
-
-    val responseCode = using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      Main.main(arguments,
-        config.file.getAbsolutePath,
-        mock[NativeProcessBuilderFactory],
-        new File("tmpAny0"),
-        new File("working_directory_AnyTests0"))
-    }
-
-    it("Then the expected response code is returned") {
-      assert(responseCode == ResponseCodes.InvalidArgumentCount)
+  describe("Given Zander When running with an invalid number of arguments") {
+    using(this.start()) {
+      harness =>
+        harness
+          .whenRanWithArguments(GenNative.genSequence(0, 3, () => GenNative.genAlphaNumericString(1, 10)).toArray)
+          .invokeMain()
+          .thenExpectedResponseCodeWasReturned(ResponseCodes.InvalidArgumentCount)
     }
   }
 
-  describe("Given Zander when running an invalid operation") {
-
-    val operation = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.operations)
-
-    val arguments = Array[String](operation,
-                                  GenStringArguments.genProject(),
-                                  GenStringArguments.genCompiler(),
-                                  GenStringArguments.genBuildMode())
-
-    var responseCode = 0
-    using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      responseCode = Main.main(arguments,
-        config.file.getAbsolutePath,
-        mock[NativeProcessBuilderFactory],
-        new File("tmpAny0"),
-        new File("working_directory_AnyTests0"))
-    }
-
-    it("Then the program exits with the expected code") {
-      assert(responseCode == ResponseCodes.InvalidOperation)
+  describe("Given Zander When running an invalid operation") {
+    using(this.start()) {
+      harness =>
+        val invalidOperation = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.operations)
+        harness
+          .whenExecutingOperation(invalidOperation)
+          .invokeMain()
+          .thenExpectedResponseCodeWasReturned(ResponseCodes.InvalidOperation)
     }
   }
 
-  describe("Given Zander when running an invalid compiler") {
-
-    val compiler = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.compilers)
-
-    val arguments = Array[String](GenStringArguments.genOperation(),
-      GenStringArguments.genProject(), compiler,
-      GenStringArguments.genBuildMode())
-
-    var responseCode = 0
-    using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      responseCode = Main.main(arguments,
-        config.file.getAbsolutePath,
-        mock[NativeProcessBuilderFactory],
-        new File("tmpAny1"),
-        new File("working_directory_AnyTests1"))
-    }
-
-    it("Then the program exits with the expected code") {
-      assert(responseCode == ResponseCodes.InvalidCompiler)
+  describe("Given Zander When running an invalid compiler") {
+    using(this.start()) {
+      harness =>
+        val invokedCompiler = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.compilers)
+        harness
+          .whenExecutingOperation(compiler = invokedCompiler)
+          .invokeMain()
+          .thenExpectedResponseCodeWasReturned(ResponseCodes.InvalidCompiler)
     }
   }
 
   describe("Given Zander when running an invalid build mode") {
-
-    val buildMode = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.buildModes)
-
-    val arguments = Array[String](GenStringArguments.genOperation(),
-      GenStringArguments.genProject(),
-      GenStringArguments.genCompiler(),
-      buildMode)
-
-    var responseCode = -1
-    using(new TestConfigurationFile(new Configuration("http://localhost"))) { config =>
-      responseCode = Main.main(arguments,
-        config.file.getAbsolutePath,
-        mock[NativeProcessBuilderFactory],
-        new File("tmpAny2"),
-        new File("working_directory_AnyTests2"))
-    }
-
-    it("Then the program exits with the expected code") {
-      assert(responseCode == ResponseCodes.InvalidBuildMode)
+    using(this.start()) {
+      harness =>
+        val invalidBuildMode = GenNative.genAlphaNumericStringExcluding(1, 10, GenStringArguments.buildModes)
+        harness
+          .whenExecutingOperation(mode = invalidBuildMode)
+          .invokeMain()
+          .thenExpectedResponseCodeWasReturned(ResponseCodes.InvalidBuildMode)
     }
   }
 
   describe("Given Zander when running any operation with a non-alphanumeric project") {
+    using(this.start()) {
+      harness =>
+        val invalidProject = Iterator.continually(GenNative.genAsciiString(1, 20))
+          .find(f => !f.forall(c => c.isLetterOrDigit))
+          .get
 
-    val random = new Random
-    val project = Iterator.continually(random.nextString(random.nextInt(20)+1))
-                          .find(f => !f.forall(c => c.isLetterOrDigit))
-                          .get
-
-    val arguments = Array[String](GenStringArguments.genOperation(),
-                                  project,
-                                  GenStringArguments.genCompiler(),
-                                  GenStringArguments.genBuildMode())
-
-    var responseCode = 0
-    using(new TestConfigurationFile(new Configuration(GenNative.genHttpUrl().toString))) { config =>
-      responseCode = Main.main(arguments,
-        config.file.getAbsolutePath,
-        mock[NativeProcessBuilderFactory],
-        new File("tmpAny3"),
-        new File("working_directory_AnyTests3"))
-    }
-
-    it("Then the program exits with the expected code") {
-      assert(responseCode == ResponseCodes.InvalidProject)
+        harness
+          .whenExecutingOperation(project = invalidProject)
+          .invokeMain()
+          .thenExpectedResponseCodeWasReturned(ResponseCodes.InvalidProject)
     }
   }
 
   describe("Given Zander when running any operation with a project of invalid length") {
-
-    val project = GenNative.genAlphaNumericString(21, 50)
-
-    val arguments = Array[String](GenStringArguments.genOperation(),
-                                  project,
-                                  GenStringArguments.genCompiler(),
-                                  GenStringArguments.genBuildMode())
-
-    var responseCode = 0
-    using(new TestConfigurationFile(new Configuration(GenNative.genHttpUrl().toString))) { config =>
-      responseCode = Main.main(arguments,
-        config.file.getAbsolutePath,
-        mock[NativeProcessBuilderFactory],
-        new File("tmpAny4"),
-        new File("working_directory_AnyTests4"))
-    }
-
-    it("Then the program exits with the expected code") {
-      assert(responseCode == ResponseCodes.InvalidProject)
+    using(this.start()) {
+      harness =>
+        val invalidProject = GenNative.genAlphaNumericString(21, 50)
+        harness
+          .whenExecutingOperation(project = invalidProject)
+          .invokeMain()
+          .thenExpectedResponseCodeWasReturned(ResponseCodes.InvalidProject)
     }
   }
-
 }

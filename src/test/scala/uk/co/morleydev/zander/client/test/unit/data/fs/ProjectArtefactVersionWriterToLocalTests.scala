@@ -3,13 +3,12 @@ package uk.co.morleydev.zander.client.test.unit.data.fs
 import com.lambdaworks.jacks.JacksMapper
 import java.io.File
 import org.mockito.Mockito
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
 import uk.co.morleydev.zander.client.data.fs.WriteProjectArtefactVersionToLocal
 import uk.co.morleydev.zander.client.model.store.ArtefactDetails
 import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class ProjectArtefactVersionWriterToLocalTests extends FunSpec with MockitoSugar {
+class ProjectArtefactVersionWriterToLocalTests extends UnitTest {
   describe("Given a working directory when writing a project/compiler/mode/version"){
 
     val mockFileWriter = mock[(String, File) => Unit]

@@ -1,15 +1,15 @@
 package uk.co.morleydev.zander.client.test.unit.data.map
 
 import org.scalacheck.Gen
-import org.scalatest.FunSpec
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import uk.co.morleydev.zander.client.data.map.SplitJsonFileNameToProjectDetails
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.arg.{BuildCompiler, BuildMode, Project}
 import uk.co.morleydev.zander.client.test.gen.GenModel
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class SplitJsonFileNameToProjectDetailsTests extends FunSpec with GeneratorDrivenPropertyChecks {
+class SplitJsonFileNameToProjectDetailsTests extends UnitTest with GeneratorDrivenPropertyChecks {
 
   implicit override val generatorDrivenConfig = PropertyCheckConfig(minSize = 10, maxSize = 20)
 

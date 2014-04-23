@@ -2,11 +2,10 @@ package uk.co.morleydev.zander.client.test.spec.install
 
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import uk.co.morleydev.zander.client.util.Using._
-import uk.co.morleydev.zander.client.test.spec.ResponseCodes
-import uk.co.morleydev.zander.client.test.spec.util.TestHarnessSpec
+import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
 import java.io.File
 
-class InstallCachedSourceExistsCachedArtefactsDoNotExistTests extends TestHarnessSpec {
+class InstallCachedSourceExistsCachedArtefactsDoNotExistTests extends SpecificationTest {
 
   override def cmakeTestCase(compiler : String, mode : String, cmakeBuildType: String, generator: String) = {
 

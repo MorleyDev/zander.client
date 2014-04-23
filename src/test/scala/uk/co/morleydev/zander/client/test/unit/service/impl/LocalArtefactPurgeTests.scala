@@ -1,8 +1,6 @@
 package uk.co.morleydev.zander.client.test.unit.service.impl
 
 import org.mockito.{Matchers, Mockito}
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
 import uk.co.morleydev.zander.client.data.{ProcessProjectArtefactDetailsMap, DeleteProjectArtefactDetails, DeleteProjectArtefacts}
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler._
 import uk.co.morleydev.zander.client.model.arg.BuildMode._
@@ -12,8 +10,9 @@ import uk.co.morleydev.zander.client.service.GetAllProjectArtefactDetails
 import uk.co.morleydev.zander.client.service.exception.NoLocalArtefactsExistException
 import uk.co.morleydev.zander.client.service.impl.LocalArtefactPurge
 import uk.co.morleydev.zander.client.test.gen.GenModel
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class LocalArtefactPurgeTests extends FunSpec with MockitoSugar {
+class LocalArtefactPurgeTests extends UnitTest {
 
   describe("Given a purge of local artefacts") {
 

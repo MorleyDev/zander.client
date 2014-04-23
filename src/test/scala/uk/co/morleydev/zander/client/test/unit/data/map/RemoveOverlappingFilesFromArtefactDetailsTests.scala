@@ -1,13 +1,13 @@
 package uk.co.morleydev.zander.client.test.unit.data.map
 
-import org.scalatest.FunSpec
 import uk.co.morleydev.zander.client.data.map.RemoveOverlappingFilesFromArtefactDetails
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler._
 import uk.co.morleydev.zander.client.model.arg.BuildMode._
 import uk.co.morleydev.zander.client.model.arg.{BuildMode, BuildCompiler, Project}
 import uk.co.morleydev.zander.client.model.store.ArtefactDetails
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class RemoveOverlappingFilesFromArtefactDetailsTests extends FunSpec {
+class RemoveOverlappingFilesFromArtefactDetailsTests extends UnitTest {
   describe("Given a map of project details to artefact details") {
 
     val removeOverlapping = RemoveOverlappingFilesFromArtefactDetails

@@ -1,11 +1,11 @@
 package uk.co.morleydev.zander.client.test.unit.data.map
 
-import org.scalatest.FunSpec
+import uk.co.morleydev.zander.client.data.map.CMakeBuildModeBuildTypeMap
 import uk.co.morleydev.zander.client.model.arg.BuildMode
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
-import uk.co.morleydev.zander.client.data.map.CMakeBuildModeBuildTypeMap
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class CMakeBuildTypeMapTests extends FunSpec {
+class CMakeBuildTypeMapTests extends UnitTest {
 
   private def testCase(buildMode : BuildMode, buildType : String) {
 

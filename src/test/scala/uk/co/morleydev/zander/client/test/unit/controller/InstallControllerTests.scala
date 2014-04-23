@@ -1,26 +1,24 @@
 package uk.co.morleydev.zander.client.test.unit.controller
 
-import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
-import uk.co.morleydev.zander.client.model.arg.{Project, BuildCompiler, BuildMode}
-import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
-import org.scalatest.mock.MockitoSugar
-import org.mockito.{Matchers, Mockito}
-import scala.concurrent.future
-import scala.concurrent.ExecutionContext.Implicits.global
-import uk.co.morleydev.zander.client.controller.InstallController
-import uk.co.morleydev.zander.client.data._
-import uk.co.morleydev.zander.client.service.{AcquireProjectArtefacts, CompileProjectSource, AcquireProjectSource}
-import uk.co.morleydev.zander.client.model.net.ProjectDto
-import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
-import uk.co.morleydev.zander.client.model.arg.BuildMode
-import org.mockito.stubbing.Answer
-import uk.co.morleydev.zander.client.model.store.ArtefactDetails
-import org.mockito.invocation.InvocationOnMock
 import java.io.FileNotFoundException
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import org.mockito.{Matchers, Mockito}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.future
+import uk.co.morleydev.zander.client.controller.InstallController
 import uk.co.morleydev.zander.client.controller.exception.LocalArtefactsAlreadyExistException
+import uk.co.morleydev.zander.client.data._
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
+import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
+import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.model.net.ProjectDto
+import uk.co.morleydev.zander.client.model.store.ArtefactDetails
+import uk.co.morleydev.zander.client.service.{AcquireProjectArtefacts, CompileProjectSource, AcquireProjectSource}
+import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class InstallControllerTests extends FunSpec with MockitoSugar {
+class InstallControllerTests extends UnitTest {
   describe("Given an install controller") {
     val mockArtefactDetailsReader = mock[ReadProjectArtefactDetails]
     val mockGetProjectDto = mock[GetProjectDto]

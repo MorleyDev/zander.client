@@ -1,21 +1,19 @@
 package uk.co.morleydev.zander.client.test.unit
 
-import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.Program
-import uk.co.morleydev.zander.client.model.arg.{Project, BuildCompiler, BuildMode, Operation}
-import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
-import uk.co.morleydev.zander.client.model.{ExitCodes, Arguments, Configuration}
-import org.scalatest.mock.MockitoSugar
 import org.mockito.{Matchers, Mockito}
-import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
+import uk.co.morleydev.zander.client.Program
+import uk.co.morleydev.zander.client.controller.exception.LocalArtefactsAlreadyExistException
 import uk.co.morleydev.zander.client.controller.{Controller, ControllerFactory}
+import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.arg.Operation.Operation
-import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
-import uk.co.morleydev.zander.client.controller.exception.LocalArtefactsAlreadyExistException
+import uk.co.morleydev.zander.client.model.arg.{Project, BuildCompiler, BuildMode}
+import uk.co.morleydev.zander.client.model.{ExitCodes, Arguments, Configuration}
 import uk.co.morleydev.zander.client.service.exception.NoLocalArtefactsExistException
+import uk.co.morleydev.zander.client.test.gen.{GenModel, GenNative}
 
-class ProgramTests extends FunSpec with MockitoSugar {
+class ProgramTests extends UnitTest {
 
   val expectedOperation = GenModel.arg.genOperation()
   val expectedCompiler = GenNative.genOneFrom(BuildCompiler.values.toSeq)

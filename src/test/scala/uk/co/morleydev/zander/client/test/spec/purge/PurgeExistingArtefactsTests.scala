@@ -1,12 +1,11 @@
 package uk.co.morleydev.zander.client.test.spec.purge
 
 import uk.co.morleydev.zander.client.util.Using.using
-import uk.co.morleydev.zander.client.test.spec.util.TestHarnessSpec
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import java.io.File
-import uk.co.morleydev.zander.client.test.spec.ResponseCodes
+import uk.co.morleydev.zander.client.test.spec.{SpecificationTest, ResponseCodes}
 
-class PurgeExistingArtefactsTests extends TestHarnessSpec {
+class PurgeExistingArtefactsTests extends SpecificationTest {
   describe("Given locally installed artefacts") {
     describe("When purging") {
       val expectedFiles = Seq[String]("include/" + GenNative.genAlphaNumericString(1, 20),

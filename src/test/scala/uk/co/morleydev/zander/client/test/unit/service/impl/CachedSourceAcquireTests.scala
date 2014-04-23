@@ -1,15 +1,14 @@
 package uk.co.morleydev.zander.client.test.unit.service.impl
 
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.FunSpec
-import uk.co.morleydev.zander.client.service.impl.AcquireCachedSource
 import java.io.File
-import uk.co.morleydev.zander.client.data.{GetProjectSourceVersion, UpdateProjectSource, DownloadProjectSource}
-import uk.co.morleydev.zander.client.test.gen.GenModel
 import org.mockito.{Matchers, Mockito}
+import uk.co.morleydev.zander.client.data.{GetProjectSourceVersion, UpdateProjectSource, DownloadProjectSource}
 import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.service.impl.AcquireCachedSource
+import uk.co.morleydev.zander.client.test.gen.GenModel
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class CachedSourceAcquireTests extends FunSpec with MockitoSugar {
+class CachedSourceAcquireTests extends UnitTest {
   describe("Given a project and project dto") {
 
     val cache = new File("cache")

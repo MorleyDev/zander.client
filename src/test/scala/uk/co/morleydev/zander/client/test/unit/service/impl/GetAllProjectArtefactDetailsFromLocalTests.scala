@@ -1,20 +1,20 @@
 package uk.co.morleydev.zander.client.test.unit.service.impl
 
+import java.io.File
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.FunSpec
 import org.scalatest.mock.MockitoSugar
-import uk.co.morleydev.zander.client.service.impl.GetAllProjectArtefactDetailsFromLocal
-import java.io.File
-import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.data.ReadProjectArtefactDetails
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler._
 import uk.co.morleydev.zander.client.model.arg.BuildMode._
-import uk.co.morleydev.zander.client.data.ReadProjectArtefactDetails
-import org.mockito.{Matchers, Mockito}
+import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.service.impl.GetAllProjectArtefactDetailsFromLocal
 import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
-import org.mockito.stubbing.Answer
-import org.mockito.invocation.InvocationOnMock
-import uk.co.morleydev.zander.client.model.store.ArtefactDetails
+import uk.co.morleydev.zander.client.test.unit.UnitTest
 
-class GetAllProjectArtefactDetailsFromLocalTests extends FunSpec with MockitoSugar {
+class GetAllProjectArtefactDetailsFromLocalTests extends UnitTest {
   describe("Given a working directory") {
 
     val mockGetFilesInDirectory = mock[(File, String) => Seq[File]]
