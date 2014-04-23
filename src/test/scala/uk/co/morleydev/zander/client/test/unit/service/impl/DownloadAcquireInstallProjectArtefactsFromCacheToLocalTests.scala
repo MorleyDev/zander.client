@@ -40,6 +40,9 @@ class DownloadAcquireInstallProjectArtefactsFromCacheToLocalTests extends UnitTe
 
       acquirer.apply(project, compiler, mode)
 
+      it("Then the project dto is acquired") {
+        Mockito.verify(mockGetProjectDto).apply(project, compiler)
+      }
       it("Then the source is acquired") {
         Mockito.verify(mockAcquireSource).apply(project, dto)
       }

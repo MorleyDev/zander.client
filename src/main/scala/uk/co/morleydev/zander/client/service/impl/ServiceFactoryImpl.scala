@@ -87,8 +87,17 @@ class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
 
   override def createDownloadAcquireUpdateProjectArtefactsFromCacheToLocal(config : Configuration) : DownloadAcquireUpdateProjectArtefacts = {
     val purge= createArtefactPurgeFromLocal()
-    val downloadAcquireInstall = createDownloadAcquireInstallProjectArtefactsFromCacheToLocal(config)
+    val getDtoRemote = dataFactory.createGetProjectDtoRemote(config)
+    val sourceAcquireService = createGitSourceAcquire(config)
+    val sourceCompileService = createCMakeProjectSourceCompile(config)
+    val readDetails = dataFactory.createArtefactDetailsReaderFromLocal()
+    val artefactAcquire = createCachedArtefactAcquire(config)
 
-    new DownloadAcquireUpdateProjectArtefactsFromCacheToLocal(purge,downloadAcquireInstall)
+    new DownloadAcquireUpdateProjectArtefactsFromCacheToLocal(getDtoRemote,
+      sourceAcquireService,
+      sourceCompileService,
+      readDetails,
+      purge,
+      artefactAcquire)
   }
 }
