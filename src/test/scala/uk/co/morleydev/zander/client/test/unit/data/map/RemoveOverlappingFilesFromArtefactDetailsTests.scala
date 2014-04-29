@@ -15,7 +15,7 @@ class RemoveOverlappingFilesFromArtefactDetailsTests extends UnitTest {
     describe("When removing overlapping files") {
 
       val mapWithOverlapping = Map[(Project, BuildCompiler, BuildMode), ArtefactDetails](
-        (new Project("asdasd"), BuildCompiler.GnuCxx, BuildMode.Debug)
+        (new Project("asdasd"), BuildCompiler.Mingw, BuildMode.Debug)
           -> new ArtefactDetails("some1", Seq[String]("file1", "file2", "file3")),
 
         (new Project("asdafw"), BuildCompiler.VisualStudio10, BuildMode.Debug)
@@ -26,7 +26,7 @@ class RemoveOverlappingFilesFromArtefactDetailsTests extends UnitTest {
       )
 
       val expectedResult = Map[(Project, BuildCompiler, BuildMode), ArtefactDetails](
-        (new Project("asdasd"), BuildCompiler.GnuCxx, BuildMode.Debug)
+        (new Project("asdasd"), BuildCompiler.Mingw, BuildMode.Debug)
           -> new ArtefactDetails("some1", Seq[String]()),
 
         (new Project("asdafw"), BuildCompiler.VisualStudio10, BuildMode.Debug)

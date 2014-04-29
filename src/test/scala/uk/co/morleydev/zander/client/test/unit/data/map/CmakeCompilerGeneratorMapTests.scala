@@ -19,10 +19,17 @@ class CMakeCompilerGeneratorMapTests extends UnitTest {
     }
   }
 
-  testCase(BuildCompiler.GnuCxx, Seq[String]("-G\"MinGW", "Makefiles\""))
+  testCase(BuildCompiler.Mingw, Seq[String]("-G\"MinGW", "Makefiles\""))
+  testCase(BuildCompiler.Unix, Seq[String]("-G\"Unix", "Makefiles\""))
+  testCase(BuildCompiler.Msys, Seq[String]("-G\"MSYS", "Makefiles\""))
+  testCase(BuildCompiler.Borland, Seq[String]("-G\"Borland", "Makefiles\""))
+  testCase(BuildCompiler.NMake, Seq[String]("-G\"NMake", "Makefiles\""))
+  testCase(BuildCompiler.NMakeJom, Seq[String]("-G\"NMake", "Makefiles", "JOM\""))
+
   testCase(BuildCompiler.VisualStudio10, Seq[String]("-G\"Visual", "Studio", "10\""))
   testCase(BuildCompiler.VisualStudio11, Seq[String]("-G\"Visual", "Studio", "11\""))
   testCase(BuildCompiler.VisualStudio12, Seq[String]("-G\"Visual", "Studio", "12\""))
+
   testCase(BuildCompiler.VisualStudio10Win64, Seq[String]("-G\"Visual", "Studio", "10", "Win64\""))
   testCase(BuildCompiler.VisualStudio11Win64, Seq[String]("-G\"Visual", "Studio", "11", "Win64\""))
   testCase(BuildCompiler.VisualStudio12Win64, Seq[String]("-G\"Visual", "Studio", "12", "Win64\""))
