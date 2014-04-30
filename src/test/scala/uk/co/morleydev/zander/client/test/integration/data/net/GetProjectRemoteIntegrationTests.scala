@@ -26,7 +26,7 @@ class GetProjectRemoteIntegrationTests extends IntegrationTest {
           val project = GenModel.arg.genProject()
           val compiler = GenModel.arg.genCompiler()
 
-          provider.expect(Method.GET, "/" + project + "/" + compiler.toString)
+          provider.expect(Method.GET, "/" + project)
             .respondWith(200, "application/json", "{ \"git\":\"" + expectedProject.git + "\" }")
 
           val projectFuture = getProjectRemote.apply(project, compiler)
@@ -41,7 +41,7 @@ class GetProjectRemoteIntegrationTests extends IntegrationTest {
           val project = GenModel.arg.genProject()
           val compiler = GenModel.arg.genCompiler()
 
-          provider.expect(Method.GET, "/" + project + "/" + compiler.toString)
+          provider.expect(Method.GET, "/" + project)
             .respondWith(404, "application/json", "{\"code\":\"ResourceNotFound\",\"message\":\"/" + project + "/" + compiler + " does not exist\"}")
 
           var thrownException: Throwable = null

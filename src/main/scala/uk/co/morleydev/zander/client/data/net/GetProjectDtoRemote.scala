@@ -27,7 +27,7 @@ class GetProjectDtoRemote(url : URL,
                        implicit val executionContext : ExecutionContext = ExecutionContext.global)
   extends GetProjectDto {
   override def apply(projectName: Project, compiler: BuildCompiler): Future[ProjectDto] = {
-    val targetUrl = new URL(url, "/" + projectName + "/" + compiler.toString)
+    val targetUrl = new URL(url, "/" + projectName)
     get(targetUrl).apply
       .transform(response => {
       Log.message("Request to %s returned %s".format(targetUrl, response.code))
