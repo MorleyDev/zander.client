@@ -19,3 +19,5 @@ libraryDependencies += "org.scalacheck" % "scalacheck_2.10" % "1.11.3" % "test"
 libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
 
 libraryDependencies += "com.github.kristofa" % "mock-http-server" % "4.0" % "test"
+
+parallelExecution in Test := false
