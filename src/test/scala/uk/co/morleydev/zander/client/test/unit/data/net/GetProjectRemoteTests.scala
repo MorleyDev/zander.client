@@ -39,7 +39,7 @@ class GetProjectRemoteTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compilerString = GenStringArguments.genCompiler()
       val compiler = BuildCompiler.withName(compilerString)
-      val expectedPath = host + "/" + project
+      val expectedPath = host + "/project/" + project
 
       val result = getProjectRemote.apply(project, compiler)
 
