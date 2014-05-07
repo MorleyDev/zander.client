@@ -23,7 +23,6 @@ import uk.co.morleydev.zander.client.util.Using._
 class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable {
 
   private val programs = new ProgramConfiguration(GenNative.genAlphaNumericString(3, 10),
-    GenNative.genAlphaNumericString(3, 10),
     GenNative.genAlphaNumericString(3, 10))
 
   private val mockProcessBuilderFactory = mock[NativeProcessBuilderFactory]
