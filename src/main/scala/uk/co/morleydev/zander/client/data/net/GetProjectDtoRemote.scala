@@ -1,19 +1,18 @@
 package uk.co.morleydev.zander.client.data.net
 
-import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
-import uk.co.morleydev.zander.client.model.net.ProjectDto
-import java.net.URL
-import scala.concurrent.{ExecutionContext, Future}
 import com.lambdaworks.jacks.JacksMapper
-import com.stackmob.newman.request.HttpRequest
 import com.stackmob.newman.ApacheHttpClient
 import com.stackmob.newman.dsl.GET
+import com.stackmob.newman.request.HttpRequest
 import com.stackmob.newman.response.HttpResponseCode
-import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
-import uk.co.morleydev.zander.client.model.arg.Project
-import uk.co.morleydev.zander.client.util.Log
+import java.net.URL
+import scala.concurrent.{ExecutionContext, Future}
 import uk.co.morleydev.zander.client.data.GetProjectDto
-import java.lang
+import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
+import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
+import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.model.net.ProjectDto
+import uk.co.morleydev.zander.client.util.Log
 
 private object GetProjectRemoteDefaultDsl extends (URL => HttpRequest) {
   def apply(url : URL) : HttpRequest = {
