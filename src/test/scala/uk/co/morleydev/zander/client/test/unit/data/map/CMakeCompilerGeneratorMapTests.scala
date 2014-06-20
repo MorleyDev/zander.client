@@ -7,37 +7,27 @@ import uk.co.morleydev.zander.client.test.unit.UnitTest
 
 class CMakeCompilerGeneratorMapTests extends UnitTest {
 
-  private def testCase(compiler : BuildCompiler, generator : String) {
-    describe("Given a Compiler Generator map for Windows") {
+  private def whenMappingXtoYThenExpectedResultIsReturned(compiler : BuildCompiler, generator : String) {
       describe("When mapping %s to %s".format(compiler, generator)) {
-        val result = new CMakeCompilerGeneratorMap(isWindows = true)(compiler)
-        it("Then the expected result is returned") {
-          assert(result == ("-G\"" + generator + "\"").split(' ').toSeq)
-        }
-      }
-    }
-    describe("Given a Compiler Generator map not for Windows") {
-      describe("When mapping %s to %s".format(compiler, generator)) {
-        val result = new CMakeCompilerGeneratorMap(isWindows = false)(compiler)
+        val result = CMakeCompilerGeneratorMap(compiler)
         it("Then the expected result is returned") {
           assert(result == Seq("-G", generator))
         }
       }
-    }
   }
 
-  testCase(BuildCompiler.Mingw, "MinGW Makefiles")
-  testCase(BuildCompiler.Unix, "Unix Makefiles")
-  testCase(BuildCompiler.Msys, "MSYS Makefiles")
-  testCase(BuildCompiler.Borland, "Borland Makefiles")
-  testCase(BuildCompiler.NMake, "NMake Makefiles")
-  testCase(BuildCompiler.NMakeJom, "NMake Makefiles JOM")
-
-  testCase(BuildCompiler.VisualStudio10, "Visual Studio 10")
-  testCase(BuildCompiler.VisualStudio11, "Visual Studio 11")
-  testCase(BuildCompiler.VisualStudio12, "Visual Studio 12")
-
-  testCase(BuildCompiler.VisualStudio10Win64, "Visual Studio 10 Win64")
-  testCase(BuildCompiler.VisualStudio11Win64, "Visual Studio 11 Win64")
-  testCase(BuildCompiler.VisualStudio12Win64, "Visual Studio 12 Win64")
+  describe("Given a Compiler Generator map") {
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.Mingw, "MinGW Makefiles")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.Unix, "Unix Makefiles")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.Msys, "MSYS Makefiles")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.Borland, "Borland Makefiles")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.NMake, "NMake Makefiles")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.NMakeJom, "NMake Makefiles JOM")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio10, "Visual Studio 10")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio11, "Visual Studio 11")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio12, "Visual Studio 12")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio10Win64, "Visual Studio 10 Win64")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio11Win64, "Visual Studio 11 Win64")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio12Win64, "Visual Studio 12 Win64")
+  }
 }

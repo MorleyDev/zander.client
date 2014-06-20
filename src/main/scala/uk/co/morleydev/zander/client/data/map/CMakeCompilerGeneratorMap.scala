@@ -4,7 +4,7 @@ import uk.co.morleydev.zander.client.data.CompilerGeneratorMap
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 
-class CMakeCompilerGeneratorMap(isWindows : Boolean) extends CompilerGeneratorMap {
+object CMakeCompilerGeneratorMap extends CompilerGeneratorMap {
 
   private val buildCompilerGeneratorMap = Map[BuildCompiler, String](
     BuildCompiler.Mingw -> "MinGW Makefiles",
@@ -22,8 +22,5 @@ class CMakeCompilerGeneratorMap(isWindows : Boolean) extends CompilerGeneratorMa
   )
 
   override def apply(compiler: BuildCompiler): Seq[String] =
-    if (isWindows)
-      ("-G\"" + buildCompilerGeneratorMap(compiler) + "\"").split(' ')
-    else
-      Seq("-G", buildCompilerGeneratorMap(compiler))
+    Seq("-G", buildCompilerGeneratorMap(compiler))
 }
