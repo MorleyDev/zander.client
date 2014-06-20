@@ -4,6 +4,7 @@ import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
 import com.lambdaworks.jacks.JacksMapper
 import java.io.{FileNotFoundException, PrintWriter, ByteArrayInputStream, File}
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.SystemUtils
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.mockito.{Matchers, Mockito}
@@ -287,7 +288,10 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
 
   def thenACMakePreBuildWasInvoked(buildType : String, generator: String) : RealTestHarness = {
 
-    val generatorSequence = generator.split(' ')
+    val generatorSequence = if (SystemUtils.IS_OS_WINDOWS)
+      ("-G\"" + generator + "\"").split(' ')
+    else
+      Array("-G", generator)
 
     parent.it("Then a cmake prebuild was invoked") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake,

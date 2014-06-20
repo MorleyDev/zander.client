@@ -3,6 +3,7 @@ package uk.co.morleydev.zander.client.data.impl
 import java.io.{PrintWriter, File}
 import java.net.URL
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang3.SystemUtils
 import scala.collection.JavaConversions
 import scala.io.Source
 import uk.co.morleydev.zander.client.data._
@@ -53,7 +54,7 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       createProgramRunner(),
       createCacheDirectory(config),
       temporaryDirectory,
-      CMakeCompilerGeneratorMap,
+      new CMakeCompilerGeneratorMap(isWindows = SystemUtils.IS_OS_WINDOWS),
       CMakeBuildModeBuildTypeMap)
 
   override def createCMakeBuildCachedSource(config : Configuration) =

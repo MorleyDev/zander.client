@@ -26,18 +26,18 @@ abstract class SpecTest extends FunSpec with MockitoSugar {
   }
 
   private val testCaseMap = Map[String, String](
-    "unix" -> "-G\"Unix Makefiles\"",
-    "mingw" -> "-G\"MinGW Makefiles\"",
-    "msys" -> "-G\"MSYS Makefiles\"",
-    "borland" -> "-G\"Borland Makefiles\"",
-    "nmake" -> "-G\"NMake Makefiles\"",
-    "nmake-jom" -> "-G\"NMake Makefiles JOM\"",
-    "msvc10" -> "-G\"Visual Studio 10\"",
-    "msvc11" -> "-G\"Visual Studio 11\"",
-    "msvc12" -> "-G\"Visual Studio 12\"",
-    "msvc10w64" -> "-G\"Visual Studio 10 Win64\"",
-    "msvc11w64" -> "-G\"Visual Studio 11 Win64\"",
-    "msvc12w64" -> "-G\"Visual Studio 12 Win64\""
+    "unix" -> "Unix Makefiles",
+    "mingw" -> "MinGW Makefiles",
+    "msys" -> "MSYS Makefiles",
+    "borland" -> "Borland Makefiles",
+    "nmake" -> "NMake Makefiles",
+    "nmake-jom" -> "NMake Makefiles JOM",
+    "msvc10" -> "Visual Studio 10",
+    "msvc11" -> "Visual Studio 11",
+    "msvc12" -> "Visual Studio 12",
+    "msvc10w64" -> "Visual Studio 10 Win64",
+    "msvc11w64" -> "Visual Studio 11 Win64",
+    "msvc12w64" -> "Visual Studio 12 Win64"
   )
 
   def runAllTestCmakeCases() {
