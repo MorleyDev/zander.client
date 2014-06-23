@@ -14,21 +14,20 @@ import uk.co.morleydev.zander.client.controller.impl.ControllerFactoryImpl
 
 object Main {
 
+  class InvalidArgumentsException(val message : String) extends Exception
+  class MissingArgumentsException extends InvalidArgumentsException("Missing arguments, expected [operation] [project] [compiler] [build mode]")
+  class InvalidOperationException(val operation : String) extends InvalidArgumentsException("Operation " + operation + " is not valid operation")
+  class InvalidProjectException(val project : String) extends InvalidArgumentsException("Project " + project + " is not valid project")
+  class InvalidCompilerException(val compiler : String) extends InvalidArgumentsException("Compiler " + compiler + " is not valid compiler")
+  class InvalidBuildModeException(val mode : String) extends InvalidArgumentsException("BuildMode " + mode + " is not valid build mode")
+
   object NativeProcessBuilderFactoryImpl extends NativeProcessBuilderFactory {
     override def apply(commands :  Seq[String]): NativeProcessBuilder =
       new NativeProcessBuilderImpl(commands)
   }
 
-  def main(args : Array[String],
-           configFile : String,
-           processBuilderFactory : NativeProcessBuilderFactory,
-           temporaryDirectory : File,
-           workingDirectory: File) : Int = {
-
-    if ( args.size != 4 )
-      return ExitCodes.InvalidArgumentCount
-
-    def extractEnum(enum : Enumeration, value: String): enum.Value = {
+  object ArgumentParser {
+    private def extractEnum(enum: Enumeration, value: String): enum.Value = {
       try {
         enum.withName(value)
       } catch {
@@ -37,17 +36,49 @@ object Main {
       }
     }
 
-    val operation = extractEnum(Operation, args(0))
-    val project = try { new Project(args(1)) } catch { case e : IllegalArgumentException => null }
-    val compiler = extractEnum(BuildCompiler, args(2))
-    val buildMode = extractEnum(BuildMode, args(3))
+    def apply(args : Array[String]): Arguments = {
+      if (args.size != 4)
+        throw new MissingArgumentsException()
 
-    if (operation == null) return ExitCodes.InvalidOperation
-    if (project == null) return ExitCodes.InvalidProject
-    if(compiler == null) return ExitCodes.InvalidCompiler
-    if(buildMode == null) return ExitCodes.InvalidBuildMode
+      val operation = extractEnum(Operation, args(0))
+      val project = try {
+        new Project(args(1))
+      } catch {
+        case e: IllegalArgumentException => null
+      }
+      val compiler = extractEnum(BuildCompiler, args(2))
+      val buildMode = extractEnum(BuildMode, args(3))
 
-    val arguments = new Arguments(operation, project, compiler, buildMode)
+      if (operation == null)
+        throw new InvalidOperationException(args(0))
+      if (project == null)
+        throw new InvalidProjectException(args(1))
+      if (compiler == null)
+        throw new InvalidCompilerException(args(2))
+      if (buildMode == null)
+        throw new InvalidBuildModeException(args(3))
+
+      new Arguments(operation, project, compiler, buildMode)
+    }
+  }
+
+  def main(args : Array[String],
+           configFile : String,
+           processBuilderFactory : NativeProcessBuilderFactory,
+           temporaryDirectory : File,
+           workingDirectory: File) : Int = {
+
+    val arguments = try ArgumentParser(args) catch {
+      case e: InvalidArgumentsException =>
+        Log.error(e.message)
+        e match {
+          case e: MissingArgumentsException => return ExitCodes.InvalidArgumentCount
+          case e: InvalidOperationException => return ExitCodes.InvalidOperation
+          case e: InvalidProjectException => return ExitCodes.InvalidProject
+          case e: InvalidCompilerException => return ExitCodes.InvalidCompiler
+          case e: InvalidBuildModeException => return ExitCodes.InvalidBuildMode
+        }
+    }
 
     val configJson = try {
       val file = Source.fromFile(configFile)
