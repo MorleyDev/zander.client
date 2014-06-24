@@ -3,6 +3,7 @@ package uk.co.morleydev.zander.client.model.arg
 class Project(val value : String) {
   require(value.size <= 20
     && value.size >= 1
+    && value != "."
     && value.forall(c => ('A' to 'Z').contains(c)
       || ('a' to 'z').contains(c)
       || ('0' to '9').contains(c)

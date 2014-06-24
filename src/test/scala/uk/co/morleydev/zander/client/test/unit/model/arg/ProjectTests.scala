@@ -21,7 +21,7 @@ class ProjectTests extends UnitTest with GeneratorDrivenPropertyChecks {
         forAll(validProjectGenerator) {
           project: Project => {
 
-            assert(project != new Project(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](project.value))))
+            assert(project != new Project(GenNative.genAlphaNumericStringExcluding(2, 20, Seq[String](project.value))))
             assert(project == new Project(project.value))
           }
         }
@@ -30,7 +30,7 @@ class ProjectTests extends UnitTest with GeneratorDrivenPropertyChecks {
         forAll(validProjectGenerator) {
           project =>
 
-            assert(project != new Project(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](project.value))))
+            assert(project != new Project(GenNative.genAlphaNumericStringExcluding(2, 20, Seq[String](project.value))))
             assert(project == new Project(project.value))
         }
       }
@@ -66,15 +66,15 @@ class ProjectTests extends UnitTest with GeneratorDrivenPropertyChecks {
       }
     }
 
-    val invalidCharacterProjectStringGenerator : Gen[String] =
+    val invalidCharacterProjectStringGenerator: Gen[String] =
       Gen.oneOf(Iterator.continually(GenStringArguments.genInvalidProjectWithBannedCharacters())
         .take(20)
         .toSeq)
 
-      describe("When initialising a project string containing invalid characters") {
+    describe("When initialising a project string containing invalid characters") {
 
-        it("Then the expected exception was thrown") {
-          forAll(invalidCharacterProjectStringGenerator) { project =>
+      it("Then the expected exception was thrown") {
+        forAll(invalidCharacterProjectStringGenerator) { project =>
           var thrownException: Exception = null
           try {
             new Project(project)
@@ -83,6 +83,18 @@ class ProjectTests extends UnitTest with GeneratorDrivenPropertyChecks {
           }
           assert(thrownException.isInstanceOf[IllegalArgumentException])
         }
+      }
+    }
+
+    describe("When initialising a project string of only \".\"") {
+      it("Then the expected exception was thrown") {
+        var thrownException: Exception = null
+        try {
+          new Project(".")
+        } catch {
+          case e: Exception => thrownException = e
+        }
+        assert(thrownException.isInstanceOf[IllegalArgumentException])
       }
     }
   }

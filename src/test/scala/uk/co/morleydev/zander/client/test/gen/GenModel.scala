@@ -21,9 +21,7 @@ object GenModel {
 
     def genBuildMode(): BuildMode = GenNative.genOneFrom(BuildMode.values.toSeq)
 
-    def genProject(): Project =
-      new Project(GenNative.genStringContaining(1, 20,
-        GenNative.alphaNumericCharacters ++ Seq[Char]('_', '-', '.')))
+    def genProject(): Project = new Project(GenStringArguments.genProject())
 
     def genProjectCompilerBuildModeTuple() : (Project, BuildCompiler, BuildMode) =
       (genProject(), genCompiler(), genBuildMode())

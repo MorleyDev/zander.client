@@ -18,7 +18,7 @@ object GenStringArguments {
   val operations = Array[String]("install", "purge", "update", "get")
 
   def genOperation() : String = GenNative.genOneFrom[String](operations)
-  def genProject() : String = GenNative.genStringContaining(1, 20, validProjectCharacters)
+  def genProject() : String = Iterator.continually(GenNative.genStringContaining(1, 20, validProjectCharacters)).dropWhile(_.charAt(0) == '.').toSeq.head
   def genCompiler() : String = GenNative.genOneFrom(compilers)
   def genBuildMode() : String = GenNative.genOneFrom(buildModes)
 
