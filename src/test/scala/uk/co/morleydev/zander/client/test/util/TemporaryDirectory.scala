@@ -9,24 +9,22 @@ class TemporaryDirectory(create : Boolean = false) extends AutoCloseable  {
   object freeNames {
     private var generatedAlready = List[File]()
 
-    private def generate = Iterator.continually(new File(GenNative.genAlphaNumericString(10, 20)))
-      .dropWhile(f => f.exists() || generatedAlready.contains(f))
-      .take(1)
-      .toList
-      .head
+    def getFreeName(create: Boolean): File = synchronized {
+      val result = Iterator.continually(new File(GenNative.genAlphaNumericString(10, 20)))
+        .dropWhile(f => f.exists() || generatedAlready.contains(f))
+        .take(1)
+        .toList
+        .head
+      generatedAlready ++= List[File](result)
 
-    def getFreeName: File = {
-      synchronized {
-        val result = generate
-        generatedAlready = generatedAlready ++ List[File](result)
-        return result
-      }
+      if (create)
+        result.mkdirs()
+
+      return result
     }
   }
 
-  val file = freeNames.getFreeName
-  if (create)
-    file.mkdirs()
+  val file = freeNames.getFreeName(create)
 
   def sub(s : String) : File =
     new File(file.getAbsoluteFile, s)
