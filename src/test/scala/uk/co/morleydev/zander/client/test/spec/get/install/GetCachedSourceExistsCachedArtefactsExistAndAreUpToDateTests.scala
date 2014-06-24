@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client.test.spec.get.install
 import java.io.File
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
-import uk.co.morleydev.zander.client.util.Using._
+import uk.co.morleydev.zander.client.util.using
 
 class GetCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends SpecTest {
 

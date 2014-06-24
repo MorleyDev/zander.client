@@ -1,5 +1,6 @@
 package uk.co.morleydev.zander.client.test.gen
 
+import uk.co.morleydev.zander.client.model.Arguments
 import uk.co.morleydev.zander.client.model.arg.{Project, BuildMode, Operation, BuildCompiler}
 import uk.co.morleydev.zander.client.model.arg.Operation.Operation
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
@@ -26,6 +27,8 @@ object GenModel {
 
     def genProjectCompilerBuildModeTuple() : (Project, BuildCompiler, BuildMode) =
       (genProject(), genCompiler(), genBuildMode())
+
+    def genArguments() : Arguments = new Arguments(genOperation(), genProject(), genCompiler(), genBuildMode())
   }
 
   object net {

@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client.test.spec
 
 import java.io.{FileOutputStream, File}
 import com.lambdaworks.jacks.JacksMapper
-import uk.co.morleydev.zander.client.util.Using.using
+import uk.co.morleydev.zander.client.util.using
 import uk.co.morleydev.zander.client.model.Configuration
 
 class TestConfigurationFile(configuration : Configuration) extends AutoCloseable {

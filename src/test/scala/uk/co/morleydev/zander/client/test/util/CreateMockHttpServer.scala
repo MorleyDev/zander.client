@@ -13,7 +13,7 @@ class MockServerAndPort(val server : MockHttpServer, val port : Int) extends Aut
 
 object CreateMockHttpServer extends (AbstractHttpResponseProvider => MockServerAndPort) {
 
-  override def apply(provider: AbstractHttpResponseProvider): MockServerAndPort = {
+  override def apply(provider: AbstractHttpResponseProvider): MockServerAndPort = synchronized {
     var mockHttpServer : MockHttpServer = null
     val mockPort = Iterator.continually(GenNative.genInt(8000, 60000))
       .dropWhile(port => {

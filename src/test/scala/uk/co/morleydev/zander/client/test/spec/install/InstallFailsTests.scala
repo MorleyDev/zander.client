@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.test.spec.install
 
 import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
-import uk.co.morleydev.zander.client.util.Using.using
+import uk.co.morleydev.zander.client.util.using
 
 class InstallFailsTests extends SpecTest {
 

@@ -12,7 +12,7 @@ import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
 import uk.co.morleydev.zander.client.data.program._
 import uk.co.morleydev.zander.client.model.Configuration
 import uk.co.morleydev.zander.client.util.Log
-import uk.co.morleydev.zander.client.util.Using._
+import uk.co.morleydev.zander.client.util.using
 
 class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
                       temporaryDirectory : File,

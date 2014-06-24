@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.test.spec
 
 import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenNative}
-import uk.co.morleydev.zander.client.util.Using._
+import uk.co.morleydev.zander.client.util.using
 
 class AnyTests extends SpecTest {
 

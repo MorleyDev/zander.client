@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.test.spec.update
 
 import uk.co.morleydev.zander.client.test.spec.{ResponseCodes, SpecTest}
-import uk.co.morleydev.zander.client.util.Using._
+import uk.co.morleydev.zander.client.util.using
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import java.io.File
 

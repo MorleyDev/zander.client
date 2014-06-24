@@ -1,17 +1,12 @@
 package uk.co.morleydev.zander.client.test.spec
 
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
 import uk.co.morleydev.zander.client.test.spec.util.RealTestHarness
+import uk.co.morleydev.zander.client.test.util.AbstractTest
 
-abstract class SpecTest extends FunSpec with MockitoSugar {
+abstract class SpecTest extends AbstractTest(SpecificationTag) {
 
   def start() : RealTestHarness =
     new RealTestHarness(this)
-
-  def it(desc : String)(testFunc: => Unit) : Unit = {
-    it(desc, SpecificationTag)(testFunc)
-  }
 
   def _assert(value : Boolean, hint : String) : Unit = {
     assert(value, hint)

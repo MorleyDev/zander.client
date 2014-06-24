@@ -1,8 +1,11 @@
-package uk.co.morleydev.zander.client.util
+package uk.co.morleydev.zander.client.data.program
+
+import java.io.File
+
+import uk.co.morleydev.zander.client.data.NativeProcessBuilder
+import uk.co.morleydev.zander.client.util.Log
 
 import scala.collection.JavaConversions
-import java.io.File
-import uk.co.morleydev.zander.client.data.NativeProcessBuilder
 
 class NativeProcessBuilderImpl(args : Seq[String]) extends NativeProcessBuilder {
 

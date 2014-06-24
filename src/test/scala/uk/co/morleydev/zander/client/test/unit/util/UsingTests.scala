@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.test.unit.util
 
 import uk.co.morleydev.zander.client.test.unit.UnitTest
-import uk.co.morleydev.zander.client.util.Using
+import uk.co.morleydev.zander.client.util.using
 
 class UsingTests extends UnitTest {
 
@@ -16,9 +16,7 @@ class UsingTests extends UnitTest {
       val closable = new MockAutoCloseable()
 
       var actualClosable : MockAutoCloseable = null
-      Using.using(closable) { c =>
-        actualClosable = c
-      }
+      using(closable) { c => actualClosable = c }
 
       it("Then the expected autoclosable was captured") {
         assert(actualClosable == closable)
@@ -33,9 +31,7 @@ class UsingTests extends UnitTest {
       var actualException : Exception = null
       val closable = new MockAutoCloseable()
       try {
-        Using.using(closable) { c =>
-          throw expectedException
-        }
+        using(closable) { c => throw expectedException }
       } catch {
         case e : Exception => actualException = e
       }

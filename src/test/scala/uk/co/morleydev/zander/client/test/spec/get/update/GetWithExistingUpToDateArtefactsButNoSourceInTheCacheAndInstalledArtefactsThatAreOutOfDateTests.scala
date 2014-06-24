@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client.test.spec.get.update
 import java.io.File
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import uk.co.morleydev.zander.client.test.spec.{ResponseCodes, SpecTest}
-import uk.co.morleydev.zander.client.util.Using._
+import uk.co.morleydev.zander.client.util.using
 
 class GetWithExistingUpToDateArtefactsButNoSourceInTheCacheAndInstalledArtefactsThatAreOutOfDateTests extends SpecTest {
   override def noBuildTestCase(compiler : String, mode: String) = {

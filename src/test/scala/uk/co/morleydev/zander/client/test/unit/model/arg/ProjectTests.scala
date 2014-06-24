@@ -3,21 +3,18 @@ package uk.co.morleydev.zander.client.test.unit.model.arg
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import uk.co.morleydev.zander.client.model.arg.Project
-import uk.co.morleydev.zander.client.test.gen.GenNative
+import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenNative}
 import uk.co.morleydev.zander.client.test.unit.UnitTest
 
 class ProjectTests extends UnitTest with GeneratorDrivenPropertyChecks {
 
   implicit override val generatorDrivenConfig = PropertyCheckConfig(minSize = 10, maxSize = 20)
 
-  private val validProjectCharacters = GenNative.alphaNumericCharacters ++ Seq[Char]('.', '_', '-')
-  private val invalidProjectCharacters = (0.toChar to 255.toChar).diff(validProjectCharacters)
-
   describe("Given a project string") {
     describe("When initialising a valid project that is an alphanumeric string") {
 
       val validProjectGenerator: Gen[Project] =
-        Gen.oneOf(Iterator.continually(GenNative.genStringContaining(1, 20, validProjectCharacters))
+        Gen.oneOf(Iterator.continually(GenStringArguments.genProject())
           .map(new Project(_)).take(20).toSeq)
 
       it("Then the project can be compared to another project") {
@@ -42,7 +39,7 @@ class ProjectTests extends UnitTest with GeneratorDrivenPropertyChecks {
     describe("When initialising a project with invalid alphanumeric length greater than 20") {
       var thrownException: Exception = null
       try {
-        new Project(GenNative.genStringContaining(21, 100, validProjectCharacters))
+        new Project(GenStringArguments.genInvalidProjectWithTooLargeLength())
       } catch {
         case e: Exception => thrownException = e
       }
@@ -70,8 +67,7 @@ class ProjectTests extends UnitTest with GeneratorDrivenPropertyChecks {
     }
 
     val invalidCharacterProjectStringGenerator : Gen[String] =
-      Gen.oneOf(Iterator.continually(GenNative.genStringContaining(1, 20, (0 to 255).map(_.toChar)))
-        .filter(c => c.count(invalidProjectCharacters.contains(_)) > 1)
+      Gen.oneOf(Iterator.continually(GenStringArguments.genInvalidProjectWithBannedCharacters())
         .take(20)
         .toSeq)
 

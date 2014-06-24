@@ -1,11 +1,5 @@
 package uk.co.morleydev.zander.client.test.integration
 
-import org.scalatest.FunSpec
-import org.scalatest.mock.MockitoSugar
+import uk.co.morleydev.zander.client.test.util.AbstractTest
 
-abstract class IntegrationTest extends FunSpec with MockitoSugar {
-
-  def it(desc : String)(testFunc: => Unit) : Unit = {
-    it(desc, IntegrationTag)(testFunc)
-  }
-}
+abstract class IntegrationTest extends AbstractTest(IntegrationTag)

@@ -1,6 +1,6 @@
 package uk.co.morleydev.zander.client.test.spec.get
 
-import uk.co.morleydev.zander.client.util.Using.using
+import uk.co.morleydev.zander.client.util.using
 import uk.co.morleydev.zander.client.test.spec.{ResponseCodes, SpecTest}
 
 class GetFailsTests extends SpecTest {

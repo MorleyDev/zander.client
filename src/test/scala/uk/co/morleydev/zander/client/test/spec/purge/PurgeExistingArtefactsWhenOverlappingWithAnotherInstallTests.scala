@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client.test.spec.purge
 
 import uk.co.morleydev.zander.client.test.gen.GenNative
 import java.io.File
-import uk.co.morleydev.zander.client.util.Using._
+import uk.co.morleydev.zander.client.util.using
 import uk.co.morleydev.zander.client.test.spec.{SpecTest, ResponseCodes}
 
 class PurgeExistingArtefactsWhenOverlappingWithAnotherInstallTests extends SpecTest {

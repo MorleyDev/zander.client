@@ -9,10 +9,10 @@ import uk.co.morleydev.zander.client.validator.exception.{NoLocalArtefactsExistE
 class Program(controllerFactory : ControllerFactory) {
   def run(args : Arguments, config : Configuration) : Int = {
 
-    val installController = controllerFactory.createController(args.operation, config)
+    val controller = controllerFactory.createController(args.operation, config)
 
     try {
-      installController(args.project, args.compiler, args.mode)
+      controller(args.project, args.compiler, args.mode)
       ExitCodes.Success
     } catch {
       case e : LocalArtefactsAlreadyExistException => ExitCodes.ArtefactsAlreadyInstalled

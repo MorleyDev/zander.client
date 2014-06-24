@@ -1,24 +1,25 @@
 package uk.co.morleydev.zander.client.test.spec.util
 
+import java.io.{ByteArrayInputStream, File, FileNotFoundException, PrintWriter}
+
 import com.github.kristofa.test.http.{Method, SimpleHttpResponseProvider}
 import com.lambdaworks.jacks.JacksMapper
-import java.io.{FileNotFoundException, PrintWriter, ByteArrayInputStream, File}
 import org.apache.commons.io.FileUtils
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.mock.MockitoSugar
-import scala.collection.{JavaConversions, mutable}
-import scala.io.Source
 import uk.co.morleydev.zander.client.Main
 import uk.co.morleydev.zander.client.data.{NativeProcessBuilder, NativeProcessBuilderFactory}
-import uk.co.morleydev.zander.client.model.Configuration
-import uk.co.morleydev.zander.client.model.ProgramConfiguration
-import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenNative}
-import uk.co.morleydev.zander.client.test.spec.{SpecTest, TestConfigurationFile}
+import uk.co.morleydev.zander.client.model.{Configuration, ProgramConfiguration}
+import uk.co.morleydev.zander.client.test.gen.{GenNative, GenStringArguments}
 import uk.co.morleydev.zander.client.test.spec.model.{CachedArtefactDetails, InstalledArtefactDetails}
-import uk.co.morleydev.zander.client.test.util.{TemporaryDirectory, CreateMockProcess, CreateMockHttpServer, MockServerAndPort}
-import uk.co.morleydev.zander.client.util.Using._
+import uk.co.morleydev.zander.client.test.spec.{SpecTest, TestConfigurationFile}
+import uk.co.morleydev.zander.client.test.util.{CreateMockHttpServer, CreateMockProcess, MockServerAndPort, TemporaryDirectory}
+import uk.co.morleydev.zander.client.util.using
+
+import scala.collection.{JavaConversions, mutable}
+import scala.io.Source
 
 class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable {
 
@@ -241,7 +242,6 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   }
 
   def thenTheExpectedServerRequestsWereHandled() : RealTestHarness = {
-
     parent.it("Then the expected server requests were handled") {
       mockServer.server.verify()
     }
