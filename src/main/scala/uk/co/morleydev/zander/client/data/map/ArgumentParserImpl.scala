@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.data.map
 
 import uk.co.morleydev.zander.client.data.ArgumentParser
-import uk.co.morleydev.zander.client.exception._
+import uk.co.morleydev.zander.client.data.exception._
 import uk.co.morleydev.zander.client.model.Arguments
 import uk.co.morleydev.zander.client.model.arg.{BuildCompiler, BuildMode, Operation, Project}
 

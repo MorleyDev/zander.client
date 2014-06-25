@@ -1,4 +1,4 @@
-package uk.co.morleydev.zander.client.exception
+package uk.co.morleydev.zander.client.data.exception
 
 /**
  * Created by jason on 24/06/14.

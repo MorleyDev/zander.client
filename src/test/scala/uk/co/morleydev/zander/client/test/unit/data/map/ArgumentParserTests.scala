@@ -1,7 +1,7 @@
 package uk.co.morleydev.zander.client.test.unit.data.map
 
 import uk.co.morleydev.zander.client.data.map.ArgumentParserImpl
-import uk.co.morleydev.zander.client.exception._
+import uk.co.morleydev.zander.client.data.exception._
 import uk.co.morleydev.zander.client.model.arg.{Operation, BuildMode, BuildCompiler, Project}
 import uk.co.morleydev.zander.client.test.gen.GenStringArguments
 import uk.co.morleydev.zander.client.test.unit.UnitTest

@@ -5,7 +5,7 @@ import org.mockito.stubbing.Answer
 import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.data.ArgumentParser
 import uk.co.morleydev.zander.client.data.map.ArgumentParserWithErrorCodesImpl
-import uk.co.morleydev.zander.client.exception._
+import uk.co.morleydev.zander.client.data.exception._
 import uk.co.morleydev.zander.client.model.ExitCodes
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import uk.co.morleydev.zander.client.test.unit.UnitTest
@@ -44,7 +44,7 @@ class ArgumentParserWithErrorCodesTests extends UnitTest {
 
         Mockito
           .when(mockArgumentParser.apply(Matchers.any[IndexedSeq[String]]))
-          .then(new Answer[IndexedSeq[String]] {
+          .thenAnswer(new Answer[IndexedSeq[String]] {
           override def answer(invocation: InvocationOnMock): IndexedSeq[String] = {
             throw exception
           }
