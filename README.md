@@ -46,20 +46,20 @@ It deletes all the files for the specified project, unless another installed fil
 The get operation performs an install or update, depending on whether local aretefacts are currently installed (and have not been since deleted/purged). If the artefacts are installed, this operation is equivalent to calling update.
 
 ### Supported Compilers
-msvc10: Visual Studio 2010 MSVC10 C++ Compiler
-msvc11: Visual Studio 2012 MSVC11 C++ Compiler
-msvc12: Visual Studio 2013 MSVC12 C++ Compiler
-msvc10w64: Visual Studio 2010 MSVC10 C++ Compiler 64-bit
-msvc11w64: Visual Studio 2012 MSVC11 C++ Compiler 64-bit
-msvc12w64: Visual Studio 2013 MSVC12 C++ Compiler 64-bit
-mingw: MinGW g++ compiler
-unix: Cygwin g++ Compiler
-msys: Msys g++ Compiler
-borland: Borland C++ Compiler
+* msvc10: Visual Studio 2010 MSVC10 C++ Compiler
+* msvc11: Visual Studio 2012 MSVC11 C++ Compiler
+* msvc12: Visual Studio 2013 MSVC12 C++ Compiler
+* msvc10w64: Visual Studio 2010 MSVC10 C++ Compiler 64-bit
+* msvc11w64: Visual Studio 2012 MSVC11 C++ Compiler 64-bit
+* msvc12w64: Visual Studio 2013 MSVC12 C++ Compiler 64-bit
+* mingw: MinGW g++ compiler
+* unix: Cygwin g++ Compiler
+* msys: Msys g++ Compiler
+* borland: Borland C++ Compiler
 
 ### Supported Build Modes
-debug: Build the project artefacts with debug information and without optimisations
-release: Build the project artefacts with no debug information and with full release optimisations
+* debug: Build the project artefacts with debug information and without optimisations
+* release: Build the project artefacts with no debug information and with full release optimisations
 
 ##Build Status
 
