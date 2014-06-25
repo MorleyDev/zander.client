@@ -20,4 +20,4 @@ libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
 
 libraryDependencies += "com.github.kristofa" % "mock-http-server" % "4.0" % "test"
 
-parallelExecution in Test := true
+parallelExecution in Test := false
