@@ -1,6 +1,6 @@
 # Zander Command-Line Client
 ## Downloading and Installing
-The command line tool can be download compiled from [here][http://development.morleydev.co.uk:8080/jenkins/job/zander.client.package/lastSuccessfulBuild/artifact/target/universal/zander_client-prealpha-0.0.1.zip].
+The command line tool can be download compiled from [here](http://development.morleydev.co.uk:8080/jenkins/job/zander.client.package/lastSuccessfulBuild/artifact/target/universal/zander_client-prealpha-0.0.1.zip).
 
 This zip file can be unzipped, and will create a folder zander_client-prealpha-0.0.1 with two sub-folders, bin and lib. The bin folder contains the script files that are used to run zander
 
@@ -13,10 +13,11 @@ Tests can be ran with sbt test if wished. Next, the program must be packaged wit
 The configuration for zander is a json file named “config.json” found in a folder in the the user home directory named “.zander”, this folder and configuration will be created if not present.
 
 The json file defines the following values:
+
 | Key | Description | Default Value |
-|-|-|-|
+| ------------- |-------------| -----|
 | server | The server to request against to retrieve the project information, must point to a running instance of the zander server rest api. | http://zander.morleydev.co.uk |
-|programs | The set of the programs the zander client application runs | { “git”:see programs.git, “cmake”: see programs.cmake } |
+|programs | The set of the programs the zander client application runs | { “git” : see programs.git, “cmake” : see programs.cmake } |
 | programs.git | The git program to be invoked in order to perform git operations | git |
 | programs.cmake | The cmake program to be invoked in order to perform cmake operations (e.g build, install) | cmake |
 | cache | The location of the cache to store source code and compiled artefacts. | $(userhome)/.zander/cache
