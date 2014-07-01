@@ -14,5 +14,7 @@ class TemporaryDirectory extends File(Iterator.continually(new File("zander-" + 
   mkdirs()
 
   override def close() =
-    FileUtils.deleteDirectory(getAbsoluteFile)
+    if (FileUtils.deleteQuietly(this))
+      Log.error("Could not delete temporary directory " + getName)
 }
+
