@@ -38,7 +38,7 @@ object Main {
     val responseCode = using(new TemporaryDirectory) {
       temporaryDirectory =>
         main(args,
-          new File(GetUserHomeDirectory(), "config.json").getAbsolutePath,
+          new File(GetZanderHomeDirectory(), "config.json").getAbsolutePath,
           NativeProcessBuilderFactoryImpl,
           temporaryDirectory, new File("").getAbsoluteFile)
     }

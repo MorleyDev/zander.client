@@ -10,7 +10,7 @@ Compiling requires sbt. The source code can be git cloned from https://github.co
 Tests can be ran with sbt test if wished. Next, the program must be packaged with sbt, the command sbt universal:package-bin can be used to produce a zip file like the one in “Download and Installing”.
 
 ## Configuration
-The configuration for zander is a json file named “config.json” found in a folder in the the user home directory named “.zander”, this folder and configuration will be created if not present.
+The configuration for zander is a json file named “config.json”, which is by default found in a folder in the the user home directory named “.zander”, this folder and configuration will be created if not present. The folder in which the system will attempt to look for config.json can be changed by setting the environmental variable *ZANDER_CLIENT*.
 
 The json file defines the following values:
 
@@ -20,11 +20,11 @@ The json file defines the following values:
 |programs | The set of the programs the zander client application runs | { “git” : see programs.git, “cmake” : see programs.cmake } |
 | programs.git | The git program to be invoked in order to perform git operations | git |
 | programs.cmake | The cmake program to be invoked in order to perform cmake operations (e.g build, install) | cmake |
-| cache | The location of the cache to store source code and compiled artefacts. | $(userhome)/.zander/cache
+| cache | The location of the cache to store source code and compiled artefacts. | $(ZANDER_HOME)/cache |
 
 ## Command-Line
 The command line argument takes the format:
-zander_client [operation] \$(project) [compiler] [build mode]
+*zander_client* [operation] \$(project) [compiler] [build mode]
 Where operation, compiler and build mode are one of the supported values, and the project is the name of a project that can be retrieved via a request to the host at /project/$(project)
 
 ### install
