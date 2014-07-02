@@ -1,13 +1,14 @@
 # Zander Command-Line Client
-## Downloading and Installing
-The command line tool can be download compiled from [here](http://development.morleydev.co.uk:8080/jenkins/job/zander.client.package/lastSuccessfulBuild/artifact/target/universal/zander_client-prealpha-0.0.1.zip).
+## Compiling
+Compiling requires the latest version of sbt. The source code can be git cloned from https://github.com/MorleyDev/zander.client, or downloaded from https://github.com/MorleyDev/zander.client/archive/master.zip
 
-This zip file can be unzipped, and will create a folder zander_client-prealpha-0.0.1 with two sub-folders, bin and lib. The bin folder contains the script files that are used to run zander
+Compilation can be executed via the command *sbt compile*
+Tests can be ran with sbt test if wished via *sbt test*. Next, the program must be packaged with sbt, the command *sbt universal:package-bin* can be used to produce a zip file. This zip file can be unzipped, and will create a folder zander-client-prealpha-0.0.1 with two sub-folders, bin and lib. The bin folder contains the script files that are used to run zander.
 
-### Alternatively Compiling
-Compiling requires sbt. The source code can be git cloned from https://github.com/MorleyDev/zander.client, or downloaded from https://github.com/MorleyDev/zander.client/archive/master.zip
+Alternatively, on debian an installer .deb file can be generator with *sbt debian:package-bin*
 
-Tests can be ran with sbt test if wished. Next, the program must be packaged with sbt, the command sbt universal:package-bin can be used to produce a zip file like the one in “Download and Installing”.
+All of these can be ran in sequence via the command:
+*sbt compile test universal:package-bin*
 
 ## Configuration
 The configuration for zander is a json file named “config.json”, which is by default found in a folder in the the user home directory named “.zander”, this folder and configuration will be created if not present. The folder in which the system will attempt to look for config.json can be changed by setting the environmental variable *ZANDER_CLIENT*.

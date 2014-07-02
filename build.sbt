@@ -1,6 +1,6 @@
-name := "zander_client"
+name := "zander-client"
 
-version := "prealpha-0.0.1"
+version := "0.0.1-prealpha"
 
 scalaVersion := "2.10.3"
 
@@ -21,3 +21,4 @@ libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
 libraryDependencies += "com.github.kristofa" % "mock-http-server" % "4.0" % "test"
 
 parallelExecution in Test := false
+
