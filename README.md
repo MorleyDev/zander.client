@@ -1,4 +1,9 @@
 # Zander Command-Line Client
+## Downloading
+The latest version of zander can be downloaded from http://files.morleydev.co.uk/zander-client/latest.zip
+
+Unzipping latest.zip will result in a zander-client-0.0.1-prealpha folder. Adding the folder *zander-client-0.0.1-prealpha/bin* to your PATH will allow for running the client through the command line.
+
 ## Compiling
 Compiling requires the latest version of sbt. The source code can be git cloned from https://github.com/MorleyDev/zander.client, or downloaded from https://github.com/MorleyDev/zander.client/archive/master.zip
 
