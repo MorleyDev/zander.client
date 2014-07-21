@@ -62,6 +62,31 @@ class GetProjectRemoteIntegrationTests extends IntegrationTest {
     }
   }
 
+  describe("Given a GetProjectRemote function object and active server on subpath") {
+
+    val provider = new SimpleHttpResponseProvider()
+    using(CreateMockHttpServer(provider)) {
+      mockHttpServer =>
+
+        val getProjectRemote = new GetProjectDtoRemote(new URL("http://localhost:" + mockHttpServer.port + "/api/"))
+
+        describe("When requesting a project") {
+          val expectedProject = GenModel.net.genGitSupportingProjectDto()
+          val project = GenModel.arg.genProject()
+          val compiler = GenModel.arg.genCompiler()
+
+          provider.expect(Method.GET, "/api/project/" + project)
+            .respondWith(200, "application/json", "{ \"git\":\"" + expectedProject.git + "\" }")
+
+          val projectFuture = getProjectRemote.apply(project, compiler)
+
+          it("Then the expected project is returned") {
+            val actualProject = Await.result(projectFuture, Duration(1, MINUTES))
+            assert(actualProject.git.equals(expectedProject.git))
+          }
+        }
+    }
+  }
   describe("Given a GetProjectRemote function object and no server") {
 
     val getProjectRemote = new GetProjectDtoRemote(new URL("http://localhost:7999/"))
