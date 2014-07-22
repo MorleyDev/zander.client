@@ -40,13 +40,14 @@ class GetCachedSourceDoesNotExistCachedArtefactsDoExistAndAreUpToDateTests exten
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
+              .givenFullGitPipelineIsPossible(artefactVersion)
               .whenGetting(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsArtefacts(artefactVersion, expectedFiles)
               .expectSuccessfulRequest(gitUrl)
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitCloneWasInvoked(gitUrl)
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenExpectedResponseCodeWasReturned(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)

@@ -2,6 +2,7 @@ package uk.co.morleydev.zander.client.test.unit.controller
 
 import org.mockito.Mockito
 import uk.co.morleydev.zander.client.controller.impl.PurgeController
+import uk.co.morleydev.zander.client.model.OperationArguments
 import uk.co.morleydev.zander.client.service.PurgeProjectArtefacts
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import uk.co.morleydev.zander.client.test.unit.UnitTest
@@ -21,7 +22,7 @@ class PurgeControllerTests extends UnitTest {
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
 
-      purgeController.apply(project, compiler, mode)
+      purgeController.apply(new OperationArguments(project, compiler, mode))
 
       it("Then the existence of artefact details is validated") {
         Mockito.verify(mockValidate).apply(project, compiler, mode)

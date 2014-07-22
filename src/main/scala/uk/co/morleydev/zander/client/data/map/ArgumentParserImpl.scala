@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client.data.map
 
 import uk.co.morleydev.zander.client.data.ArgumentParser
 import uk.co.morleydev.zander.client.data.exception._
-import uk.co.morleydev.zander.client.model.Arguments
+import uk.co.morleydev.zander.client.model.{OperationArguments, Arguments}
 import uk.co.morleydev.zander.client.model.arg.{BuildCompiler, BuildMode, Operation, Project}
 
 object ArgumentParserImpl extends ArgumentParser {
@@ -24,7 +24,7 @@ object ArgumentParserImpl extends ArgumentParser {
   }
 
   def apply(args : IndexedSeq[String]): Arguments = {
-    if (args.size != 4)
+    if (args.size < 4)
       throw new MissingArgumentsException()
 
     val operation = tryExtractEnum(Operation, args(0))
@@ -41,6 +41,6 @@ object ArgumentParserImpl extends ArgumentParser {
     if (buildMode.isEmpty)
       throw new InvalidBuildModeException(args(3))
 
-    new Arguments(operation.get, project.get, compiler.get, buildMode.get)
+    new Arguments(operation.get, new OperationArguments(project.get, compiler.get, buildMode.get))
   }
 }

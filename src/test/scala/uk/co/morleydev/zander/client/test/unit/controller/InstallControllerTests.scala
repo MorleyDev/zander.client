@@ -1,6 +1,7 @@
 package uk.co.morleydev.zander.client.test.unit.controller
 
 import org.mockito.Mockito
+import uk.co.morleydev.zander.client.model.OperationArguments
 import uk.co.morleydev.zander.client.service.DownloadAcquireInstallProjectArtefacts
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import uk.co.morleydev.zander.client.test.unit.UnitTest
@@ -21,14 +22,15 @@ class InstallControllerTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
 
-      installController(project, compiler, mode)
+      installController(new OperationArguments(project, compiler, mode, branch))
 
       it("Then the artefact details are validated") {
         Mockito.verify(mockValidator).apply(project, compiler, mode)
       }
       it("Then the artefacts are downloaded, compiled and acquired") {
-        Mockito.verify(mockAcquireAndInstall).apply(project, compiler, mode)
+        Mockito.verify(mockAcquireAndInstall).apply(project, compiler, mode, branch)
       }
     }
   }

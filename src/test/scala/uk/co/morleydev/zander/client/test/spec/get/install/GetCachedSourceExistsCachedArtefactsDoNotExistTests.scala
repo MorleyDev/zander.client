@@ -38,14 +38,15 @@ class GetCachedSourceExistsCachedArtefactsDoNotExistTests extends SpecTest {
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
-              .givenFullCMakeBuildIsPossible(expectedFiles)
+              .givenFullGitPipelineIsPossible(artefactVersion)
+              .givenFullCMakePipelineIsPossible(expectedFiles)
               .whenGetting(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()
               .expectSuccessfulRequest(gitUrl)
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitUpdateWasInvoked()
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenACMakePreBuildWasInvoked(cmakeBuildType, generator)
               .thenACMakeBuildWasInvoked(cmakeBuildType)

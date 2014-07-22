@@ -1,19 +1,17 @@
 package uk.co.morleydev.zander.client.controller.impl
 
 import uk.co.morleydev.zander.client.controller.Controller
-import uk.co.morleydev.zander.client.model.arg.Project
-import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
-import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.data.CheckArtefactDetailsExist
-import uk.co.morleydev.zander.client.service.{DownloadAcquireUpdateProjectArtefacts, DownloadAcquireInstallProjectArtefacts}
+import uk.co.morleydev.zander.client.model.OperationArguments
+import uk.co.morleydev.zander.client.service.{DownloadAcquireInstallProjectArtefacts, DownloadAcquireUpdateProjectArtefacts}
 
 class GetController(checkArtefactDetails : CheckArtefactDetailsExist,
                     install : DownloadAcquireInstallProjectArtefacts,
                     update : DownloadAcquireUpdateProjectArtefacts) extends Controller {
-  override def apply(project: Project, compiler: BuildCompiler, buildMode: BuildMode): Unit = {
-    if (checkArtefactDetails(project, compiler, buildMode))
-      update(project,compiler,buildMode)
+  override def apply(args : OperationArguments): Unit = {
+    if (checkArtefactDetails(args.project, args.compiler, args.mode))
+      update(args.project, args.compiler, args.mode, args.branch)
     else
-      install(project,compiler,buildMode)
+      install(args.project, args.compiler, args.mode, args.branch)
   }
 }

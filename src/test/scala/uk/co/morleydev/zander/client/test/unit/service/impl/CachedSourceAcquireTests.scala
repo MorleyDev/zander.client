@@ -2,7 +2,7 @@ package uk.co.morleydev.zander.client.test.unit.service.impl
 
 import java.io.File
 import org.mockito.{Matchers, Mockito}
-import uk.co.morleydev.zander.client.data.{GetProjectSourceVersion, UpdateProjectSource, DownloadProjectSource}
+import uk.co.morleydev.zander.client.data.{CheckoutProjectSource, GetProjectSourceVersion, UpdateProjectSource, DownloadProjectSource}
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.service.impl.AcquireCachedSource
 import uk.co.morleydev.zander.client.test.gen.GenModel
@@ -15,12 +15,14 @@ class CachedSourceAcquireTests extends UnitTest {
     val mockDirectoryIsExists = mock[(File => Boolean)]
     val mockSourceDownload = mock[DownloadProjectSource]
     val mockSourceUpdate = mock[UpdateProjectSource]
+    val mockSourceCheckout = mock[CheckoutProjectSource]
     val mockGetSourceVersion = mock[GetProjectSourceVersion]
 
     val gitCachedSourceAcquire = new AcquireCachedSource(cache,
       mockDirectoryIsExists,
       mockSourceDownload,
       mockSourceUpdate,
+      mockSourceCheckout,
       mockGetSourceVersion)
 
     describe("When acquiring the source and the source does not already exist") {
@@ -34,13 +36,17 @@ class CachedSourceAcquireTests extends UnitTest {
 
       val project = GenModel.arg.genProject()
       val dto = GenModel.net.genProjectDto()
-      val actualSourceVersion = gitCachedSourceAcquire(project, dto)
+      val branch = GenModel.arg.genBranch()
+      val actualSourceVersion = gitCachedSourceAcquire(project, dto, branch)
 
       it("Then the source directories existence is checked") {
         Mockito.verify(mockDirectoryIsExists).apply(new File(cache, project.value + "/source"))
       }
       it("Then the source is downloaded") {
         Mockito.verify(mockSourceDownload).apply(project, dto)
+      }
+      it("Then the source is checked out") {
+        Mockito.verify(mockSourceCheckout).apply(project, branch)
       }
       it("Then the source version is retrieved") {
         Mockito.verify(mockGetSourceVersion).apply(project)
@@ -61,13 +67,17 @@ class CachedSourceAcquireTests extends UnitTest {
 
       val project = GenModel.arg.genProject()
       val dto = GenModel.net.genProjectDto()
-      val actualSourceVersion = gitCachedSourceAcquire(project, dto)
+      val branch = GenModel.arg.genBranch()
+      val actualSourceVersion = gitCachedSourceAcquire(project, dto, branch)
 
       it("Then the source directories existence is checked") {
         Mockito.verify(mockDirectoryIsExists).apply(new File(cache, project.value + "/source"))
       }
       it("Then the source is updated") {
         Mockito.verify(mockSourceUpdate).apply(project, dto)
+      }
+      it("Then the source is checked out") {
+        Mockito.verify(mockSourceCheckout).apply(project, branch)
       }
       it("Then the source version is retrieved") {
         Mockito.verify(mockGetSourceVersion).apply(project)

@@ -36,7 +36,7 @@ class GetWithExistingUpToDateArtefactsButNoSourceInTheCacheAndInstalledArtefacts
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
+              .givenFullGitPipelineIsPossible(artefactVersion)
               .whenGetting(compiler = compiler, mode = mode)
               .whenTheArtefactsAreLocallyInstalled(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](artefactVersion)),
                 expectedFiles)
@@ -45,6 +45,7 @@ class GetWithExistingUpToDateArtefactsButNoSourceInTheCacheAndInstalledArtefacts
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitCloneWasInvoked(gitUrl)
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenExpectedResponseCodeWasReturned(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)

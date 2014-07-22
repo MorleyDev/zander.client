@@ -37,7 +37,7 @@ class GetCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends SpecT
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
+              .givenFullGitPipelineIsPossible(artefactVersion)
               .whenGetting(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()
               .whenTheCacheAlreadyContainsArtefacts(artefactVersion, expectedFiles)
@@ -45,6 +45,7 @@ class GetCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends SpecT
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitUpdateWasInvoked()
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenExpectedResponseCodeWasReturned(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)

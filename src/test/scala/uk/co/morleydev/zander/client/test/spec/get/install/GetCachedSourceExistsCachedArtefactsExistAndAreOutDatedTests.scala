@@ -38,8 +38,8 @@ class GetCachedSourceExistsCachedArtefactsExistAndAreOutDatedTests extends SpecT
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
-              .givenFullCMakeBuildIsPossible(expectedFiles)
+              .givenFullGitPipelineIsPossible(artefactVersion)
+              .givenFullCMakePipelineIsPossible(expectedFiles)
               .whenGetting(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()
               .whenTheCacheAlreadyContainsArtefacts(oldArtefactVersion, expectedFiles ++ Seq[String]("include/gone"))
@@ -47,6 +47,7 @@ class GetCachedSourceExistsCachedArtefactsExistAndAreOutDatedTests extends SpecT
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitUpdateWasInvoked()
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenACMakePreBuildWasInvoked(cmakeBuildType, generator)
               .thenACMakeBuildWasInvoked(cmakeBuildType)

@@ -1,13 +1,13 @@
 package uk.co.morleydev.zander.client.data.program
 
+import java.io.File
+
+import uk.co.morleydev.zander.client.data.DownloadProjectSource
+import uk.co.morleydev.zander.client.data.exception.GitDownloadFailedException
 import uk.co.morleydev.zander.client.model.arg.Project
 import uk.co.morleydev.zander.client.model.net.ProjectDto
-import scala.concurrent.{ExecutionContext, Future, future}
-import uk.co.morleydev.zander.client.util.Log
-import uk.co.morleydev.zander.client.data.{NativeProcessBuilderFactory, DownloadProjectSource}
-import java.io.{File, InputStreamReader, BufferedReader}
-import scala.io.Source
-import uk.co.morleydev.zander.client.data.exception.GitDownloadFailedException
+
+import scala.concurrent.ExecutionContext
 
 class GitDownloadSourceToCache(gitProgram : String,
                         programRunner : ProgramRunner,

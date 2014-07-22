@@ -20,11 +20,13 @@ class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
     val gitDownloadRemote = dataFactory.createGitDownloadRemote(config)
     val gitUpdateRemote = dataFactory.createGitUpdate(config)
     val getGitSourceVersion = dataFactory.createGetGitVersion(config)
+    val gitCheckoutRemote = dataFactory.createGitCheckout(config)
 
     new AcquireCachedSource(new File(config.cache),
                             f => f.exists() && f.isDirectory,
                             gitDownloadRemote,
                             gitUpdateRemote,
+                            gitCheckoutRemote,
                             getGitSourceVersion)
   }
 

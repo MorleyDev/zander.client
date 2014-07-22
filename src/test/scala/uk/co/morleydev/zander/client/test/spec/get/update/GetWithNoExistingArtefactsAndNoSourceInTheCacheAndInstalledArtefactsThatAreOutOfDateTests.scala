@@ -36,8 +36,8 @@ class GetWithNoExistingArtefactsAndNoSourceInTheCacheAndInstalledArtefactsThatAr
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
-              .givenFullCMakeBuildIsPossible(expectedFiles)
+              .givenFullGitPipelineIsPossible(artefactVersion)
+              .givenFullCMakePipelineIsPossible(expectedFiles)
               .whenGetting(compiler = compiler, mode = mode)
               .whenTheArtefactsAreLocallyInstalled(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](artefactVersion)),
                                                    expectedFiles)
@@ -45,6 +45,7 @@ class GetWithNoExistingArtefactsAndNoSourceInTheCacheAndInstalledArtefactsThatAr
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitCloneWasInvoked(gitUrl)
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenACMakePreBuildWasInvoked(cmakeBuildType, generator)
               .thenACMakeBuildWasInvoked(cmakeBuildType)

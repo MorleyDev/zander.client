@@ -40,13 +40,14 @@ class InstallCachedSourceDoesNotExistCachedArtefactsDoExistAndAreUpToDateTests e
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
+              .givenFullGitPipelineIsPossible(artefactVersion)
               .whenInstalling(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsArtefacts(artefactVersion, expectedFiles)
               .expectSuccessfulRequest(gitUrl)
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitCloneWasInvoked(gitUrl)
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenExpectedResponseCodeWasReturned(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)

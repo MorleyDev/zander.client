@@ -7,7 +7,7 @@ import scala.collection.JavaConversions
 import scala.io.Source
 import uk.co.morleydev.zander.client.data._
 import uk.co.morleydev.zander.client.data.fs._
-import uk.co.morleydev.zander.client.data.map.{CMakeBuildModeBuildTypeMap, CMakeCompilerGeneratorMap}
+import uk.co.morleydev.zander.client.data.map.{GetCachedArtefactsLocation, GetCachedSourceLocation, CMakeBuildModeBuildTypeMap, CMakeCompilerGeneratorMap}
 import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
 import uk.co.morleydev.zander.client.data.program._
 import uk.co.morleydev.zander.client.model.Configuration
@@ -17,6 +17,10 @@ import uk.co.morleydev.zander.client.util.using
 class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
                       temporaryDirectory : File,
                       workingDirectory : File) extends DataFactory {
+  def createGitCheckout(config: Configuration) = new GitCheckoutCachedSource(
+    config.programs.git,
+    createProgramRunner(),
+    createCacheDirectory(config))
 
 
   private def createProgramRunner() : ProgramRunner = {
@@ -48,13 +52,19 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       createCacheDirectory(config),
       processBuilderFactory)
 
-  override def createCMakePreBuildCachedSource(config : Configuration) : PreBuildProjectSource =
+  override def createCMakePreBuildCachedSource(config : Configuration) : PreBuildProjectSource = {
+    val cacheDirectory = createCacheDirectory(config)
+    val getCachedSourceLocation = new GetCachedSourceLocation(cacheDirectory)
+    val getCachedArtefactLocation = new GetCachedArtefactsLocation(cacheDirectory)
+
     new CMakePreBuildCachedSource(config.programs.cmake,
       createProgramRunner(),
-      createCacheDirectory(config),
+      getCachedSourceLocation,
+      getCachedArtefactLocation,
       temporaryDirectory,
       CMakeCompilerGeneratorMap,
       CMakeBuildModeBuildTypeMap)
+  }
 
   override def createCMakeBuildCachedSource(config : Configuration) =
     new CMakeBuildCachedSource(config.programs.cmake,
@@ -69,14 +79,14 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       CMakeBuildModeBuildTypeMap)
 
   override def createProjectSourceDetailsReaderFromCache(cache : File): ReadProjectCacheDetails = {
-    new ReadProjectCacheDetailsFromCache(cache,
+    new ReadProjectCacheDetailsFromCache(new GetCachedArtefactsLocation(cache),
       file => using(Source.fromFile(file)) {
         source => source.getLines().mkString("\n")
       })
   }
 
   override def createProjectSourceDetailsWriterToCache(config : Configuration) : WriteProjectSourceDetails =
-    new WriteProjectSourceDetailsToCache(createCacheDirectory(config), writeDataToFile)
+    new WriteProjectSourceDetailsToCache(new GetCachedArtefactsLocation(createCacheDirectory(config)), writeDataToFile)
 
   override def createArtefactDetailsReaderFromLocal() : ReadProjectArtefactDetails =
     new ReadProjectArtefactDetailsFromLocal(workingDirectory, f => using(Source.fromFile(f)) {
@@ -102,7 +112,7 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       cleanEmptyDirectory)
 
   override def createProjectArtefactInstallFromCache(config : Configuration) : InstallProjectArtefact =
-    new InstallProjectArtefactFromCache(createCacheDirectory(config),
+    new InstallProjectArtefactFromCache(new GetCachedArtefactsLocation(createCacheDirectory(config)),
       workingDirectory.getAbsoluteFile,
       (src, dst) => {
         if (src.exists()) {

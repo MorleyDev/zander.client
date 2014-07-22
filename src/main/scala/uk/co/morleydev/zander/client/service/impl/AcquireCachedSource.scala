@@ -1,22 +1,25 @@
 package uk.co.morleydev.zander.client.service.impl
 
-import uk.co.morleydev.zander.client.service.AcquireProjectSource
-import uk.co.morleydev.zander.client.model.arg.Project
-import uk.co.morleydev.zander.client.model.net.ProjectDto
 import java.io.File
-import uk.co.morleydev.zander.client.data.{GetProjectSourceVersion, UpdateProjectSource, DownloadProjectSource}
+
+import uk.co.morleydev.zander.client.data.{CheckoutProjectSource, DownloadProjectSource, GetProjectSourceVersion, UpdateProjectSource}
+import uk.co.morleydev.zander.client.model.arg.{Branch, Project}
+import uk.co.morleydev.zander.client.model.net.ProjectDto
 import uk.co.morleydev.zander.client.model.store.SourceVersion
+import uk.co.morleydev.zander.client.service.AcquireProjectSource
 
 class AcquireCachedSource(cache : File,
                           directoryExists : (File => Boolean),
                           sourceDownload : DownloadProjectSource,
                           sourceUpdate : UpdateProjectSource,
+                          sourceCheckout : CheckoutProjectSource,
                           getSourceVersion : GetProjectSourceVersion) extends AcquireProjectSource {
-  override def apply(project: Project, dto: ProjectDto): SourceVersion = {
+  override def apply(project: Project, dto: ProjectDto, branch: Branch): SourceVersion = {
     if ( directoryExists(new File(cache, project.value + "/source")) )
       sourceUpdate(project, dto)
     else
       sourceDownload(project, dto)
+    sourceCheckout(project, branch)
     getSourceVersion(project)
   }
 }

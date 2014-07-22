@@ -9,7 +9,7 @@ import uk.co.morleydev.zander.client.test.gen.GenModel
 import uk.co.morleydev.zander.client.test.unit.UnitTest
 import uk.co.morleydev.zander.client.data.{ReadProjectArtefactDetails, GetProjectDto}
 import uk.co.morleydev.zander.client.model.net.ProjectDto
-import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.model.arg.{Branch, Project}
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
 import uk.co.morleydev.zander.client.model.store.ArtefactDetails
@@ -37,7 +37,7 @@ class DownloadAcquireUpdateProjectArtefactsFromCacheToLocalTests extends UnitTes
         .thenReturn(future(dto))
 
       val sourceVersion = GenModel.store.genSourceVersion()
-      Mockito.when(mockAcquireSource.apply(Matchers.any[Project], Matchers.any[ProjectDto]))
+      Mockito.when(mockAcquireSource.apply(Matchers.any[Project], Matchers.any[ProjectDto], Matchers.any[Branch]))
         .thenReturn(sourceVersion)
 
       val artefactDetails = Iterator.continually(GenModel.store.genArtefactDetails())
@@ -52,17 +52,18 @@ class DownloadAcquireUpdateProjectArtefactsFromCacheToLocalTests extends UnitTes
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
 
-      acquirer.apply(project, compiler, mode)
+      acquirer.apply(project, compiler, mode, branch)
 
       it("Then the project dto is acquired") {
         Mockito.verify(mockGetProjectDto).apply(project, compiler)
       }
       it("Then the source is acquired") {
-        Mockito.verify(mockAcquireSource).apply(project, dto)
+        Mockito.verify(mockAcquireSource).apply(project, dto, branch)
       }
       it("Then the source is compiled") {
-        Mockito.verify(mockCompileSource).apply(project, compiler, mode, sourceVersion)
+        Mockito.verify(mockCompileSource).apply(project, compiler, mode, branch, sourceVersion)
       }
       it("Then the artefact details are read") {
         Mockito.verify(mockReadArtefactDetails).apply(project, compiler, mode)
@@ -71,7 +72,7 @@ class DownloadAcquireUpdateProjectArtefactsFromCacheToLocalTests extends UnitTes
         Mockito.verify(mockPurgeArtefacts).apply(project, compiler, mode)
       }
       it("Then the artefacts are acquired") {
-        Mockito.verify(mockAcquireArtefacts).apply(project, compiler, mode, sourceVersion)
+        Mockito.verify(mockAcquireArtefacts).apply(project, compiler, mode, branch, sourceVersion)
       }
     }
   }
@@ -98,7 +99,7 @@ class DownloadAcquireUpdateProjectArtefactsFromCacheToLocalTests extends UnitTes
         .thenReturn(future(dto))
 
       val sourceVersion = GenModel.store.genSourceVersion()
-      Mockito.when(mockAcquireSource.apply(Matchers.any[Project], Matchers.any[ProjectDto]))
+      Mockito.when(mockAcquireSource.apply(Matchers.any[Project], Matchers.any[ProjectDto], Matchers.any[Branch]))
         .thenReturn(sourceVersion)
 
       val artefactDetails = new ArtefactDetails(sourceVersion.value, Seq[String]())
@@ -109,17 +110,18 @@ class DownloadAcquireUpdateProjectArtefactsFromCacheToLocalTests extends UnitTes
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
 
-      acquirer.apply(project, compiler, mode)
+      acquirer.apply(project, compiler, mode, branch)
 
       it("Then the project dto is acquired") {
         Mockito.verify(mockGetProjectDto).apply(project, compiler)
       }
       it("Then the source is acquired") {
-        Mockito.verify(mockAcquireSource).apply(project, dto)
+        Mockito.verify(mockAcquireSource).apply(project, dto, branch)
       }
       it("Then the source is compiled") {
-        Mockito.verify(mockCompileSource).apply(project, compiler, mode, sourceVersion)
+        Mockito.verify(mockCompileSource).apply(project, compiler, mode, branch, sourceVersion)
       }
       it("Then the artefact details are read") {
         Mockito.verify(mockReadArtefactDetails).apply(project, compiler, mode)
@@ -128,7 +130,7 @@ class DownloadAcquireUpdateProjectArtefactsFromCacheToLocalTests extends UnitTes
         Mockito.verify(mockPurgeArtefacts, Mockito.never()).apply(project, compiler, mode)
       }
       it("Then the artefacts are not acquired") {
-        Mockito.verify(mockAcquireArtefacts, Mockito.never()).apply(project, compiler, mode, sourceVersion)
+        Mockito.verify(mockAcquireArtefacts, Mockito.never()).apply(project, compiler, mode, branch, sourceVersion)
       }
     }
   }

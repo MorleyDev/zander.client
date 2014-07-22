@@ -38,14 +38,15 @@ class GetCachedSourceDoesNotExistCachedArtefactsDoExistAndAreOutOfDateTests exte
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
-              .givenFullCMakeBuildIsPossible(expectedFiles)
+              .givenFullGitPipelineIsPossible(artefactVersion)
+              .givenFullCMakePipelineIsPossible(expectedFiles)
               .whenGetting(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsArtefacts(oldArtefactVersion, expectedFiles ++ Seq[String]("include/gone"))
               .expectSuccessfulRequest(gitUrl)
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitCloneWasInvoked(gitUrl)
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenACMakePreBuildWasInvoked(cmakeBuildType, generator)
               .thenACMakeBuildWasInvoked(cmakeBuildType)

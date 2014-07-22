@@ -2,6 +2,7 @@ package uk.co.morleydev.zander.client.test.unit.controller
 
 import org.mockito.Mockito
 import uk.co.morleydev.zander.client.controller.impl.UpdateController
+import uk.co.morleydev.zander.client.model.OperationArguments
 import uk.co.morleydev.zander.client.service.DownloadAcquireUpdateProjectArtefacts
 import uk.co.morleydev.zander.client.test.gen.GenModel
 import uk.co.morleydev.zander.client.test.unit.UnitTest
@@ -20,14 +21,15 @@ class UpdateControllerTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
 
-      updateController.apply(project, compiler, mode)
+      updateController.apply(new OperationArguments(project, compiler, mode, branch))
 
       it("Then the artefact detail existence was validated") {
         Mockito.verify(mockValidateArtefactDetailsExist).apply(project, compiler, mode)
       }
       it("Then the artefacts are updated") {
-        Mockito.verify(mockDownloadAcquireUpdateProjectArtefacts).apply(project, compiler, mode)
+        Mockito.verify(mockDownloadAcquireUpdateProjectArtefacts).apply(project, compiler, mode, branch)
       }
     }
   }

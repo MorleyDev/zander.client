@@ -1,25 +1,28 @@
 package uk.co.morleydev.zander.client.data.program
 
-import uk.co.morleydev.zander.client.data.{BuildModeBuildTypeMap, CompilerGeneratorMap, PreBuildProjectSource}
-import uk.co.morleydev.zander.client.model.arg.{BuildMode, Project}
+import java.io.File
+
+import uk.co.morleydev.zander.client.data._
+import uk.co.morleydev.zander.client.data.exception.CMakePreBuildFailedException
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
-import java.io.File
-import uk.co.morleydev.zander.client.data.exception.CMakePreBuildFailedException
+import uk.co.morleydev.zander.client.model.arg.{Branch, Project}
 
 class CMakePreBuildCachedSource(cmakeProgram : String,
                                 runner : ProgramRunner,
-                                cache : File, temp : File,
+                                getSourceLocation : GetSourceLocation,
+                                getArtefactLocation : GetArtefactsLocation,
+                                temp : File,
                                 generatorMap : CompilerGeneratorMap,
                                 buildTypeMap : BuildModeBuildTypeMap) extends PreBuildProjectSource {
 
-  override def apply(project : Project, compiler : BuildCompiler, mode : BuildMode) : Unit = {
+  override def apply(project : Project, compiler : BuildCompiler, mode : BuildMode, branch : Branch) : Unit = {
 
     val command = Seq[String](cmakeProgram,
-      new File(cache, project.value + "/source").getAbsolutePath) ++
+      getSourceLocation(project).getAbsolutePath) ++
       generatorMap(compiler) ++
       Seq[String]("-DCMAKE_BUILD_TYPE=" + buildTypeMap(mode),
-        "-DCMAKE_INSTALL_PREFIX=" + new File(cache, "%s/%s.%s".format(project.value, compiler, mode)).getAbsolutePath)
+        "-DCMAKE_INSTALL_PREFIX=" + getArtefactLocation(project, compiler, mode, branch).getAbsolutePath)
 
     val exitCode = runner.apply(command, temp)
     if ( exitCode != 0 )

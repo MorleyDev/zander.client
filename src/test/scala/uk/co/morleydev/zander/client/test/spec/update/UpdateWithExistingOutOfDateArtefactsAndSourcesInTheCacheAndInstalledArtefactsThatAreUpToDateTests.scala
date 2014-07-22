@@ -36,8 +36,8 @@ class UpdateWithExistingOutOfDateArtefactsAndSourcesInTheCacheAndInstalledArtefa
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
-              .givenFullCMakeBuildIsPossible(expectedFiles)
+              .givenFullGitPipelineIsPossible(artefactVersion)
+              .givenFullCMakePipelineIsPossible(expectedFiles)
               .whenUpdating(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()
               .whenTheCacheAlreadyContainsArtefacts(GenNative.genAlphaNumericStringExcluding(1, 20, Seq[String](artefactVersion)),
@@ -47,6 +47,7 @@ class UpdateWithExistingOutOfDateArtefactsAndSourcesInTheCacheAndInstalledArtefa
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitUpdateWasInvoked()
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenACMakePreBuildWasInvoked(cmakeBuildType, generator)
               .thenACMakeBuildWasInvoked(cmakeBuildType)

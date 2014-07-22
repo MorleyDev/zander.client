@@ -4,9 +4,10 @@ import java.io.File
 import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.data.exception.CMakePreBuildFailedException
 import uk.co.morleydev.zander.client.data.program.{ProgramRunner, CMakePreBuildCachedSource}
-import uk.co.morleydev.zander.client.data.{BuildModeBuildTypeMap, CompilerGeneratorMap}
+import uk.co.morleydev.zander.client.data.{GetArtefactsLocation, GetSourceLocation, BuildModeBuildTypeMap, CompilerGeneratorMap}
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
+import uk.co.morleydev.zander.client.model.arg.{Branch, Project}
 import uk.co.morleydev.zander.client.test.gen.{GenNative, GenModel}
 import uk.co.morleydev.zander.client.test.unit.UnitTest
 
@@ -17,8 +18,18 @@ class CMakePrebuildCachedSourceTests extends UnitTest {
     val mockProgramRunner = mock[ProgramRunner]
 
     val cmake = GenNative.genAlphaNumericString(3, 10)
-    val cache = new File("./cache/path")
+    val sourceCache = new File("./cache/path/source")
+    val artefactCache = new File("./cache/path/artefacts")
     val tempPath = new File("./tmp/adsafaw")
+
+    val mockGetSourceLocation = mock[GetSourceLocation]
+    Mockito.when(mockGetSourceLocation.apply(Matchers.any[Project]))
+      .thenReturn(sourceCache)
+
+    val mockGetArtefactsLocation = mock[GetArtefactsLocation]
+    Mockito.when(mockGetArtefactsLocation.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode], Matchers.any[Branch]))
+      .thenReturn(artefactCache)
+
     val mockCompilerGeneratorMap = mock[CompilerGeneratorMap]
 
     val mockBuildTypeMap = mock[BuildModeBuildTypeMap]
@@ -28,7 +39,8 @@ class CMakePrebuildCachedSourceTests extends UnitTest {
 
     val cmakePrebuildLocal = new CMakePreBuildCachedSource(cmake,
       mockProgramRunner,
-      cache,
+      mockGetSourceLocation,
+      mockGetArtefactsLocation,
       tempPath,
       mockCompilerGeneratorMap,
       mockBuildTypeMap)
@@ -45,8 +57,15 @@ class CMakePrebuildCachedSourceTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
-      cmakePrebuildLocal.apply(project, compiler, mode)
+      val branch = GenModel.arg.genBranch()
+      cmakePrebuildLocal.apply(project, compiler, mode, branch)
 
+      it("Then the source location is retrieved") {
+        Mockito.verify(mockGetSourceLocation).apply(project)
+      }
+      it("Then the artefact location is retrieved") {
+        Mockito.verify(mockGetArtefactsLocation).apply(project, compiler, mode, branch)
+      }
       it("Then the generator for the compiler is acquired") {
         Mockito.verify(mockCompilerGeneratorMap).apply(compiler)
       }
@@ -55,10 +74,10 @@ class CMakePrebuildCachedSourceTests extends UnitTest {
       }
       it("Then the cmake program was ran with the expected arguments in the expected directory") {
         val expectedArguments =
-          Seq[String](cmake, new File(cache, project.value + "/source").getAbsolutePath) ++
+          Seq[String](cmake, sourceCache.getAbsolutePath) ++
             expectedGenerator ++
             Seq[String]("-DCMAKE_BUILD_TYPE=" + buildType,
-              "-DCMAKE_INSTALL_PREFIX=" + new File(cache, "%s/%s.%s".format(project, compiler, mode)).getAbsolutePath)
+              "-DCMAKE_INSTALL_PREFIX=" + artefactCache.getAbsolutePath)
 
         Mockito.verify(mockProgramRunner).apply(expectedArguments, tempPath)
       }
@@ -70,13 +89,20 @@ class CMakePrebuildCachedSourceTests extends UnitTest {
     val mockProgramRunner = mock[ProgramRunner]
     val mockCompilerGeneratorMap = mock[CompilerGeneratorMap]
 
+    val mockGetSourceLocation = mock[GetSourceLocation]
+    Mockito.when(mockGetSourceLocation.apply(Matchers.any[Project])).thenReturn(new File("."))
+
+    val mockGetArtefactsLocation = mock[GetArtefactsLocation]
+    Mockito.when(mockGetArtefactsLocation.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode], Matchers.any[Branch])).thenReturn(new File("."))
+
     val mockBuildTypeMap = mock[BuildModeBuildTypeMap]
     Mockito.when(mockBuildTypeMap.apply(Matchers.any[BuildMode]))
       .thenReturn(GenNative.genAlphaNumericString(1, 20))
 
     val cmakePrebuildLocal = new CMakePreBuildCachedSource(GenNative.genAlphaNumericString(3, 10),
       mockProgramRunner,
-      new File("./cache/path"),
+      mockGetSourceLocation,
+      mockGetArtefactsLocation,
       new File("./tmp/adsafaw"),
       mockCompilerGeneratorMap,
       mockBuildTypeMap)
@@ -90,7 +116,7 @@ class CMakePrebuildCachedSourceTests extends UnitTest {
         .thenReturn(GenNative.genIntExcluding(-1000, 1000, Seq[Int](0)))
 
       val thrownException: Throwable = try {
-        cmakePrebuildLocal.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler(), GenModel.arg.genBuildMode())
+        cmakePrebuildLocal.apply(GenModel.arg.genProject(), GenModel.arg.genCompiler(), GenModel.arg.genBuildMode(), GenModel.arg.genBranch())
         null
       } catch {
         case e: Throwable => e

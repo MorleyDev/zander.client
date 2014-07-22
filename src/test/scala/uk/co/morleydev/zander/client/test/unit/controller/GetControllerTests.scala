@@ -1,5 +1,6 @@
 package uk.co.morleydev.zander.client.test.unit.controller
 
+import uk.co.morleydev.zander.client.model.OperationArguments
 import uk.co.morleydev.zander.client.test.unit.UnitTest
 import uk.co.morleydev.zander.client.controller.impl.GetController
 import uk.co.morleydev.zander.client.test.gen.GenModel
@@ -24,14 +25,15 @@ class GetControllerTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
 
-      getController.apply(project, compiler, mode)
+      getController.apply(new OperationArguments(project, compiler, mode, branch))
 
       it("Then the existence of artefacts is checked") {
         Mockito.verify(mockCheckArtefactDetailsExist).apply(project, compiler, mode)
       }
       it("Then the artefacts are installed") {
-        Mockito.verify(mockInstallArtefacts).apply(project, compiler, mode)
+        Mockito.verify(mockInstallArtefacts).apply(project, compiler, mode, branch)
       }
     }
   }
@@ -49,14 +51,15 @@ class GetControllerTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
 
-      getController.apply(project, compiler, mode)
+      getController.apply(new OperationArguments(project, compiler, mode, branch))
 
       it("Then the existence of artefacts is checked") {
         Mockito.verify(mockCheckArtefactDetailsExist).apply(project, compiler, mode)
       }
       it("Then the artefacts are updated") {
-        Mockito.verify(mockUpdateArtefacts).apply(project, compiler, mode)
+        Mockito.verify(mockUpdateArtefacts).apply(project, compiler, mode, branch)
       }
     }
   }

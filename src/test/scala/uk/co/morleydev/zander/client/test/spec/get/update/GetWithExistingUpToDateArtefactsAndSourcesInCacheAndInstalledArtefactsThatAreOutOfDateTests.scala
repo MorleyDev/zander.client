@@ -40,7 +40,7 @@ class GetWithExistingUpToDateArtefactsAndSourcesInCacheAndInstalledArtefactsThat
 
             testHarness
               .givenAServer()
-              .givenGitIsPossible(artefactVersion)
+              .givenFullGitPipelineIsPossible(artefactVersion)
               .whenGetting(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()
               .whenTheCacheAlreadyContainsArtefacts(artefactVersion, expectedFiles)
@@ -50,6 +50,7 @@ class GetWithExistingUpToDateArtefactsAndSourcesInCacheAndInstalledArtefactsThat
               .invokeMain()
               .thenTheExpectedServerRequestsWereHandled()
               .thenAGitUpdateWasInvoked()
+              .thenAGitCheckoutWasInvoked()
               .thenTheGitVersionWasRetrieved()
               .thenExpectedResponseCodeWasReturned(ResponseCodes.Success)
               .thenTheLocalArtefactsWereTaggedWithTheExpectedVersion(artefactVersion)

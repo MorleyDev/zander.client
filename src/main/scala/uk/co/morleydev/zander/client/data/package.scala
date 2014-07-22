@@ -1,9 +1,11 @@
 package uk.co.morleydev.zander.client
 
+import java.io.File
+
 import uk.co.morleydev.zander.client.model.{Configuration, Arguments}
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler._
 import uk.co.morleydev.zander.client.model.arg.BuildMode._
-import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.model.arg.{Branch, Project}
 import uk.co.morleydev.zander.client.model.net.ProjectDto
 import uk.co.morleydev.zander.client.model.store.{CacheDetails, ArtefactDetails, SourceVersion}
 
@@ -57,6 +59,10 @@ package object data {
   type DownloadProjectSource = ((Project, ProjectDto) => Unit)
 
   /**
+   * Checkout a branch in the source for a given project
+   */
+  type CheckoutProjectSource = ((Project, Branch) => Unit)
+  /**
    * Get the ProjectDto for the Project for a given Compiler
    */
   type GetProjectDto = ((Project, BuildCompiler) => Future[ProjectDto])
@@ -70,7 +76,7 @@ package object data {
    * The project artefact install is responsible for the installation of artefacts from a store (i.e the project cache)
    * to the local working directory
    */
-  type InstallProjectArtefact = ((Project, BuildCompiler, BuildMode) => Unit)
+  type InstallProjectArtefact = ((Project, BuildCompiler, BuildMode, Branch) => Unit)
 
   /**
    * The project source install is responsible for the installation of project files created by the build to the cache
@@ -90,7 +96,7 @@ package object data {
   /**
    * Run the prebuild steps (e.g cmake)
    */
-  type PreBuildProjectSource = ((Project, BuildCompiler, BuildMode) => Unit)
+  type PreBuildProjectSource = ((Project, BuildCompiler, BuildMode, Branch) => Unit)
 
   /**
    * Process a map of projects to artefact details (e.g remove duplicate files from the Artefact Details)
@@ -105,7 +111,7 @@ package object data {
   /**
    * Read the cache details for a given project, compiler, mode combination
    */
-  type ReadProjectCacheDetails = ((Project, BuildCompiler, BuildMode) => CacheDetails)
+  type ReadProjectCacheDetails = ((Project, BuildCompiler, BuildMode, Branch) => CacheDetails)
 
   /**
    * Split a filename into a project, compiler and build mode ( e.g project.compiler.buildmode.json => (Project, Compiler, BuildMode) )
@@ -117,6 +123,7 @@ package object data {
    */
   type UpdateProjectSource = ((Project, ProjectDto) => Unit)
 
+
   /**
    * Write a file containing the project artefact details for a project, with a compiler, build mode, source version and set of filenames
    */
@@ -125,11 +132,21 @@ package object data {
   /**
    * Write project source details for a project, with a compiler, build mode and source version
    */
-  type WriteProjectSourceDetails = ((Project, BuildCompiler, BuildMode, SourceVersion) => Unit)
+  type WriteProjectSourceDetails = ((Project, BuildCompiler, BuildMode, Branch, SourceVersion) => Unit)
 
 
   /**
    * Factory used for building a native process to run, for example running CMake or Git
    */
   type NativeProcessBuilderFactory = (Seq[String] => NativeProcessBuilder)
+
+  /**
+   * Gets the path to write/read for a project artefacts in the cache
+   */
+  type GetArtefactsLocation = ((Project, BuildCompiler, BuildMode, Branch) => File)
+
+  /**
+   * Gets the path to write/read for a project source in the cache
+   */
+  type GetSourceLocation = (Project => File)
 }

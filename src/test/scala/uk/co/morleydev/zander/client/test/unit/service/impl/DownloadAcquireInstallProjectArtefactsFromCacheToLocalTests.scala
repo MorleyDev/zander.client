@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client.test.unit.service.impl
 import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.data.GetProjectDto
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
-import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.model.arg.{Branch, Project}
 import uk.co.morleydev.zander.client.model.net.ProjectDto
 import uk.co.morleydev.zander.client.service.impl.DownloadAcquireInstallProjectArtefactsFromCacheToLocal
 import uk.co.morleydev.zander.client.service.{AcquireProjectArtefacts, CompileProjectSource, AcquireProjectSource}
@@ -27,7 +27,7 @@ class DownloadAcquireInstallProjectArtefactsFromCacheToLocalTests extends UnitTe
     describe("When acquiring and installing the details") {
 
       val sourceVersion = GenModel.store.genSourceVersion()
-      Mockito.when(mockAcquireSource.apply(Matchers.any[Project], Matchers.any[ProjectDto]))
+      Mockito.when(mockAcquireSource.apply(Matchers.any[Project], Matchers.any[ProjectDto], Matchers.any[Branch]))
              .thenReturn(sourceVersion)
 
       val dto = GenModel.net.genProjectDto()
@@ -37,20 +37,21 @@ class DownloadAcquireInstallProjectArtefactsFromCacheToLocalTests extends UnitTe
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
 
-      acquirer.apply(project, compiler, mode)
+      acquirer.apply(project, compiler, mode, branch)
 
       it("Then the project dto is acquired") {
         Mockito.verify(mockGetProjectDto).apply(project, compiler)
       }
       it("Then the source is acquired") {
-        Mockito.verify(mockAcquireSource).apply(project, dto)
+        Mockito.verify(mockAcquireSource).apply(project, dto, branch)
       }
       it("Then the source is compiled") {
-        Mockito.verify(mockCompileSource).apply(project, compiler, mode, sourceVersion)
+        Mockito.verify(mockCompileSource).apply(project, compiler, mode, branch, sourceVersion)
       }
       it("Then the artefacts are acquired") {
-        Mockito.verify(mockAcquireArtefacts).apply(project, compiler, mode, sourceVersion)
+        Mockito.verify(mockAcquireArtefacts).apply(project, compiler, mode, branch, sourceVersion)
       }
     }
   }

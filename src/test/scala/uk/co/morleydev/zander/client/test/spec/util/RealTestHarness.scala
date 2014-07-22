@@ -37,11 +37,13 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   private var provider : SimpleHttpResponseProvider = null
   private var mockServer : MockServerAndPort = null
   private var arguments : Array[String] = null
+  private val branch : String = "master"
   private val cache : TemporaryDirectory = new TemporaryDirectory()
   private val tmp : TemporaryDirectory = new TemporaryDirectory()
   private val working : TemporaryDirectory = new TemporaryDirectory(true)
 
-  private var mockGitProcessBuilder : (NativeProcessBuilder, Process) = null
+  private var mockGitDownloadProcessBuilder : (NativeProcessBuilder, Process) = null
+  private var mockGitCheckoutProcessBuilder : (NativeProcessBuilder, Process) = null
   private var mockGitVersionProcessBuilder : (NativeProcessBuilder, Process) = null
   private var mockCmakeProcessBuilder : (NativeProcessBuilder, Process) = null
   private var mockCmakeBuildProcessBuilder : (NativeProcessBuilder, Process) = null
@@ -58,34 +60,56 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
     this
   }
 
-  def givenGitIsPossible(expectedArtefactVersion : String) : RealTestHarness = {
-    mockGitProcessBuilder = CreateMockProcess()
-    mockGitVersionProcessBuilder = CreateMockProcess(
-      () => 0,
-      new ByteArrayInputStream(expectedArtefactVersion.getBytes("UTF-8")))
+  def givenFullGitPipelineIsPossible(expectedArtefactVersion : String) : RealTestHarness =
+    givenAGitDownloadIsPossible()
+      .givenAGitCheckoutIsPossible()
+      .givenAGitVersionIsPossible(expectedArtefactVersion)
 
-    mockProcessBuilderQueue.enqueue(mockGitProcessBuilder._1)
-    mockProcessBuilderQueue.enqueue(mockGitVersionProcessBuilder._1)
-
+  def givenAGitDownloadIsPossible() : RealTestHarness = {
+    mockGitDownloadProcessBuilder = CreateMockProcess()
+    mockProcessBuilderQueue.enqueue(mockGitDownloadProcessBuilder._1)
     this
   }
 
-  def givenFullCMakeBuildIsPossible(expectedFiles : Seq[String]) : RealTestHarness = {
+  def givenAGitCheckoutIsPossible() : RealTestHarness = {
+    mockGitCheckoutProcessBuilder = CreateMockProcess()
+    mockProcessBuilderQueue.enqueue(mockGitCheckoutProcessBuilder._1)
+    this
+  }
+
+  def givenAGitVersionIsPossible(expectedArtefactVersion : String) : RealTestHarness = {
+    mockGitVersionProcessBuilder = CreateMockProcess(() => 0, new ByteArrayInputStream(expectedArtefactVersion.getBytes("UTF-8")))
+    mockProcessBuilderQueue.enqueue(mockGitVersionProcessBuilder._1)
+    this
+  }
+
+  def givenFullCMakePipelineIsPossible(expectedFiles : Seq[String]) : RealTestHarness =
+    givenACMakePrebuildIsPossible()
+      .givenACMakeBuildIsPossible()
+      .givenACMakeInstallIsPossible(expectedFiles)
+
+  def givenACMakePrebuildIsPossible() : RealTestHarness = {
     mockCmakeProcessBuilder = CreateMockProcess()
+    mockProcessBuilderQueue.enqueue(mockCmakeProcessBuilder._1)
+    this
+  }
+
+  def givenACMakeBuildIsPossible() : RealTestHarness = {
     mockCmakeBuildProcessBuilder = CreateMockProcess()
+    mockProcessBuilderQueue.enqueue(mockCmakeBuildProcessBuilder._1)
+    this
+  }
+
+  def givenACMakeInstallIsPossible(expectedFiles : Seq[String]) : RealTestHarness = {
     mockCmakeInstallProcessBuilder = CreateMockProcess(() => {
       expectedFiles.foreach(path => {
-        val file = cache.sub(arguments(1) + "/" + arguments(2) + "." + arguments(3) + "/" + path)
+        val file = cache.sub(arguments(1) + "/" + branch + "/" + arguments(2) + "." + arguments(3) + "/" + path)
         if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
         file.createNewFile()
       })
       0
     })
-
-    mockProcessBuilderQueue.enqueue(mockCmakeProcessBuilder._1)
-    mockProcessBuilderQueue.enqueue(mockCmakeBuildProcessBuilder._1)
     mockProcessBuilderQueue.enqueue(mockCmakeInstallProcessBuilder._1)
-
     this
   }
 
@@ -152,7 +176,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
 
   def whenTheCacheAlreadyContainsArtefacts(version : String, files : Seq[String]) : RealTestHarness = {
 
-    val cachedArtefactStore = cache.sub("%s/%s.%s".format(arguments(1), arguments(2), arguments(3)))
+    val cachedArtefactStore = cache.sub("%s/%s/%s.%s".format(arguments(1), branch, arguments(2), arguments(3)))
     cachedArtefactStore.mkdirs()
     using(new PrintWriter(new File(cachedArtefactStore, "version.json"))) {
       writer => writer.write(JacksMapper.writeValueAsString[CachedArtefactDetails](new CachedArtefactDetails(version)))
@@ -258,9 +282,19 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   def thenAGitCloneWasInvoked(gitUrl : String) : RealTestHarness = {
     parent.it("Then a git clone was invoked on " + gitUrl) {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "source"))
-      Mockito.verify(mockGitProcessBuilder._1).directory(cache.sub(arguments(1)))
-      Mockito.verify(mockGitProcessBuilder._1).start()
-      Mockito.verify(mockGitProcessBuilder._2).waitFor()
+      Mockito.verify(mockGitDownloadProcessBuilder._1).directory(cache.sub(arguments(1)))
+      Mockito.verify(mockGitDownloadProcessBuilder._1).start()
+      Mockito.verify(mockGitDownloadProcessBuilder._2).waitFor()
+    }
+    this
+  }
+
+  def thenAGitCheckoutWasInvoked() : RealTestHarness = {
+    parent.it("Then a git clone was invoked on " + branch) {
+      Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "checkout", branch))
+      Mockito.verify(mockGitCheckoutProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
+      Mockito.verify(mockGitCheckoutProcessBuilder._1).start()
+      Mockito.verify(mockGitCheckoutProcessBuilder._2).waitFor()
     }
     this
   }
@@ -268,9 +302,9 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   def thenAGitUpdateWasInvoked() : RealTestHarness = {
     parent.it("Then a git update was invoked") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "pull"))
-      Mockito.verify(mockGitProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
-      Mockito.verify(mockGitProcessBuilder._1).start()
-      Mockito.verify(mockGitProcessBuilder._2).waitFor()
+      Mockito.verify(mockGitDownloadProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
+      Mockito.verify(mockGitDownloadProcessBuilder._1).start()
+      Mockito.verify(mockGitDownloadProcessBuilder._2).waitFor()
     }
     this
   }
@@ -294,7 +328,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
         new File(cache.file, arguments(1) + "/source").getAbsolutePath) ++
         generatorSequence ++
         Seq[String]("-DCMAKE_BUILD_TYPE=" + buildType,
-        "-DCMAKE_INSTALL_PREFIX=" + cache.sub(arguments(1) + "/" + arguments(2) + "." + arguments(3)).getAbsolutePath
+        "-DCMAKE_INSTALL_PREFIX=" + cache.sub(arguments(1) + "/" + branch + "/" + arguments(2) + "." + arguments(3)).getAbsolutePath
       ))
 
       Mockito.verify(mockCmakeProcessBuilder._1).directory(tmp.file)

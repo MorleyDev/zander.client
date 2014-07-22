@@ -7,7 +7,7 @@ import org.mockito.{Matchers, Mockito}
 import uk.co.morleydev.zander.client.data._
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
-import uk.co.morleydev.zander.client.model.arg.Project
+import uk.co.morleydev.zander.client.model.arg.{Branch, Project}
 import uk.co.morleydev.zander.client.model.store.CacheDetails
 import uk.co.morleydev.zander.client.service.impl.CompileCachedProjectSource
 import uk.co.morleydev.zander.client.test.gen.GenModel
@@ -17,7 +17,7 @@ class CachedSourceCompileTests extends UnitTest {
   describe("Given a source details reader for a project") {
 
     val mockSourceDetailsReader = mock[ReadProjectCacheDetails]
-    Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode]))
+    Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode], Matchers.any[Branch]))
            .thenAnswer(new Answer[CacheDetails] {
               override def answer(invocation: InvocationOnMock): CacheDetails = {
                 throw new FileNotFoundException()
@@ -40,15 +40,16 @@ class CachedSourceCompileTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
       val version = GenModel.store.genSourceVersion()
 
-      cachedSourceCompile.apply(project, compiler, mode, version)
+      cachedSourceCompile.apply(project, compiler, mode, branch, version)
 
       it("Then the source version is read") {
-        Mockito.verify(mockSourceDetailsReader).apply(project, compiler, mode)
+        Mockito.verify(mockSourceDetailsReader).apply(project, compiler, mode, branch)
       }
       it("Then the source is prebuilt") {
-        Mockito.verify(mockPrebuild).apply(project, compiler, mode)
+        Mockito.verify(mockPrebuild).apply(project, compiler, mode, branch)
       }
       it("Then the source is built") {
         Mockito.verify(mockBuild).apply(project, compiler, mode)
@@ -57,7 +58,7 @@ class CachedSourceCompileTests extends UnitTest {
         Mockito.verify(mockInstall).apply(project, compiler, mode)
       }
       it("Then the source details are written to the cache") {
-        Mockito.verify(mockSourceDetailsWriter).apply(project, compiler, mode, version)
+        Mockito.verify(mockSourceDetailsWriter).apply(project, compiler, mode, branch, version)
       }
     }
   }
@@ -78,17 +79,18 @@ class CachedSourceCompileTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
       val version = GenModel.store.genSourceVersion()
-      Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode]))
+      Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode], Matchers.any[Branch]))
         .thenReturn(new CacheDetails(version.value))
 
-      cachedSourceCompile.apply(project, compiler, mode, version)
+      cachedSourceCompile.apply(project, compiler, mode, branch, version)
 
       it("Then the source version is read") {
-        Mockito.verify(mockSourceDetailsReader).apply(project, compiler, mode)
+        Mockito.verify(mockSourceDetailsReader).apply(project, compiler, mode, branch)
       }
       it("Then the source details are not written to the cache") {
-        Mockito.verify(mockSourceDetailsWriter, Mockito.never()).apply(project, compiler, mode, version)
+        Mockito.verify(mockSourceDetailsWriter, Mockito.never()).apply(project, compiler, mode, branch, version)
       }
     }
   }
@@ -113,20 +115,21 @@ class CachedSourceCompileTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
       val version = GenModel.store.genSourceVersion()
-      Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode]))
+      Mockito.when(mockSourceDetailsReader.apply(Matchers.any[Project], Matchers.any[BuildCompiler], Matchers.any[BuildMode], Matchers.any[Branch]))
         .thenReturn(new CacheDetails(GenModel.store.genSourceVersion().value))
 
-      cachedSourceCompile.apply(project, compiler, mode, version)
+      cachedSourceCompile.apply(project, compiler, mode, branch, version)
 
       it("Then the source version is read") {
-        Mockito.verify(mockSourceDetailsReader).apply(project, compiler, mode)
+        Mockito.verify(mockSourceDetailsReader).apply(project, compiler, mode, branch)
       }
       it("Then the directory is deleted") {
         Mockito.verify(mockDirectoryDelete).apply(project, compiler, mode)
       }
       it("Then the source is prebuilt") {
-        Mockito.verify(mockPrebuild).apply(project, compiler, mode)
+        Mockito.verify(mockPrebuild).apply(project, compiler, mode, branch)
       }
       it("Then the source is built") {
         Mockito.verify(mockBuild).apply(project, compiler, mode)
@@ -135,7 +138,7 @@ class CachedSourceCompileTests extends UnitTest {
         Mockito.verify(mockInstall).apply(project, compiler, mode)
       }
       it("Then the source details are written to the cache") {
-        Mockito.verify(mockSourceDetailsWriter).apply(project, compiler, mode, version)
+        Mockito.verify(mockSourceDetailsWriter).apply(project, compiler, mode, branch, version)
       }
     }
   }

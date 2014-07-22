@@ -12,7 +12,7 @@ class Program(controllerFactory : ControllerFactory) {
     val controller = controllerFactory.createController(args.operation, config)
 
     try {
-      controller(args.project, args.compiler, args.mode)
+      controller(args.operationArgs)
       ExitCodes.Success
     } catch {
       case e : LocalArtefactsAlreadyExistException => ExitCodes.ArtefactsAlreadyInstalled

@@ -21,16 +21,17 @@ class CachedArtefactAcquireTests extends UnitTest {
       val project = GenModel.arg.genProject()
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
+      val branch = GenModel.arg.genBranch()
       val version = GenModel.store.genSourceVersion()
 
       val expectedFiles = GenNative.genSequence(1, 10, () => GenNative.genAlphaNumericString(1, 20))
       Mockito.when(mockProjectSourceListFiles.apply(project, compiler, mode))
              .thenReturn(expectedFiles)
 
-      cachedArtefactAcquire.apply(project, compiler, mode, version)
+      cachedArtefactAcquire.apply(project, compiler, mode, branch, version)
 
       it("Then the artefacts are installed") {
-        Mockito.verify(mockArtefactInstall).apply(project, compiler, mode)
+        Mockito.verify(mockArtefactInstall).apply(project, compiler, mode, branch)
       }
       it("Then the files are retrieved") {
         Mockito.verify(mockProjectSourceListFiles).apply(project, compiler, mode)
