@@ -13,7 +13,7 @@ class LocalProgramRunner(processBuilderFactory : NativeProcessBuilderFactory) ex
       .start()
 
     Source.fromInputStream(process.getInputStream).getLines().foreach(Log.message(_))
-    Source.fromInputStream(process.getErrorStream).getLines().foreach(Log.error(_))
+    Source.fromInputStream(process.getErrorStream).getLines().foreach(Log.warning(_))
 
     process.waitFor()
   }
