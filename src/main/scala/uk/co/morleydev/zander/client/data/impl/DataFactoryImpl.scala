@@ -17,12 +17,6 @@ import uk.co.morleydev.zander.client.util.using
 class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
                       temporaryDirectory : File,
                       workingDirectory : File) extends DataFactory {
-  def createGitCheckout(config: Configuration) = new GitCheckoutCachedSource(
-    config.programs.git,
-    createProgramRunner(),
-    createCacheDirectory(config))
-
-
   private def createProgramRunner() : ProgramRunner = {
     new LocalProgramRunner(processBuilderFactory)
   }
@@ -37,6 +31,12 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
     new File(config.cache)
   }
 
+  override def createGetCachedArtefactsLocation(config: Configuration): GetArtefactsLocation =
+    new GetCachedArtefactsLocation(createCacheDirectory(config))
+
+  override def createGetCachedSourceLocation(config: Configuration): GetSourceLocation =
+    new GetCachedSourceLocation(createCacheDirectory(config))
+
   override def createGitDownloadRemote(config : Configuration) : DownloadProjectSource =
     new GitDownloadSourceToCache(config.programs.git,
       createProgramRunner(),
@@ -47,20 +47,19 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       createCacheDirectory(config),
       createProgramRunner())
 
+  override def createGitCheckout(config: Configuration) : CheckoutProjectSource =
+    new GitCheckoutCachedSource(config.programs.git, createProgramRunner(), createCacheDirectory(config))
+
   override def createGetGitVersion(config : Configuration) : GetProjectSourceVersion =
     new GetGitSourceVersion(config.programs.git,
       createCacheDirectory(config),
       processBuilderFactory)
 
   override def createCMakePreBuildCachedSource(config : Configuration) : PreBuildProjectSource = {
-    val cacheDirectory = createCacheDirectory(config)
-    val getCachedSourceLocation = new GetCachedSourceLocation(cacheDirectory)
-    val getCachedArtefactLocation = new GetCachedArtefactsLocation(cacheDirectory)
-
     new CMakePreBuildCachedSource(config.programs.cmake,
       createProgramRunner(),
-      getCachedSourceLocation,
-      getCachedArtefactLocation,
+      createGetCachedSourceLocation(config),
+      createGetCachedArtefactsLocation(config),
       temporaryDirectory,
       CMakeCompilerGeneratorMap,
       CMakeBuildModeBuildTypeMap)
@@ -78,15 +77,16 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       temporaryDirectory,
       CMakeBuildModeBuildTypeMap)
 
-  override def createProjectSourceDetailsReaderFromCache(cache : File): ReadProjectCacheDetails = {
-    new ReadProjectCacheDetailsFromCache(new GetCachedArtefactsLocation(cache),
+  override def createProjectSourceDetailsReaderFromCache(config : Configuration): ReadProjectCacheDetails = {
+    val getCachedArtefactsLocation = createGetCachedArtefactsLocation(config)
+    new ReadProjectCacheDetailsFromCache(getCachedArtefactsLocation,
       file => using(Source.fromFile(file)) {
         source => source.getLines().mkString("\n")
       })
   }
 
   override def createProjectSourceDetailsWriterToCache(config : Configuration) : WriteProjectSourceDetails =
-    new WriteProjectSourceDetailsToCache(new GetCachedArtefactsLocation(createCacheDirectory(config)), writeDataToFile)
+    new WriteProjectSourceDetailsToCache(createGetCachedArtefactsLocation(config), writeDataToFile)
 
   override def createArtefactDetailsReaderFromLocal() : ReadProjectArtefactDetails =
     new ReadProjectArtefactDetailsFromLocal(workingDirectory, f => using(Source.fromFile(f)) {
@@ -112,19 +112,10 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
       cleanEmptyDirectory)
 
   override def createProjectArtefactInstallFromCache(config : Configuration) : InstallProjectArtefact =
-    new InstallProjectArtefactFromCache(new GetCachedArtefactsLocation(createCacheDirectory(config)),
+    new InstallProjectArtefactFromCache(
+      createGetCachedArtefactsLocation(config),
       workingDirectory.getAbsoluteFile,
-      (src, dst) => {
-        if (src.exists()) {
-          Log.message("%s copied to %s".format(src, dst))
-          if (!dst.exists())
-            dst.mkdirs()
-
-          FileUtils.copyDirectory(src, dst)
-        }
-        else
-          Log.warning("%s copy to %s failed".format(src, dst))
-      })
+      copyDirectoriesFromSourceToDestination)
 
   override def createProjectSourceListFilesInCache(config : Configuration) : ListProjectCacheFiles =
     new ListProjectCacheFilesInCache(createCacheDirectory(config), file =>
@@ -144,4 +135,16 @@ class DataFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
 
   override def createCheckArtefactDetailsExist(): CheckArtefactDetailsExist =
     new CheckArtefactDetailsExistInLocal(workingDirectory, createArtefactDetailsReaderFromLocal())
+
+  private def copyDirectoriesFromSourceToDestination(src: File, dst: File) : Unit = {
+    if (src.exists()) {
+      Log.message("%s copied to %s".format(src, dst))
+      if (!dst.exists())
+        dst.mkdirs()
+
+      FileUtils.copyDirectory(src, dst)
+    }
+    else
+      Log.warning("%s copy to %s failed".format(src, dst))
+  }
 }

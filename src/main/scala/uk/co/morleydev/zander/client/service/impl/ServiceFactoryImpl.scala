@@ -34,7 +34,7 @@ class ServiceFactoryImpl(processBuilderFactory : NativeProcessBuilderFactory,
 
     val cacheDirectory = new File(config.cache)
 
-    val detailsReader = dataFactory.createProjectSourceDetailsReaderFromCache(cacheDirectory)
+    val detailsReader = dataFactory.createProjectSourceDetailsReaderFromCache(config)
     val preBuild = dataFactory.createCMakePreBuildCachedSource(config)
     val build = dataFactory.createCMakeBuildCachedSource(config)
     val install = dataFactory.createCMakeInstallCachedSource(config)

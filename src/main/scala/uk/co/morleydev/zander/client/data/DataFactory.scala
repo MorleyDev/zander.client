@@ -1,6 +1,5 @@
 package uk.co.morleydev.zander.client.data
 
-import java.io.File
 import uk.co.morleydev.zander.client.model.Configuration
 
 trait DataFactory {
@@ -12,9 +11,13 @@ trait DataFactory {
 
   def createGitDownloadRemote(config : Configuration) : DownloadProjectSource
   def createGitUpdate(config : Configuration) : UpdateProjectSource
+  def createGitCheckout(config: Configuration) : CheckoutProjectSource
   def createGetGitVersion(config : Configuration) : GetProjectSourceVersion
 
-  def createProjectSourceDetailsReaderFromCache(cache : File): ReadProjectCacheDetails
+  def createGetCachedArtefactsLocation(config: Configuration): GetArtefactsLocation
+  def createGetCachedSourceLocation(config: Configuration): GetSourceLocation
+
+  def createProjectSourceDetailsReaderFromCache(config : Configuration): ReadProjectCacheDetails
   def createProjectSourceDetailsWriterToCache(config : Configuration) : WriteProjectSourceDetails
   def createProjectSourceListFilesInCache(config : Configuration) : ListProjectCacheFiles
 
