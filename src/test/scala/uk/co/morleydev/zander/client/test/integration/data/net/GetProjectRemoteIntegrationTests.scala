@@ -27,13 +27,13 @@ class GetProjectRemoteIntegrationTests extends IntegrationTest {
           val compiler = GenModel.arg.genCompiler()
 
           provider.expect(Method.GET, "/project/" + project)
-            .respondWith(200, "application/json", "{ \"git\":\"" + expectedProject.git + "\" }")
+            .respondWith(200, "application/json", "{ \"src\": { \"vcs\": \"" + expectedProject.src.vcs + "\", \"href\": \"" + expectedProject.src.href + "\" } }")
 
           val projectFuture = getProjectRemote.apply(project, compiler)
 
           it("Then the expected project is returned") {
             val actualProject = Await.result(projectFuture, Duration(1, MINUTES))
-            assert(actualProject.git.equals(expectedProject.git))
+            assert(actualProject.src.equals(expectedProject.src))
           }
         }
 
@@ -76,13 +76,13 @@ class GetProjectRemoteIntegrationTests extends IntegrationTest {
           val compiler = GenModel.arg.genCompiler()
 
           provider.expect(Method.GET, "/api/project/" + project)
-            .respondWith(200, "application/json", "{ \"git\":\"" + expectedProject.git + "\" }")
+            .respondWith(200, "application/json", "{ \"src\": { \"vcs\": \"" + expectedProject.src.vcs + "\", \"href\": \"" + expectedProject.src.href + "\" } }")
 
           val projectFuture = getProjectRemote.apply(project, compiler)
 
           it("Then the expected project is returned") {
             val actualProject = Await.result(projectFuture, Duration(1, MINUTES))
-            assert(actualProject.git.equals(expectedProject.git))
+            assert(actualProject.src.equals(expectedProject.src))
           }
         }
     }

@@ -5,7 +5,7 @@ import uk.co.morleydev.zander.client.model.arg._
 import uk.co.morleydev.zander.client.model.arg.Operation.Operation
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler.BuildCompiler
 import uk.co.morleydev.zander.client.model.arg.BuildMode.BuildMode
-import uk.co.morleydev.zander.client.model.net.ProjectDto
+import uk.co.morleydev.zander.client.model.net.{ProjectVcsDto, ProjectDto}
 import scala.util.Random
 import java.net.URL
 import uk.co.morleydev.zander.client.model.store.{ArtefactDetails, SourceVersion}
@@ -41,9 +41,9 @@ object GenModel {
         new URL(GenNative.genHttpUrl(), "%s/%s".format(user, project)).toString
     }
 
-    def genGitSupportingProjectDto() : ProjectDto = new ProjectDto(genGitUrl())
+    def genGitSupportingProjectDto() : ProjectDto = new ProjectDto(new ProjectVcsDto("git", genGitUrl()))
 
-    def genProjectDto() : ProjectDto = new ProjectDto(genGitUrl())
+    def genProjectDto() : ProjectDto = new ProjectDto(new ProjectVcsDto("git", genGitUrl()))
   }
 
   object store {

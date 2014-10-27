@@ -200,7 +200,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
     expectRequestToThenReplyWith("/project/%s".format(arguments(1)), responseCode, responseBody)
 
   def expectSuccessfulRequest(gitUrl : String) : RealTestHarness =
-    expectRequestToThenReplyWith("/project/%s".format(arguments(1)), 200, "{ \"git\":\"%s\" }".format(gitUrl))
+    expectRequestToThenReplyWith("/project/%s".format(arguments(1)), 200, "{ \"src\" : { \"vcs\" : \"git\", \"href\" : \"%s\" } }".format(gitUrl))
 
   def invokeMain() : RealTestHarness = {
 

@@ -10,7 +10,7 @@ import scala.concurrent.{Await, future}
 import uk.co.morleydev.zander.client.data.exception.ProjectEndpointNotFoundException
 import uk.co.morleydev.zander.client.data.net.GetProjectDtoRemote
 import uk.co.morleydev.zander.client.model.arg.BuildCompiler
-import uk.co.morleydev.zander.client.model.net.ProjectDto
+import uk.co.morleydev.zander.client.model.net.{ProjectVcsDto, ProjectDto}
 import uk.co.morleydev.zander.client.test.gen.{GenStringArguments, GenModel, GenNative}
 import uk.co.morleydev.zander.client.test.unit.UnitTest
 
@@ -25,7 +25,7 @@ class GetProjectRemoteTests extends UnitTest {
 
       val mockHttpRequest = mock[HttpRequest]
       val mockHttpResponse = mock[HttpResponse]
-      val expectedProject = new ProjectDto("http://git_string.com/git/string")
+      val expectedProject = new ProjectDto(new ProjectVcsDto("git", "http://git_string.com/git/string"))
 
       Mockito.when(mockUrlGet(Matchers.any[URL]()))
         .thenReturn(mockHttpRequest)
@@ -34,7 +34,7 @@ class GetProjectRemoteTests extends UnitTest {
       Mockito.when(mockHttpResponse.code)
         .thenReturn(HttpResponseCode.Ok)
       Mockito.when(mockHttpResponse.bodyString)
-        .thenReturn("{ \"git\": \"" + expectedProject.git + "\" }")
+        .thenReturn("{ \"src\": { \"vcs\": \"" + expectedProject.src.vcs + "\", \"href\": \"" + expectedProject.src.href + "\" } }")
 
       val project = GenModel.arg.genProject()
       val compilerString = GenStringArguments.genCompiler()
@@ -52,7 +52,7 @@ class GetProjectRemoteTests extends UnitTest {
       }
       it("Then the returned future gives the expected project when invoked") {
         val actualProject = Await.result(result, Duration.create(1, SECONDS))
-        assert(actualProject.git.equals(expectedProject.git))
+        assert(actualProject.src.equals(expectedProject.src))
       }
     }
 
