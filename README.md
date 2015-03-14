@@ -69,9 +69,10 @@ The get operation performs an install or update, depending on whether local aret
 
 ## Branches and tags
 The /branch:{BRANCH} command line argument can be used to specify a specific branch of the project to acquire. As tags are just branches, this can include specific tags.
+
 Examples:
-zander-client get someproject mingw release /branch:some_branch
-zander-client get someproject mingw release /branch:tags/v1.0.0
+* zander-client get someproject mingw release /branch:some_branch
+* zander-client get someproject mingw release /branch:tags/v1.0.0
 
 ##Build Status
 
