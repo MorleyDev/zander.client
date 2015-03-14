@@ -44,7 +44,7 @@ class GetGitSourceVersionTests extends UnitTest {
 
       it("Then the process is created and ran") {
         Mockito.verify(mockNativeProcessBuilderFactory).apply(Seq[String](git, "rev-parse", "HEAD"))
-        Mockito.verify(mockNativeProcessBuilder).directory(new File(cache, project.value + "/source"))
+        Mockito.verify(mockNativeProcessBuilder).directory(new File(cache, project.value + "/src"))
         Mockito.verify(mockNativeProcessBuilder).start()
         Mockito.verify(mockProcess).waitFor()
       }

@@ -18,8 +18,8 @@ class CMakePrebuildCachedSourceTests extends UnitTest {
     val mockProgramRunner = mock[ProgramRunner]
 
     val cmake = GenNative.genAlphaNumericString(3, 10)
-    val sourceCache = new File("./cache/path/source")
-    val artefactCache = new File("./cache/path/artefacts")
+    val sourceCache = new File("./cache/path/src")
+    val artefactCache = new File("./cache/path/bin")
     val tempPath = new File("./tmp/adsafaw")
 
     val mockGetSourceLocation = mock[GetSourceLocation]

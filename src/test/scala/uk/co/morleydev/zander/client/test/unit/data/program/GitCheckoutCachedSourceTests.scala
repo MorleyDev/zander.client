@@ -28,7 +28,7 @@ class GitCheckoutCachedSourceTests extends UnitTest {
       gitCheckoutCachedSource.apply(project, branch)
 
       it("Then the git update is ran") {
-        Mockito.verify(mockProgramRunner).apply(Seq[String](git, "checkout", branch.toString), new File(cache, project.value + "/source"))
+        Mockito.verify(mockProgramRunner).apply(Seq[String](git, "checkout", branch.toString), new File(cache, project.value + "/src"))
       }
     }
   }

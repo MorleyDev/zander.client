@@ -9,7 +9,7 @@ import uk.co.morleydev.zander.client.model.arg.{Branch, Project}
 
 class GetCachedArtefactsLocation(cacheRoot: File) extends GetArtefactsLocation {
   def apply(p: Project, c: BuildCompiler, m: BuildMode, b: Branch) : File =
-    new File(cacheRoot, "%s/%s/%s.%s".format(p,b,c,m))
+    new File(cacheRoot, "%s/bin/%s/%s.%s".format(p,b,c,m))
 }
 
 

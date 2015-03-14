@@ -8,11 +8,11 @@ import uk.co.morleydev.zander.client.data.exception.GitUpdateFailedException
 
 class GitUpdateCachedSource(git : String, cache : File, processFactory : ProgramRunner) extends UpdateProjectSource {
   override def apply(project: Project, dto: ProjectDto): Unit = {
-    val checkoutExitCode = processFactory(Seq[String](git, "checkout", "master"), new File(cache, project + "/source"))
+    val checkoutExitCode = processFactory(Seq[String](git, "checkout", "master"), new File(cache, project + "/src"))
     if (checkoutExitCode != 0)
       throw new GitUpdateFailedException(checkoutExitCode)
 
-    val pullExitCode = processFactory(Seq[String](git, "pull"), new File(cache, project + "/source"))
+    val pullExitCode = processFactory(Seq[String](git, "pull"), new File(cache, project + "/src"))
     if (pullExitCode != 0)
       throw new GitUpdateFailedException(pullExitCode)
   }

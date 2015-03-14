@@ -27,7 +27,7 @@ class GitDownloadRemoteTests extends UnitTest {
 
       it("Then the process is ran") {
         Mockito.verify(mockProgramRunner).apply(
-          Seq[String](gitProcessName, "clone", expectedProjectDto.src.href, "source"),
+          Seq[String](gitProcessName, "clone", expectedProjectDto.src.href, "src"),
           new File(expectedCacheDirectory, expectedProject.value))
       }
     }

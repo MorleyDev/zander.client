@@ -15,7 +15,7 @@ class AcquireCachedSource(cache : File,
                           sourceCheckout : CheckoutProjectSource,
                           getSourceVersion : GetProjectSourceVersion) extends AcquireProjectSource {
   override def apply(project: Project, dto: ProjectDto, branch: Branch): SourceVersion = {
-    if ( directoryExists(new File(cache, project.value + "/source")) )
+    if ( directoryExists(new File(cache, project.value + "/src")) )
       sourceUpdate(project, dto)
     else
       sourceDownload(project, dto)

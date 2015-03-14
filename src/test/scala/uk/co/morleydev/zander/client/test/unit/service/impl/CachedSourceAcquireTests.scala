@@ -40,7 +40,7 @@ class CachedSourceAcquireTests extends UnitTest {
       val actualSourceVersion = gitCachedSourceAcquire(project, dto, branch)
 
       it("Then the source directories existence is checked") {
-        Mockito.verify(mockDirectoryIsExists).apply(new File(cache, project.value + "/source"))
+        Mockito.verify(mockDirectoryIsExists).apply(new File(cache, project.value + "/src"))
       }
       it("Then the source is downloaded") {
         Mockito.verify(mockSourceDownload).apply(project, dto)
@@ -71,7 +71,7 @@ class CachedSourceAcquireTests extends UnitTest {
       val actualSourceVersion = gitCachedSourceAcquire(project, dto, branch)
 
       it("Then the source directories existence is checked") {
-        Mockito.verify(mockDirectoryIsExists).apply(new File(cache, project.value + "/source"))
+        Mockito.verify(mockDirectoryIsExists).apply(new File(cache, project.value + "/src"))
       }
       it("Then the source is updated") {
         Mockito.verify(mockSourceUpdate).apply(project, dto)

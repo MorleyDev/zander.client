@@ -12,7 +12,7 @@ class GetGitSourceVersion(git : String,
                           processFactory : NativeProcessBuilderFactory) extends GetProjectSourceVersion {
   override def apply(project: Project): SourceVersion = {
     val process = processFactory(Seq[String](git, "rev-parse", "HEAD"))
-      .directory(new File(cache, project.value + "/source"))
+      .directory(new File(cache, project.value + "/src"))
       .start()
 
     val version = Source.fromInputStream(process.getInputStream).getLines().mkString("\n")

@@ -39,6 +39,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   private var arguments : Array[String] = null
   private var branch : String = "master"
   private val cache : TemporaryDirectory = new TemporaryDirectory()
+  private val cacheArtefactDir = "bin"
   private val tmp : TemporaryDirectory = new TemporaryDirectory()
   private val working : TemporaryDirectory = new TemporaryDirectory(true)
 
@@ -113,7 +114,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   def givenACMakeInstallIsPossible(expectedFiles : Seq[String]) : RealTestHarness = {
     mockCmakeInstallProcessBuilder = CreateMockProcess(() => {
       expectedFiles.foreach(path => {
-        val file = cache.sub(arguments(1) + "/" + branch + "/" + arguments(2) + "." + arguments(3) + "/" + path)
+        val file = cache.sub("%s/%s/%s/%s.%s/%s".format(arguments(1), cacheArtefactDir, branch, arguments(2), arguments(3), path))
         if (!file.getParentFile.exists()) file.getParentFile.mkdirs()
         file.createNewFile()
       })
@@ -147,7 +148,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
                   mode : String = GenStringArguments.genBuildMode(),
                   branch : String = "master") : RealTestHarness = {
     this.branch = branch
-    whenExecutingOperation("get", project, compiler, mode, Array[String]("\\branch:%s".format(branch)))
+    whenExecutingOperation("get", project, compiler, mode, Array[String]("/branch:%s".format(branch)))
   }
 
   def whenInstalling(project : String = GenStringArguments.genProject(),
@@ -191,13 +192,13 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   }
 
   def whenTheCacheAlreadyContainsTheSourceCode() : RealTestHarness = {
-    new File(cache.file, arguments(1) + "/source").mkdirs()
+    new File(cache.file, arguments(1) + "/src").mkdirs()
     this
   }
 
   def whenTheCacheAlreadyContainsArtefacts(version : String, files : Seq[String]) : RealTestHarness = {
 
-    val cachedArtefactStore = cache.sub("%s/%s/%s.%s".format(arguments(1), branch, arguments(2), arguments(3)))
+    val cachedArtefactStore = cache.sub("%s/%s/%s/%s.%s".format(arguments(1), cacheArtefactDir, branch, arguments(2), arguments(3)))
     cachedArtefactStore.mkdirs()
     using(new PrintWriter(new File(cachedArtefactStore, "version.json"))) {
       writer => writer.write(JacksMapper.writeValueAsString[CachedArtefactDetails](new CachedArtefactDetails(version)))
@@ -302,7 +303,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
 
   def thenAGitCloneWasInvoked(gitUrl : String) : RealTestHarness = {
     parent.it("Then a git clone was invoked on " + gitUrl) {
-      Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "source"))
+      Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "clone", gitUrl, "src"))
       Mockito.verify(mockGitDownloadProcessBuilder._1).directory(cache.sub(arguments(1)))
       Mockito.verify(mockGitDownloadProcessBuilder._1).start()
       Mockito.verify(mockGitDownloadProcessBuilder._2).waitFor()
@@ -313,7 +314,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   def thenAGitCheckoutWasInvoked() : RealTestHarness = {
     parent.it("Then a git clone was invoked on " + branch) {
       Mockito.verify(mockProcessBuilderFactory, Mockito.atLeastOnce()).apply(Seq[String](programs.git, "checkout", branch))
-      Mockito.verify(mockGitCheckoutProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
+      Mockito.verify(mockGitCheckoutProcessBuilder._1).directory(cache.sub(arguments(1) + "/src"))
       Mockito.verify(mockGitCheckoutProcessBuilder._1).start()
       Mockito.verify(mockGitCheckoutProcessBuilder._2).waitFor()
     }
@@ -323,12 +324,12 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   def thenAGitUpdateWasInvoked() : RealTestHarness = {
     parent.it("Then a git update was invoked") {
       Mockito.verify(mockProcessBuilderFactory, Mockito.atLeastOnce()).apply( Seq[String](programs.git, "checkout", "master") )
-      Mockito.verify(mockGitUpdateCheckoutProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
+      Mockito.verify(mockGitUpdateCheckoutProcessBuilder._1).directory(cache.sub("%s/src".format(arguments(1))))
       Mockito.verify(mockGitUpdateCheckoutProcessBuilder._1).start()
       Mockito.verify(mockGitUpdateCheckoutProcessBuilder._2).waitFor()
 
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "pull"))
-      Mockito.verify(mockGitUpdateProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
+      Mockito.verify(mockGitUpdateProcessBuilder._1).directory(cache.sub("%s/src".format(arguments(1))))
       Mockito.verify(mockGitUpdateProcessBuilder._1).start()
       Mockito.verify(mockGitUpdateProcessBuilder._2).waitFor()
     }
@@ -338,7 +339,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   def thenTheGitVersionWasRetrieved() : RealTestHarness = {
     parent.it("Then the git source version was retrieved") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "rev-parse", "HEAD"))
-      Mockito.verify(mockGitVersionProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
+      Mockito.verify(mockGitVersionProcessBuilder._1).directory(cache.sub("%s/src".format(arguments(1))))
       Mockito.verify(mockGitVersionProcessBuilder._1).start()
       Mockito.verify(mockGitVersionProcessBuilder._2).waitFor()
     }
@@ -351,10 +352,10 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
 
     parent.it("Then a cmake prebuild was invoked") {
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.cmake,
-        new File(cache.file, arguments(1) + "/source").getAbsolutePath) ++
+        new File(cache.file, arguments(1) + "/src").getAbsolutePath) ++
         generatorSequence ++
-        Seq[String]("-DCMAKE_BUILD_TYPE=" + buildType,
-        "-DCMAKE_INSTALL_PREFIX=" + cache.sub(arguments(1) + "/" + branch + "/" + arguments(2) + "." + arguments(3)).getAbsolutePath
+        Seq[String]("-DCMAKE_BUILD_TYPE=%s".format(buildType),
+        "-DCMAKE_INSTALL_PREFIX=%s".format(cache.sub("%s/%s/%s/%s.%s".format(arguments(1), cacheArtefactDir, branch, arguments(2), arguments(3))).getAbsolutePath)
       ))
 
       Mockito.verify(mockCmakeProcessBuilder._1).directory(tmp.file)

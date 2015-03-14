@@ -43,7 +43,7 @@ object ArgumentParserImpl extends ArgumentParser {
 
     var branch = new Branch("master")
     val optionals = args.drop(4).map(_.split(":")).foreach((s) => {
-      if (s(0) == "\\branch") {
+      if (s(0) == "/branch") {
         branch = new Branch(s(1))
       }
     })

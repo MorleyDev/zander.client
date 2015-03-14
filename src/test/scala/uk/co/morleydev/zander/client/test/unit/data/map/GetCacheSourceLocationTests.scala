@@ -16,7 +16,7 @@ class GetCacheSourceLocationTests extends UnitTest {
       val actual = getCacheLocationFromCache(project)
 
       it("Then the expected cache location is returned") {
-        assert(actual == new File(cachePathFile, "%s/source".format(project)))
+        assert(actual == new File(cachePathFile, "%s/src".format(project)))
       }
     }
   }

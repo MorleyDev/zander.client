@@ -17,7 +17,7 @@ class GitDownloadSourceToCache(gitProgram : String,
   override def apply(project: Project, dto: ProjectDto): Unit = {
 
     val workingDirectory = new File(programCacheDirectory, project.value)
-    val command = Seq[String](gitProgram, "clone", dto.src.href, "source")
+    val command = Seq[String](gitProgram, "clone", dto.src.href, "src")
     val responseCode = programRunner(command, workingDirectory)
     if (responseCode != 0)
       throw new GitDownloadFailedException(responseCode)

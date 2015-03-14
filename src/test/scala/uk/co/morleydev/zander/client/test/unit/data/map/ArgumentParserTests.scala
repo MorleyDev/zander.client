@@ -43,7 +43,7 @@ class ArgumentParserTests extends UnitTest {
   describe("Given an Argument Parser and set of valid operation/project/compiler/mode and a valid branch flag") {
     val parser = ArgumentParserImpl
     val branch = GenNative.genAlphaNumericString(1, 60)
-    val arguments = GenStringArguments.genArray() ++ Array("\\branch:%s".format(branch))
+    val arguments = GenStringArguments.genArray() ++ Array("/branch:%s".format(branch))
 
     describe("When parsing arguments") {
       val parsedArguments = parser(arguments)

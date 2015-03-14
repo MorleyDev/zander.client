@@ -19,7 +19,7 @@ class GetCacheArtefactsLocationTests extends UnitTest {
       val actual = getCacheLocationFromCache(project, compiler, mode, branch)
 
       it("Then the expected cache location is returned") {
-        assert(actual == new File(cachePathFile, "%s/%s/%s.%s".format(project,branch,compiler,mode)))
+        assert(actual == new File(cachePathFile, "%s/bin/%s/%s.%s".format(project,branch,compiler,mode)))
       }
     }
   }
