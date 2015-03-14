@@ -40,7 +40,7 @@ class UpdateWithExistingUpToDateArtefactsAndSourcesInCacheAndInstalledArtefactsT
 
             testHarness
               .givenAServer()
-              .givenFullGitPipelineIsPossible(artefactVersion)
+              .givenFullGitPipelineIsPossible(artefactVersion, isUpdate = true)
               .whenUpdating(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()
               .whenTheCacheAlreadyContainsArtefacts(artefactVersion, expectedFiles)

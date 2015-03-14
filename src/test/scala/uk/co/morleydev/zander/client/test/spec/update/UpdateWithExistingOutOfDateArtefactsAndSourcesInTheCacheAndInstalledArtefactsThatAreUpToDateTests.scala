@@ -36,7 +36,7 @@ class UpdateWithExistingOutOfDateArtefactsAndSourcesInTheCacheAndInstalledArtefa
 
             testHarness
               .givenAServer()
-              .givenFullGitPipelineIsPossible(artefactVersion)
+              .givenFullGitPipelineIsPossible(artefactVersion, isUpdate = true)
               .givenFullCMakePipelineIsPossible(expectedFiles)
               .whenUpdating(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()

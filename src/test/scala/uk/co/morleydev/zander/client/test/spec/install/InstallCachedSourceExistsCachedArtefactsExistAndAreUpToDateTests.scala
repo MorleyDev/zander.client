@@ -37,7 +37,7 @@ class InstallCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends S
 
             testHarness
               .givenAServer()
-              .givenFullGitPipelineIsPossible(artefactVersion)
+              .givenFullGitPipelineIsPossible(artefactVersion, isUpdate = true)
               .whenInstalling(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()
               .whenTheCacheAlreadyContainsArtefacts(artefactVersion, expectedFiles)

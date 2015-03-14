@@ -38,7 +38,7 @@ class GetCachedSourceExistsCachedArtefactsDoNotExistTests extends SpecTest {
 
             testHarness
               .givenAServer()
-              .givenFullGitPipelineIsPossible(artefactVersion)
+              .givenFullGitPipelineIsPossible(artefactVersion, isUpdate = true)
               .givenFullCMakePipelineIsPossible(expectedFiles)
               .whenGetting(compiler = compiler, mode = mode)
               .whenTheCacheAlreadyContainsTheSourceCode()

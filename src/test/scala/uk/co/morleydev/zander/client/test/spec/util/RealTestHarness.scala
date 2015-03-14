@@ -43,6 +43,8 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   private val working : TemporaryDirectory = new TemporaryDirectory(true)
 
   private var mockGitDownloadProcessBuilder : (NativeProcessBuilder, Process) = null
+  private var mockGitUpdateCheckoutProcessBuilder : (NativeProcessBuilder, Process) = null
+  private var mockGitUpdateProcessBuilder : (NativeProcessBuilder, Process) = null
   private var mockGitCheckoutProcessBuilder : (NativeProcessBuilder, Process) = null
   private var mockGitVersionProcessBuilder : (NativeProcessBuilder, Process) = null
   private var mockCmakeProcessBuilder : (NativeProcessBuilder, Process) = null
@@ -60,14 +62,22 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
     this
   }
 
-  def givenFullGitPipelineIsPossible(expectedArtefactVersion : String) : RealTestHarness =
-    givenAGitDownloadIsPossible()
+  def givenFullGitPipelineIsPossible(expectedArtefactVersion : String, isUpdate: Boolean = false) : RealTestHarness =
+    (if (isUpdate) { givenAGitUpdateIsPossible() } else { givenAGitDownloadIsPossible() })
       .givenAGitCheckoutIsPossible()
       .givenAGitVersionIsPossible(expectedArtefactVersion)
 
   def givenAGitDownloadIsPossible() : RealTestHarness = {
     mockGitDownloadProcessBuilder = CreateMockProcess()
     mockProcessBuilderQueue.enqueue(mockGitDownloadProcessBuilder._1)
+    this
+  }
+
+  def givenAGitUpdateIsPossible() : RealTestHarness = {
+    mockGitUpdateCheckoutProcessBuilder = CreateMockProcess()
+    mockGitUpdateProcessBuilder = CreateMockProcess()
+    mockProcessBuilderQueue.enqueue(mockGitUpdateCheckoutProcessBuilder._1)
+    mockProcessBuilderQueue.enqueue(mockGitUpdateProcessBuilder._1)
     this
   }
 
@@ -137,7 +147,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
                   mode : String = GenStringArguments.genBuildMode(),
                   branch : String = "master") : RealTestHarness = {
     this.branch = branch
-    whenExecutingOperation("get", project, compiler, mode, Array[String]("--branch=%s".format(branch)))
+    whenExecutingOperation("get", project, compiler, mode, Array[String]("\\branch:%s".format(branch)))
   }
 
   def whenInstalling(project : String = GenStringArguments.genProject(),
@@ -302,7 +312,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
 
   def thenAGitCheckoutWasInvoked() : RealTestHarness = {
     parent.it("Then a git clone was invoked on " + branch) {
-      Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "checkout", branch))
+      Mockito.verify(mockProcessBuilderFactory, Mockito.atLeastOnce()).apply(Seq[String](programs.git, "checkout", branch))
       Mockito.verify(mockGitCheckoutProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
       Mockito.verify(mockGitCheckoutProcessBuilder._1).start()
       Mockito.verify(mockGitCheckoutProcessBuilder._2).waitFor()
@@ -312,10 +322,15 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
 
   def thenAGitUpdateWasInvoked() : RealTestHarness = {
     parent.it("Then a git update was invoked") {
+      Mockito.verify(mockProcessBuilderFactory, Mockito.atLeastOnce()).apply( Seq[String](programs.git, "checkout", "master") )
+      Mockito.verify(mockGitUpdateCheckoutProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
+      Mockito.verify(mockGitUpdateCheckoutProcessBuilder._1).start()
+      Mockito.verify(mockGitUpdateCheckoutProcessBuilder._2).waitFor()
+
       Mockito.verify(mockProcessBuilderFactory).apply(Seq[String](programs.git, "pull"))
-      Mockito.verify(mockGitDownloadProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
-      Mockito.verify(mockGitDownloadProcessBuilder._1).start()
-      Mockito.verify(mockGitDownloadProcessBuilder._2).waitFor()
+      Mockito.verify(mockGitUpdateProcessBuilder._1).directory(cache.sub(arguments(1) + "/source"))
+      Mockito.verify(mockGitUpdateProcessBuilder._1).start()
+      Mockito.verify(mockGitUpdateProcessBuilder._2).waitFor()
     }
     this
   }

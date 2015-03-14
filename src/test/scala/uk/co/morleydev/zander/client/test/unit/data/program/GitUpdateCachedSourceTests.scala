@@ -26,6 +26,9 @@ class GitUpdateCachedSourceTests extends UnitTest {
       val project = GenModel.arg.genProject()
       gitUpdateCachedSource.apply(project, projectDto)
 
+      it("Then the git checkout of master is ran") {
+        Mockito.verify(mockProgramRunner).apply(Seq[String](git, "checkout", "master"), new File(cache, project.value + "/source"))
+      }
       it("Then the git update is ran") {
         Mockito.verify(mockProgramRunner).apply(Seq[String](git, "pull"), new File(cache, project.value + "/source"))
       }
