@@ -61,5 +61,5 @@ class UpdateWithExistingOutOfDateArtefactsAndSourcesInTheCacheAndInstalledArtefa
     }
   }
 
-  runAllTestCmakeCases()
+  runSingleCmakeCase()
 }

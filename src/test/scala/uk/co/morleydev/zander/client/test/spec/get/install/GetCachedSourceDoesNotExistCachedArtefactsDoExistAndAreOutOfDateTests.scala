@@ -60,5 +60,5 @@ class GetCachedSourceDoesNotExistCachedArtefactsDoExistAndAreOutOfDateTests exte
     }
   }
 
-  runAllTestCmakeCases()
+  runSingleCmakeCase()
 }

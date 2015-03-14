@@ -60,5 +60,5 @@ class GetCachedSourceExistsCachedArtefactsDoNotExistTests extends SpecTest {
     }
   }
 
-  runAllTestCmakeCases()
+  runSingleCmakeCase()
 }

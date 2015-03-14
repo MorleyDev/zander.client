@@ -58,5 +58,5 @@ class InstallCachedSourceDoesNotExistCachedArtefactsDoExistAndAreUpToDateTests e
     }
   }
 
-  runAllTestCmakeCases()
+  runSingleCmakeCase()
 }

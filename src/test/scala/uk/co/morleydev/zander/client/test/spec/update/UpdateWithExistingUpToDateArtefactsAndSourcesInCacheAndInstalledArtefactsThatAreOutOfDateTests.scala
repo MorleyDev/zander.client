@@ -62,5 +62,5 @@ class UpdateWithExistingUpToDateArtefactsAndSourcesInCacheAndInstalledArtefactsT
     }
   }
 
-  runAllTestNoBuildCases()
+  runSingleNoBuildCases()
 }

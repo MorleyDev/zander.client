@@ -56,5 +56,5 @@ class GetCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends SpecT
     }
   }
 
-  runAllTestNoBuildCases()
+  runSingleNoBuildCases()
 }

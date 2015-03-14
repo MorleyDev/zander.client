@@ -56,5 +56,5 @@ class InstallCachedSourceExistsCachedArtefactsExistAndAreUpToDateTests extends S
     }
   }
 
-  runAllTestNoBuildCases()
+  runSingleNoBuildCases()
 }

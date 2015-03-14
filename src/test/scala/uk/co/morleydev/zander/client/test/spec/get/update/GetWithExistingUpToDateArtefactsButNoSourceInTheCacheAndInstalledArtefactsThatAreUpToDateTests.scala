@@ -55,5 +55,5 @@ class GetWithExistingUpToDateArtefactsButNoSourceInTheCacheAndInstalledArtefacts
     }
   }
 
-  runAllTestNoBuildCases()
+  runSingleNoBuildCases()
 }

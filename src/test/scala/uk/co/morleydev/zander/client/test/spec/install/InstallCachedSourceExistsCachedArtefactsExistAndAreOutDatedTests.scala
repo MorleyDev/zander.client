@@ -61,5 +61,5 @@ class InstallCachedSourceExistsCachedArtefactsExistAndAreOutDatedTests extends S
     }
   }
 
-  runAllTestCmakeCases()
+  runSingleCmakeCase()
 }

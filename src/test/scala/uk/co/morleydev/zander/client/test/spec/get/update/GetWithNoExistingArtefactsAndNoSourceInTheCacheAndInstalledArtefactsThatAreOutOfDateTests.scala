@@ -59,5 +59,5 @@ class GetWithNoExistingArtefactsAndNoSourceInTheCacheAndInstalledArtefactsThatAr
     }
   }
 
-  runAllTestCmakeCases()
+  runSingleCmakeCase()
 }

@@ -61,5 +61,5 @@ class GetCachedSourceExistsCachedArtefactsExistAndAreOutDatedTests extends SpecT
     }
   }
 
-  runAllTestCmakeCases()
+  runSingleCmakeCase()
 }

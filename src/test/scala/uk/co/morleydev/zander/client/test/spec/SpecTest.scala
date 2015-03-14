@@ -1,5 +1,6 @@
 package uk.co.morleydev.zander.client.test.spec
 
+import uk.co.morleydev.zander.client.test.gen.GenStringArguments
 import uk.co.morleydev.zander.client.test.spec.util.RealTestHarness
 import uk.co.morleydev.zander.client.test.util.AbstractTest
 
@@ -46,12 +47,20 @@ abstract class SpecTest extends AbstractTest(SpecificationTag) {
     })
   }
 
-  def runAllTestNoBuildCases() {
-    def testFor(compiler : String) {
-      noBuildTestCase(compiler, "debug")
-      noBuildTestCase(compiler, "release")
-    }
+  def runSingleCmakeCase() {
 
-    testCaseMap.foreach(pair => testFor(pair._1))
+    val buildModeMap = Map[String,String](
+      "debug" -> "Debug",
+      "release" -> "Release"
+    )
+
+    val buildMode = GenStringArguments.genBuildMode()
+    val compiler = GenStringArguments.genCompiler()
+
+    cmakeTestCase(compiler, buildMode, buildModeMap(buildMode), testCaseMap(compiler))
+  }
+
+  def runSingleNoBuildCases() {
+    noBuildTestCase(GenStringArguments.genCompiler(), GenStringArguments.genBuildMode())
   }
 }
