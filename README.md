@@ -30,7 +30,7 @@ The json file defines the following values:
 
 ## Command-Line
 The command line argument takes the format:
-*zander_client* [operation] \$(project) [compiler] [build mode]
+*zander_client* [operation] \$(project) [compiler] [build mode] {ADDITIONAL}
 Where operation, compiler and build mode are one of the supported values, and the project is the name of a project that can be retrieved via a request to the host at /project/$(project)
 
 ### install
@@ -66,6 +66,12 @@ The get operation performs an install or update, depending on whether local aret
 ### Supported Build Modes
 * debug: Build the project artefacts with debug information and without optimisations
 * release: Build the project artefacts with no debug information and with full release optimisations
+
+## Branches and tags
+The /branch:{BRANCH} command line argument can be used to specify a specific branch of the project to acquire. As tags are just branches, this can include specific tags.
+Examples:
+zander-client get someproject mingw release /branch:some_branch
+zander-client get someproject mingw release /branch:tags/v1.0.0
 
 ##Build Status
 
