@@ -8,7 +8,7 @@ import BuildMode.BuildMode
 case class OperationArguments(project : Project,
                             compiler : BuildCompiler,
                             mode : BuildMode,
-                            branch : Branch = new Branch("master"))
+                            branch : Branch)
 
 case class Arguments(operation : Operation,
                      operationArgs : OperationArguments)

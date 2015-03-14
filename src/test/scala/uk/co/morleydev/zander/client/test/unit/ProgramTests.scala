@@ -13,7 +13,7 @@ class ProgramTests extends UnitTest {
 
   val expectedArguments = new Arguments(
     GenModel.arg.genOperation(),
-    new OperationArguments(GenModel.arg.genProject(), GenModel.arg.genCompiler(), GenModel.arg.genBuildMode())
+    new OperationArguments(GenModel.arg.genProject(), GenModel.arg.genCompiler(), GenModel.arg.genBuildMode(), GenModel.arg.genBranch())
   )
 
   describe("Given a Program When running the program") {

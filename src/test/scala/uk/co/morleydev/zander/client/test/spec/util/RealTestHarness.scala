@@ -37,7 +37,7 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   private var provider : SimpleHttpResponseProvider = null
   private var mockServer : MockServerAndPort = null
   private var arguments : Array[String] = null
-  private val branch : String = "master"
+  private var branch : String = "master"
   private val cache : TemporaryDirectory = new TemporaryDirectory()
   private val tmp : TemporaryDirectory = new TemporaryDirectory()
   private val working : TemporaryDirectory = new TemporaryDirectory(true)
@@ -121,13 +121,24 @@ class RealTestHarness(parent : SpecTest) extends MockitoSugar with AutoCloseable
   def whenExecutingOperation(operation : String = GenStringArguments.genOperation(),
                              project : String = GenStringArguments.genProject(),
                              compiler : String = GenStringArguments.genCompiler(),
-                             mode : String = GenStringArguments.genBuildMode()): RealTestHarness =
-    whenRanWithArguments(Array[String](operation, project, compiler, mode))
+                             mode : String = GenStringArguments.genBuildMode(),
+                              extraArgs : Array[String] = Array[String]()): RealTestHarness =
+    whenRanWithArguments(Array[String](operation, project, compiler, mode) ++ extraArgs)
 
   def whenGetting(project : String = GenStringArguments.genProject(),
                   compiler : String = GenStringArguments.genCompiler(),
-                  mode : String = GenStringArguments.genBuildMode()) : RealTestHarness =
+                  mode : String = GenStringArguments.genBuildMode()) : RealTestHarness = {
+    branch = "master"
     whenExecutingOperation("get", project, compiler, mode)
+  }
+
+  def whenGettingBranch(project : String = GenStringArguments.genProject(),
+                  compiler : String = GenStringArguments.genCompiler(),
+                  mode : String = GenStringArguments.genBuildMode(),
+                  branch : String = "master") : RealTestHarness = {
+    this.branch = branch
+    whenExecutingOperation("get", project, compiler, mode, Array[String]("--branch=%s".format(branch)))
+  }
 
   def whenInstalling(project : String = GenStringArguments.genProject(),
                      compiler : String = GenStringArguments.genCompiler(),

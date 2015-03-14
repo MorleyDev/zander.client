@@ -28,7 +28,7 @@ object GenModel {
     def genProjectCompilerBuildModeTuple() : (Project, BuildCompiler, BuildMode) =
       (genProject(), genCompiler(), genBuildMode())
 
-    def genArguments() : Arguments = new Arguments(genOperation(), new OperationArguments(genProject(), genCompiler(), genBuildMode()))
+    def genArguments() : Arguments = new Arguments(genOperation(), new OperationArguments(genProject(), genCompiler(), genBuildMode(), genBranch()))
   }
 
   object net {

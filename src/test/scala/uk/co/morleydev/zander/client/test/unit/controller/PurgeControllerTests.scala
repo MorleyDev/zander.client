@@ -22,7 +22,7 @@ class PurgeControllerTests extends UnitTest {
       val compiler = GenModel.arg.genCompiler()
       val mode = GenModel.arg.genBuildMode()
 
-      purgeController.apply(new OperationArguments(project, compiler, mode))
+      purgeController.apply(new OperationArguments(project, compiler, mode, GenModel.arg.genBranch()))
 
       it("Then the existence of artefact details is validated") {
         Mockito.verify(mockValidate).apply(project, compiler, mode)

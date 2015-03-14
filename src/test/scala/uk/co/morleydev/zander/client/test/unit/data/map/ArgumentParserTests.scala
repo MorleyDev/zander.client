@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client.test.unit.data.map
 import uk.co.morleydev.zander.client.data.map.ArgumentParserImpl
 import uk.co.morleydev.zander.client.data.exception._
 import uk.co.morleydev.zander.client.model.arg._
-import uk.co.morleydev.zander.client.test.gen.GenStringArguments
+import uk.co.morleydev.zander.client.test.gen.{GenNative, GenStringArguments}
 import uk.co.morleydev.zander.client.test.unit.UnitTest
 
 class ArgumentParserTests extends UnitTest {
@@ -40,6 +40,23 @@ class ArgumentParserTests extends UnitTest {
     }
   }
 
+  describe("Given an Argument Parser and set of valid operation/project/compiler/mode and a valid branch flag") {
+    val parser = ArgumentParserImpl
+    val branch = GenNative.genAlphaNumericString(1, 60)
+    val arguments = GenStringArguments.genArray() ++ Array("--branch=%s".format(branch))
+
+    describe("When parsing arguments") {
+      val parsedArguments = parser(arguments)
+
+      it("Then the expected parsed arguments are returned") {
+        assert(parsedArguments.operation == Operation.withName(arguments(0)))
+        assert(parsedArguments.operationArgs.project == new Project(arguments(1)))
+        assert(parsedArguments.operationArgs.compiler == BuildCompiler.withName(arguments(2)))
+        assert(parsedArguments.operationArgs.mode == BuildMode.withName(arguments(3)))
+        assert(parsedArguments.operationArgs.branch == new Branch(branch))
+      }
+    }
+  }
   describe("Given an Argument Parser and set of valid operation/project/compiler/mode but unrecognised flags") {
     val parser = ArgumentParserImpl
     val arguments = GenStringArguments.genArray() ++ Array("--unrecognised=flag")

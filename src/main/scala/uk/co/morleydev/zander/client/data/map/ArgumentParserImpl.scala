@@ -3,7 +3,7 @@ package uk.co.morleydev.zander.client.data.map
 import uk.co.morleydev.zander.client.data.ArgumentParser
 import uk.co.morleydev.zander.client.data.exception._
 import uk.co.morleydev.zander.client.model.{OperationArguments, Arguments}
-import uk.co.morleydev.zander.client.model.arg.{BuildCompiler, BuildMode, Operation, Project}
+import uk.co.morleydev.zander.client.model.arg._
 
 object ArgumentParserImpl extends ArgumentParser {
   private def tryExtractEnum(enum: Enumeration, value: String): Option[enum.Value] = {
@@ -41,6 +41,13 @@ object ArgumentParserImpl extends ArgumentParser {
     if (buildMode.isEmpty)
       throw new InvalidBuildModeException(args(3))
 
-    new Arguments(operation.get, new OperationArguments(project.get, compiler.get, buildMode.get))
+    var branch = new Branch("master")
+    val optionals = args.drop(4).map(_.split("=")).foreach((s) => {
+      if (s(0) == "--branch") {
+        branch = new Branch(s(1))
+      }
+    })
+
+    new Arguments(operation.get, new OperationArguments(project.get, compiler.get, buildMode.get, branch))
   }
 }
