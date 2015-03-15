@@ -5,7 +5,7 @@ import java.util.UUID
 
 import org.apache.commons.io.FileUtils
 
-class TemporaryDirectory extends File(Iterator.continually(new File("zander-" + UUID.randomUUID().toString + "-tmp"))
+class TemporaryDirectory extends File(Iterator.continually(new File(System.getProperty("java.io.tmpdir"), "znd-%s".format(UUID.randomUUID().toString)))
   .dropWhile(_.exists())
   .take(1)
   .toSeq
