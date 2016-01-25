@@ -26,8 +26,10 @@ class CMakeCompilerGeneratorMapTests extends UnitTest {
     whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio10, "Visual Studio 10")
     whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio11, "Visual Studio 11")
     whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio12, "Visual Studio 12")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio14, "Visual Studio 14")
     whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio10Win64, "Visual Studio 10 Win64")
     whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio11Win64, "Visual Studio 11 Win64")
     whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio12Win64, "Visual Studio 12 Win64")
+    whenMappingXtoYThenExpectedResultIsReturned(BuildCompiler.VisualStudio14Win64, "Visual Studio 14 Win64")
   }
 }

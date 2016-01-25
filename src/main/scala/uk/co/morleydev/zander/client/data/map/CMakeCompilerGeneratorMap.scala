@@ -16,9 +16,11 @@ object CMakeCompilerGeneratorMap extends CompilerGeneratorMap {
     BuildCompiler.VisualStudio10 -> "Visual Studio 10",
     BuildCompiler.VisualStudio11 -> "Visual Studio 11",
     BuildCompiler.VisualStudio12 -> "Visual Studio 12",
+    BuildCompiler.VisualStudio14 -> "Visual Studio 14",
     BuildCompiler.VisualStudio10Win64 -> "Visual Studio 10 Win64",
     BuildCompiler.VisualStudio11Win64 -> "Visual Studio 11 Win64",
-    BuildCompiler.VisualStudio12Win64 -> "Visual Studio 12 Win64"
+    BuildCompiler.VisualStudio12Win64 -> "Visual Studio 12 Win64",
+    BuildCompiler.VisualStudio14Win64 -> "Visual Studio 14 Win64"
   )
 
   override def apply(compiler: BuildCompiler): Seq[String] =
