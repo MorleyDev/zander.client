@@ -55,9 +55,11 @@ The get operation performs an install or update, depending on whether local aret
 * msvc10: Visual Studio 2010 MSVC10 C++ Compiler
 * msvc11: Visual Studio 2012 MSVC11 C++ Compiler
 * msvc12: Visual Studio 2013 MSVC12 C++ Compiler
+* msvc14: Visual Studio 2015 MSVC14 C++ Compiler
 * msvc10w64: Visual Studio 2010 MSVC10 C++ Compiler 64-bit
 * msvc11w64: Visual Studio 2012 MSVC11 C++ Compiler 64-bit
 * msvc12w64: Visual Studio 2013 MSVC12 C++ Compiler 64-bit
+* msvc14w64: Visual Studio 2015 MSVC12 C++ Compiler 64-bit
 * mingw: MinGW g++ compiler
 * unix: Cygwin g++ Compiler
 * msys: Msys g++ Compiler
